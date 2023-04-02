@@ -18,13 +18,31 @@ const request = require("request"),
 
 const { OAuth2Client } = require("google-auth-library");
 
+const { urlencoded, json } = require("body-parser")
+
+const mongoose = require('mongoose')
+
+const mongoString = 'mongodb+srv://batchy_bot:Tilapia-626@cluster0.kqimzoq.mongodb.net/?retryWrites=true&w=majority'
+
+mongoose.connect(mongoString + "/noteyfi_data", {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+});
+
+/** MONGO Database */
+var db = mongoose.connection;
+db.on("error", () => console.log("Error in Connecting to Database"));
+db.once("open", () => console.log("Connected to Database"));
+
+app.use(urlencoded({ extended: true }));
+app.use(json());
+
 // Sets server port and logs message on success
 app.listen(process.env.PORT || 1337, () => console.log("webhook is listening"));
 
-app.get('/', (req, res) => {
-  res.send('Hello')
-})
-
+app.get("/", (req, res) => {
+  res.send("Hello");
+});
 
 // Accepts POST requests at /webhook endpoint
 app.post("/webhook", (req, res) => {
@@ -75,13 +93,12 @@ app.get("/webhook", (req, res) => {
   }
 });
 
-
-
 app.get("/oauth2callback", async (req, res) => {
-  const CLIENT_ID = '231696863119-lhr8odkfv58eir2l6m9bvdt8grnlnu4k.apps.googleusercontent.com';
-const CLIENT_SECRET = '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';
-var REDIRECT_URI = 'https://hollow-iodized-beanie.glitch.me/oauth2callback';
-const SCOPES = ['https://www.googleapis.com/auth/classroom.courses.readonly'];
+  const CLIENT_ID =
+    "231696863119-lhr8odkfv58eir2l6m9bvdt8grnlnu4k.apps.googleusercontent.com";
+  const CLIENT_SECRET = "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";
+  var REDIRECT_URI = "https://hollow-iodized-beanie.glitch.me/oauth2callback";
+  const SCOPES = ["https://www.googleapis.com/auth/classroom.courses.readonly"];
 
   return new Promise(async (resolve, reject) => {
     const oauth2Client = new OAuth2Client(
@@ -95,6 +112,17 @@ const SCOPES = ['https://www.googleapis.com/auth/classroom.courses.readonly'];
       const { tokens } = await oauth2Client.getToken(code);
 
       console.log(tokens);
+      
+      await db
+                                .collection("noteyfi_users")
+                                .updateOne(
+                                    { psid: this.participantID },
+                                    {
+                                        $push: {
+                                            vle_accounts: tokens,
+                                        },
+                                    })
+      
 
       /*
                     // Use the access token to make API requests
