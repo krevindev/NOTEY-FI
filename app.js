@@ -18,15 +18,17 @@ const request = require("request"),
 
 const { OAuth2Client } = require("google-auth-library");
 
-const { urlencoded, json } = require("body-parser")
+const { urlencoded, json } = require("body-parser");
 
-const mongoose = require('mongoose')
+const mongoose = require("mongoose");
 
-const mongoString = 'mongodb+srv://batchy_bot:Tilapia-626@cluster0.kqimzoq.mongodb.net/?retryWrites=true&w=majority'
+const mongoString =
+  "mongodb+srv://batchy_bot:Tilapia-626@cluster0.kqimzoq.mongodb.net/?retryWrites=true&w=majority";
 
 mongoose.connect(mongoString + "/noteyfi_data", {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  writeConcern: { w: "majority" },
 });
 
 /** MONGO Database */
@@ -94,6 +96,8 @@ app.get("/webhook", (req, res) => {
 });
 
 app.get("/oauth2callback", async (req, res) => {
+  const targetPSID = req.query.state;
+
   const CLIENT_ID =
     "231696863119-lhr8odkfv58eir2l6m9bvdt8grnlnu4k.apps.googleusercontent.com";
   const CLIENT_SECRET = "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";
@@ -112,17 +116,15 @@ app.get("/oauth2callback", async (req, res) => {
       const { tokens } = await oauth2Client.getToken(code);
 
       console.log(tokens);
-      
-      await db
-                                .collection("noteyfi_users")
-                                .updateOne(
-                                    { psid: this.participantID },
-                                    {
-                                        $push: {
-                                            vle_accounts: tokens,
-                                        },
-                                    })
-      
+
+      await db.collection("noteyfi_users").updateOne(
+        { psid: targetPSID },
+        {
+          $push: {
+            vle_accounts: tokens,
+          },
+        }
+      );
 
       /*
                     // Use the access token to make API requests

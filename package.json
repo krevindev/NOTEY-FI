@@ -17,9 +17,10 @@
     "express": "^4.13.4",
     "request": "^2.72.0",
     "google-auth-library": "^8.7.0",
-    "mongoose": "^6.7.2"
+    "mongoose": "^6.7.2",
+    "whatwg-url": "^11.0.0"
   },
   "engines": {
-    "node": "~4.1.2"
+    "node": "14.x"
   }
 }

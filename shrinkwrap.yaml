@@ -4,6 +4,7 @@ dependencies:
   google-auth-library: 8.7.0
   mongoose: 6.10.4
   request: 2.88.2
+  whatwg-url: 11.0.0
 packages:
   /@aws-crypto/ie11-detection/3.0.0:
     dependencies:
@@ -1918,3 +1919,4 @@ specifiers:
   google-auth-library: ^8.7.0
   mongoose: ^6.7.2
   request: ^2.72.0
+  whatwg-url: ^11.0.0
