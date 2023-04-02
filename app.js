@@ -16,10 +16,15 @@ const request = require("request"),
   body_parser = require("body-parser"),
   app = express().use(body_parser.json()); // creates express http server
 
-const { OAuth2Client } = require('google-auth-library');
+const { OAuth2Client } = require("google-auth-library");
 
 // Sets server port and logs message on success
 app.listen(process.env.PORT || 1337, () => console.log("webhook is listening"));
+
+app.get('/', (req, res) => {
+  res.send('Hello')
+})
+
 
 // Accepts POST requests at /webhook endpoint
 app.post("/webhook", (req, res) => {
@@ -45,25 +50,6 @@ app.post("/webhook", (req, res) => {
 });
 
 // Add support for GET requests to our webhook
-app.get("/messaging-webhook", (req, res) => {
-  // Parse the query params
-  let mode = req.query["hub.mode"];
-  let token = req.query["hub.verify_token"];
-  let challenge = req.query["hub.challenge"];
-
-  // Check if a token and mode is in the query string of the request
-  if (mode && token) {
-    // Check the mode and token sent is correct
-    if (mode === "subscribe" && token === config.verifyToken) {
-      // Respond with the challenge token from the request
-      console.log("WEBHOOK_VERIFIED");
-      res.status(200).send(challenge);
-    } else {
-      // Respond with '403 Forbidden' if verify tokens do not match
-      res.sendStatus(403);
-    }
-  }
-});
 
 // Accepts GET requests at the /webhook endpoint
 app.get("/webhook", (req, res) => {
@@ -90,12 +76,10 @@ app.get("/webhook", (req, res) => {
 });
 
 app.get("/oauth2callback", async (req, res) => {
-  const CLIENT_ID =
-    "524422024726-kbjdo5pbmant8nbnli4dppmbicc430ts.apps.googleusercontent.com";
-  const CLIENT_SECRET = "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";
-  var REDIRECT_URI =
-    "https://hollow-iodized-beanie.glitch.me/messaging-webhook/oauth2callback";
-  const SCOPES = ["https://www.googleapis.com/auth/classroom.courses.readonly"];
+  const CLIENT_ID = '231696863119-lhr8odkfv58eir2l6m9bvdt8grnlnu4k.apps.googleusercontent.com';
+const CLIENT_SECRET = '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';
+var REDIRECT_URI = 'https://hollow-iodized-beanie.glitch.me';
+const SCOPES = ['https://www.googleapis.com/auth/classroom.courses.readonly'];
 
   return new Promise(async (resolve, reject) => {
     const oauth2Client = new OAuth2Client(
@@ -110,15 +94,6 @@ app.get("/oauth2callback", async (req, res) => {
 
       console.log(this.participantID + ":\n");
       console.log(tokens);
-
-      await db.collection("noteyfi_users").updateOne(
-        { psid: this.participantID },
-        {
-          $push: {
-            vle_accounts: tokens,
-          },
-        }
-      );
 
       /*
                     // Use the access token to make API requests
