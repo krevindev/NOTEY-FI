@@ -92,7 +92,6 @@ const SCOPES = ['https://www.googleapis.com/auth/classroom.courses.readonly'];
     try {
       const { tokens } = await oauth2Client.getToken(code);
 
-      console.log(this.participantID + ":\n");
       console.log(tokens);
 
       /*
