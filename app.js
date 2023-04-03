@@ -233,7 +233,9 @@ async function handleMessage(sender_psid, received_message) {
         },
       };
     } else if (msg[0] === "/") {
-      console.log(await askGPT(msg))
+      response = {
+        text: await askGPT(msg).then(res => res)
+      }
     } else {
       response = {
         text: `You sent the message: "${received_message.text}". Now send me an attachment!`,
