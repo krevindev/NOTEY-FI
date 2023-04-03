@@ -61,69 +61,49 @@ async function response(msg) {
         },
       ],
     };
-  }else if (msg === 'menu'){
-    response = {
-      text: "Menu: ",
-      quick_replies: [
-        {
-          content_type: "text",
-          title: "Set Reminder",
-          payload: "set_reminder",
-          image_url:
-            "https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-ios7-bell-512.png",
-        },
-        {
-          content_type: "text",
-          title: "Add VLE Account",
-          payload: "add_vle_account",
-          image_url:
-            "https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-ios7-bell-512.png",
-        },
-        {
-          content_type: "text",
-          title: "Unsubscribe",
-          payload: "unsubscribe",
-          image_url:
-            "https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-ios7-bell-512.png",
-        },
-      ],
-    }
   }
 
   return response;
 }
 
+async function subscribe(sender_psid, db) {
+  const name = await axios
+    .get(
+      `https://graph.facebook.com/${sender_psid}?fields=first_name,last_name&access_token=${process.env.PAGE_ACCESS_TOKEN}`
+    )
+    .then(function (response) {
+      // Extract the user's name from the response
+      let firstName = response.data.first_name;
+      let lastName = response.data.last_name;
+      let fullName = `${firstName} ${lastName}`;
 
- async function subscribe(sender_psid, db) {
-   
-   const name = await axios.get(`https://graph.facebook.com/${sender_psid}?fields=first_name,last_name&access_token=${process.env.PAGE_ACCESS_TOKEN}`)
-  .then(function(response) {
-    // Extract the user's name from the response
-    let firstName = response.data.first_name;
-    let lastName = response.data.last_name;
-    let fullName = `${firstName} ${lastName}`;
+      return fullName;
+    });
 
-    return fullName
-  })
-   
-   
-   let body = {
-        name: name,
-        psid: sender_psid,
-      };
-   
-      return new Promise((resolve, reject) => {
-        db.collection("noteyfi_users").findOne(body, async (err, result) => {
-          if (result == null) {
-            resolve(
-              db
-                .collection("noteyfi_users")
-                .insertOne(body, (err, result) => {})
-            );
-          } else {
-            reject("Existing");
-          }
-        });
+  let body = {
+    name: name,
+    psid: sender_psid,
+  };
+
+  return new Promise((resolve, reject) => {
+    db.collection("noteyfi_users").findOne(body, async (err, result) => {
+      if (result == null) {
+        resolve(
+          db.collection("noteyfi_users").insertOne(body, (err, result) => {})
+        );
+      } else {
+        reject("Existing");
+      }
+    });
+  });
+}
+
+module.exports = {
+  askGPT,
+  response,
+  subscribe,
+};
+
       });
     }
 
