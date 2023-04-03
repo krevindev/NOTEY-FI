@@ -159,9 +159,9 @@ const botResponses = require("./bot-responses");
 // Handles messages events
 async function handleMessage(sender_psid, received_message) {
   let response;
+  console.log('FFFFFFF')
+  console.log(received_message)
 
-  
-  
   // Checks if the message contains text
   if (received_message.text) {
     let msg = received_message.text.toLowerCase();
@@ -174,30 +174,27 @@ async function handleMessage(sender_psid, received_message) {
     // if the message is a quick reply
     if (received_message.quick_reply) {
       let payload = received_message.quick_reply.payload;
-      
-      handleQuickReplies(sender_psid, payload)
-      
+
+      handleQuickReplies(sender_psid, payload);
+
       // if it's just plain text
     } else {
-      
-    if (msg === "test") {
-      response = {
-        text: `Test Succeeded`,
-      };
-    } else if (msg === "get started") {
-      response = await botResponses.response(msg);
-    } else if (msg[0] === "/") {
-      response = {
-        text: await botResponses.askGPT(msg),
-      };
-    } else {
-      response = {
-        text: `'${received_message.text}' is an invalid command!`,
-      };
+      if (msg === "test") {
+        response = {
+          text: `Test Succeeded`,
+        };
+      } else if (msg === "get started") {
+        response = await botResponses.response(msg);
+      } else if (msg[0] === "/") {
+        response = {
+          text: await botResponses.askGPT(msg),
+        };
+      } else {
+        response = {
+          text: `'${received_message.text}' is an invalid command!`,
+        };
+      }
     }
-      
-    }
-
   } else if (received_message.attachments) {
     // Get the URL of the message attachment
     let attachment_url = received_message.attachments[0].payload.url;
@@ -234,15 +231,35 @@ async function handleMessage(sender_psid, received_message) {
   callSendAPI(sender_psid, response);
 }
 
-
 // Handles QuickReplies
-function handleQuickReplies(sender_psid, received_payload){
-  
+function handleQuickReplies(sender_psid, received_payload) {
   let response;
-  if(received_payload === 'subscribe'){
-    response = { text: 'Subsribing...' }
+  if (received_payload === "subscribe") {
+    response = { text: "Subsribing..." };
+    
+    subscribe()
+
+    async function subscribe() {
+      let body = {
+        name: botResponses.getName(sender_psid),
+        psid: sender_psid,
+      };
+      return new Promise((resolve, reject) => {
+        db.collection("noteyfi_users").findOne(body, async (err, result) => {
+          if (result == null) {
+            resolve(
+              db
+                .collection("noteyfi_users")
+                .insertOne(body, (err, result) => {})
+            );
+          } else {
+            reject("Existing");
+          }
+        });
+      });
+    }
   }
-  
+
   callSendAPI(sender_psid, response);
 }
 

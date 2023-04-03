@@ -66,29 +66,22 @@ async function response(msg) {
   return response;
 }
 
-async function subscribe(){
-  sendText(this.participantID, 'Please wait...')
-            .then(async res => {
-                let body = {
-                    name: this.storedLastMsg.from.name,
-                    psid: this.participantID
-                }
-                return new Promise((resolve, reject) => {
-                    db.collection("noteyfi_users").findOne(
-                        body, async (err, result) => {
 
-                            if (result == null) {
-                                resolve(db.collection("noteyfi_users").insertOne(body, (err, result) => { }))
-                            } else {
-                                reject('Existing')
-                            }
-                        });
-                })
-            })
-            .then(res => sendText(this.participantID, 'Successfully Added'))
-            .catch(err => sendText(this.participantID, 'You have already subscribed'))
-            .finally(res => this.sendMenu())
+async function getName(targetPSID){
+  axios.get(`https://graph.facebook.com/${targetPSID}?fields=first_name,last_name&access_token=${process.env.PAGE_ACCESS_TOKEN}`)
+  .then(function(response) {
+    // Extract the user's name from the response
+    let firstName = response.data.first_name;
+    let lastName = response.data.last_name;
+    let fullName = `${firstName} ${lastName}`;
+
+    return fullName
+  })
+  .catch(function(error) {
+    console.error(`Error getting user's name: ${error}`);
+  });
 }
+
 
 module.exports = {
   askGPT,
