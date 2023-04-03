@@ -243,20 +243,14 @@ function handleQuickReplies(sender_psid, received_payload) {
         botResponses
             .subscribe(sender_psid, db)
             .then(async () => {
-                await callSendAPI(sender_psid, {
-                    // if storing in database succeeded
-                    text: "Successfully Subscribed",
-                }).then(
-                    async () =>
-                        await callSendAPI(sender_psid, await botResponses.response("menu"))
-                );
+            // if storing succeeded
+                await callSendAPI(sender_psid, {text: "Successfully Subscribed"})
+                  .then(async () => callSendAPI(sender_psid, await botResponses.response("menu")));
             })
             // if storing in database failed
             .catch(async () => {
                 await callSendAPI(sender_psid, { text: "You have already Subscribed" })
-                    .then(async () => {
-                  return callSendAPI(sender_psid, await botResponses.response("menu")
-                });
+                  .then(async () => callSendAPI(sender_psid, await botResponses.response("menu")));
             });
     } else {
         callSendAPI(sender_psid, {

@@ -1,6 +1,9 @@
 const axios = require("axios");
 const request = require("request");
 
+const img_url = 'https://cdn.pixabay.com/photo/2016/02/25/05/36/button-1221338_1280.png'
+
+
 async function askGPT(question) {
     const apiEndpoint =
         "https://api.openai.com/v1/engines/text-davinci-003/completions";
@@ -57,7 +60,7 @@ async function response(msg) {
                     title: "Subscribe",
                     payload: "subscribe",
                     image_url:
-                        "https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-ios7-bell-512.png",
+                        img_url,
                 },
             ],
         };
@@ -71,20 +74,20 @@ async function response(msg) {
                     title: "1",
                     payload: "subscribe",
                     image_url:
-                        "https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-ios7-bell-512.png",
+                       img_url,
                 }, {
                     content_type: "text",
                     title: "2",
                     payload: "f",
                     image_url:
-                        "https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-ios7-bell-512.png",
+                        img_url,
                 },
                 {
                     content_type: "text",
                     title: "6",
                     payload: "3",
                     image_url:
-                        "https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-ios7-bell-512.png",
+                        img_url,
                 },
             ],
         };
