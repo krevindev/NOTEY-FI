@@ -238,16 +238,19 @@ function handleQuickReplies(sender_psid, received_payload) {
 
   // Subscribe
   if (received_payload === "subscribe") {
-    response = { text: "Subscribing..." };
+    callSendAPI(sender_psid, { text: "Subscribing..." });
 
     botResponses
       .subscribe(sender_psid, db)
-      .then((res) =>
+      .then(async (res) =>
         callSendAPI(sender_psid, { text: "Successfully Subscribed" })
-      ) // if storoing in database succeeded
-      .then((res) => console.log(res))
-      .catch((err) => callSendAPI(sender_psid, { text: "You have already Subscribed" }))
-      .finally(res => callSendAPI(sender_psid, botResponses.response("menu")))
+      ) // if storing in database succeeded
+      .catch(async (err) =>
+        callSendAPI(sender_psid, { text: "You have already Subscribed" })
+      )
+      .finally(async (res) =>
+        callSendAPI(sender_psid, await botResponses.response("menu"))
+      );
   }
 }
 

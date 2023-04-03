@@ -68,21 +68,21 @@ async function response(msg) {
             quick_replies: [
                 {
                     content_type: "text",
-                    title: "Subscribe",
+                    title: "1",
                     payload: "subscribe",
                     image_url:
                         "https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-ios7-bell-512.png",
                 }, {
                     content_type: "text",
-                    title: "Subscribe",
-                    payload: "subscribe",
+                    title: "2",
+                    payload: "f",
                     image_url:
                         "https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-ios7-bell-512.png",
                 },
                 {
                     content_type: "text",
-                    title: "Subscribe",
-                    payload: "subscribe",
+                    title: "6",
+                    payload: "3",
                     image_url:
                         "https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-ios7-bell-512.png",
                 },
