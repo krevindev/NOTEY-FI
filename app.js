@@ -17,8 +17,7 @@ const request = require("request"),
   app = express().use(body_parser.json()); // creates express http server
 
 const { OAuth2Client } = require("google-auth-library");
-const axios = require('axios');
-
+const axios = require("axios");
 
 const { urlencoded, json } = require("body-parser");
 
@@ -157,45 +156,47 @@ app.get("/oauth2callback", async (req, res) => {
   });
 });
 
-
 async function askGPT(question) {
+  const apiEndpoint =
+    "https://api.openai.com/v1/engines/text-davinci-003/completions";
+  const accessToken = "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";
 
-    const apiEndpoint = 'https://api.openai.com/v1/engines/text-davinci-003/completions';
-    const accessToken = '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';
-
-    async function askQuestion(question) {
-        try {
-            const response = await axios.post(apiEndpoint, {
-                prompt: `Q: ${question}\nA:`,
-                max_tokens: 50,
-                n: 1,
-                stop: '\n'
-            }, {
-                headers: {
-                    'Authorization': `Bearer ${accessToken}`,
-                    'Content-Type': 'application/json'
-                }
-            });
-
-            return response.data.choices[0].text.trim();
-        } catch (error) {
-            console.error(`Error asking question: ${question}`, error.response.data);
+  async function askQuestion(question) {
+    try {
+      const response = await axios.post(
+        apiEndpoint,
+        {
+          prompt: `Q: ${question}\nA:`,
+          max_tokens: 50,
+          n: 1,
+          stop: "\n",
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json",
+          },
         }
-    }
+      );
 
-    const answer = await askQuestion(question);
-    /*
+      return response.data.choices[0].text.trim();
+    } catch (error) {
+      console.error(`Error asking question: ${question}`, error.response.data);
+    }
+  }
+
+  const answer = await askQuestion(question);
+  /*
     if (answer) {
         console.log(`Q: ${question}\nA: ${answer}`);
     }
     */
-    if (answer) {
-        return `A: ${answer}`
-    } else {
-        return 'Error!'
-    }
+  if (answer) {
+    return `A: ${answer}`;
+  } else {
+    return "Error!";
+  }
 }
-
 
 // Handles messages events
 function handleMessage(sender_psid, received_message) {
@@ -203,14 +204,14 @@ function handleMessage(sender_psid, received_message) {
 
   // Checks if the message contains text
   if (received_message.text) {
-    let msg = received_message.text.toLowerCase()
+    let msg = received_message.text.toLowerCase();
     // Create the payload for a basic text message, which
     // will be added to the body of our request to the Send API
     if (msg === "test") {
       response = {
         text: `Test Succeeded`,
       };
-    }else if (msg === "get started") {
+    } else if (msg === "get started") {
       response = {
         attachment: {
           type: "image",
@@ -220,8 +221,7 @@ function handleMessage(sender_psid, received_message) {
           },
         },
       };
-    }
-    else if (msg === "subscribe") {
+    } else if (msg === "subscribe") {
       response = {
         attachment: {
           type: "video",
@@ -231,13 +231,16 @@ function handleMessage(sender_psid, received_message) {
           },
         },
       };
-    } 
-    else if (msg[0] === '/'){
+    } else if (msg[0] === "/") {
+      async () => {
         response = {
-            text: askGPT(msg).then(res => res).catch(err => err)
-        }
-    }
-    else {
+          text: await askGPT(msg)
+            .then((ans) => ans)
+            .catch((err) => err),
+        };
+        console.log(response);
+      };
+    } else {
       response = {
         text: `You sent the message: "${received_message.text}". Now send me an attachment!`,
       };
