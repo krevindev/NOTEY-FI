@@ -252,7 +252,12 @@ function handleQuickReplies(sender_psid, received_payload) {
                 await callSendAPI(sender_psid, { text: "You have already Subscribed" })
                   .then(async () => callSendAPI(sender_psid, await botResponses.response("menu")));
             });
-    } else {
+    } else if(received_payload === "unsubscribe"){
+      botResponses
+        .unsubscribe(sender_psid, db)
+    }
+  
+  else {
         callSendAPI(sender_psid, {
             text: "For some reason, that's an unknown postback",
         })(
