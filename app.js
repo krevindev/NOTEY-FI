@@ -238,7 +238,7 @@ function handleQuickReplies(sender_psid, received_payload) {
 
   // Subscribe
   if (received_payload === "subscribe") {
-    response = { text: "Subsribing..." };
+    response = { text: "Subscribing..." };
 
     botResponses
       .subscribe(sender_psid, db)
@@ -246,11 +246,8 @@ function handleQuickReplies(sender_psid, received_payload) {
         callSendAPI(sender_psid, { text: "Successfully Subscribed" })
       ) // if storoing in database succeeded
       .then((res) => console.log(res))
-      .catch((err) => {
-        callSendAPI(sender_psid, { text: "You have already Subscribed" });
-      }); // if user is already existing
-        callSendAPI(sender_psid, botResponses.response("menu"));
-  } else {
+      .catch((err) => callSendAPI(sender_psid, { text: "You have already Subscribed" }))
+      .finally(res => callSendAPI(sender_psid, botResponses.response("menu")))
   }
 }
 
