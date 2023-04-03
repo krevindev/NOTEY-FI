@@ -156,7 +156,7 @@ app.get("/oauth2callback", async (req, res) => {
   });
 });
 
-
+const botResponses = require('./bot-responses')
 
 // Handles messages events
 async function handleMessage(sender_psid, received_message) {
@@ -193,8 +193,8 @@ async function handleMessage(sender_psid, received_message) {
       };
     } else if (msg[0] === "/") {
       response = {
-        text: await askGPT(msg).then(res => res)
-      }
+        text: await botResponses.askGPT(msg),
+      };
     } else {
       response = {
         text: `You sent the message: "${received_message.text}". Now send me an attachment!`,

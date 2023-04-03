@@ -1,3 +1,5 @@
+const axios = require('axios');
+
 async function askGPT(question) {
   const apiEndpoint =
     "https://api.openai.com/v1/engines/text-davinci-003/completions";
@@ -39,4 +41,8 @@ async function askGPT(question) {
   } else {
     return "Error!";
   }
+}
+
+module.exports = {
+  askGPT
 }
