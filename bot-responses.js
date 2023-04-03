@@ -108,7 +108,13 @@ async function response(msg){
             title: "Subscribe",
             payload: "subscribe",
             image_url: "https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-ios7-bell-512.png",
-          }]
+          }, {
+            content_type: "text",
+            title: "Subscribe2",
+            payload: "subscribe2",
+            image_url: "https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-ios7-bell-512.png",
+          }
+        ]
       }
   }
   

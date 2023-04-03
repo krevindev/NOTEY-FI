@@ -166,8 +166,25 @@ async function handleMessage(sender_psid, received_message) {
     // Create the payload for a basic text message, which
     // will be added to the body of our request to the Send API
 
-    console.log('RECEIVED MESSAGE: ')
+    console.log("RECEIVED MESSAGE: ");
+    console.log(received_message);
+
+    // if the message is a quick reply
+    if (received_message.quick_reply) {
+      let payload = received_message.quick_reply.payload;
+      console.log(payload);
+    } else {
+      
+      
+      
+      
+    }
     
+    
+    
+    
+    
+
     if (msg === "test") {
       response = {
         text: `Test Succeeded`,
