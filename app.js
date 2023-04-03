@@ -243,13 +243,23 @@ function handleQuickReplies(sender_psid, received_payload) {
     botResponses
       .subscribe(sender_psid, db)
       .then(async (res) => {
-        await callSendAPI(sender_psid, { text: "Successfully Subscribed" })
-        .then(async res => await callSendAPI(sender_psid, await botResponses.response("menu")))
-        
+        await callSendAPI(sender_psid, {
+          text: "Successfully Subscribed",
+        }).then(
+          async (res) =>
+            await callSendAPI(sender_psid, await botResponses.response("menu"))
+        );
       }) // if storing in database succeeded
       .catch(async (err) => {
-        await callSendAPI(sender_psid, { text: "You have already Subscribed" })
-          .then(async res => await callSendAPI(sender_psid, await botResponses.response("menu")))
+        await callSendAPI(
+          sender_psid,
+          { text: "You have already Subscribed" }.then(async () =>
+            await callSendAPI(sender_psid, await botResponses.response("menu"))
+          )
+        ).then(
+          async (res) =>
+            await callSendAPI(sender_psid, await botResponses.response("menu"))
+        );
       });
   } else {
     callSendAPI(sender_psid, {
@@ -300,21 +310,19 @@ function callSendAPI(sender_psid, response) {
   // Send the HTTP request to the Messenger Platform
   return new Promise((resolve, reject) => {
     request(
-    {
-      uri: "https://graph.facebook.com/v2.6/me/messages",
-      qs: { access_token: process.env.PAGE_ACCESS_TOKEN },
-      method: "POST",
-      json: request_body,
-    },
-    (err, res, body) => {
-      if (!err) {
-        reject(console.log("message sent!"));
-      } else {
-        resolve(console.error("Unable to send message:" + err));
+      {
+        uri: "https://graph.facebook.com/v2.6/me/messages",
+        qs: { access_token: process.env.PAGE_ACCESS_TOKEN },
+        method: "POST",
+        json: request_body,
+      },
+      (err, res, body) => {
+        if (!err) {
+          reject(console.log("message sent!"));
+        } else {
+          resolve(console.error("Unable to send message:" + err));
+        }
       }
-    }
-  );
-    
-  })
-  
+    );
+  });
 }
