@@ -1,4 +1,46 @@
 const axios = require('axios');
+const request = require('request')
+
+function sendQuickReplies(targetPSID, qReps, qRepsText) {
+    console.log('Triggered with ')
+    let quick_replies = qReps.map(qRep => {
+        return {
+            const_type: "text",
+            title: `${qRep.title}`,
+            payload: `${qRep.payload}`,
+            image_url: qRep.image_url ? qRep.image_url:''
+        }
+    })
+
+    let qrBody = {
+        recipient: {
+            id: "" + targetPSID + "",
+        },
+        messaging_type: "RESPONSE",
+        message: {
+            text: qRepsText,
+            quick_replies: quick_replies,
+        },
+    };
+
+    new Promise((resolve, reject) => {
+        request(
+            {
+                url: `https://graph.facebook.com/v15.0/me/messages?access_token=${process.env.PAGE_ACCESS_TOKEN}`,
+                method: "POST",
+                json: true,
+                body: qrBody,
+            },
+            (err, res, body) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(body);
+                }
+            }
+        );
+    })
+}
 
 async function askGPT(question) {
   const apiEndpoint =
@@ -43,6 +85,17 @@ async function askGPT(question) {
   }
 }
 
+async function sendSubscribeBtn(targetPSID) {
+    sendQuickReplies(targetPSID, [
+        {
+            title: 'Subscribe',
+            payload: 'subscribe'
+        }
+    ])
+    // then adds the user to the database
+}
+
 module.exports = {
-  askGPT
+  askGPT,
+  sendSubscribeBtn
 }
