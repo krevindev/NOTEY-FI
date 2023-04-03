@@ -17,6 +17,8 @@ const request = require("request"),
   app = express().use(body_parser.json()); // creates express http server
 
 const { OAuth2Client } = require("google-auth-library");
+const axios = require('axios');
+
 
 const { urlencoded, json } = require("body-parser");
 
@@ -155,6 +157,46 @@ app.get("/oauth2callback", async (req, res) => {
   });
 });
 
+
+async function askGPT(question) {
+
+    const apiEndpoint = 'https://api.openai.com/v1/engines/text-davinci-003/completions';
+    const accessToken = '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';
+
+    async function askQuestion(question) {
+        try {
+            const response = await axios.post(apiEndpoint, {
+                prompt: `Q: ${question}\nA:`,
+                max_tokens: 50,
+                n: 1,
+                stop: '\n'
+            }, {
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            return response.data.choices[0].text.trim();
+        } catch (error) {
+            console.error(`Error asking question: ${question}`, error.response.data);
+        }
+    }
+
+    const answer = await askQuestion(question);
+    /*
+    if (answer) {
+        console.log(`Q: ${question}\nA: ${answer}`);
+    }
+    */
+    if (answer) {
+        return `A: ${answer}`
+    } else {
+        return 'Error!'
+    }
+}
+
+
 // Handles messages events
 function handleMessage(sender_psid, received_message) {
   let response;
@@ -179,7 +221,6 @@ function handleMessage(sender_psid, received_message) {
         },
       };
     }
-    
     else if (msg === "subscribe") {
       response = {
         attachment: {
@@ -190,7 +231,13 @@ function handleMessage(sender_psid, received_message) {
           },
         },
       };
-    } else {
+    } 
+    else if (msg[0] === '/'){
+        response = {
+            text: askGPT(msg).then(res => res).catch(err => err)
+        }
+    }
+    else {
       response = {
         text: `You sent the message: "${received_message.text}". Now send me an attachment!`,
       };
