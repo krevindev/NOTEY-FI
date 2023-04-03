@@ -67,6 +67,29 @@ async function response(msg) {
 }
 
 
+ async function subscribe(sender_psid, db) {
+   
+   let body = {
+        name: getName(sender_psid),
+        psid: sender_psid,
+      };
+   
+      return new Promise((resolve, reject) => {
+        db.collection("noteyfi_users").findOne(body, async (err, result) => {
+          if (result == null) {
+            resolve(
+              db
+                .collection("noteyfi_users")
+                .insertOne(body, (err, result) => {})
+            );
+          } else {
+            reject("Existing");
+          }
+        });
+      });
+    }
+
+
 async function getName(targetPSID){
   axios.get(`https://graph.facebook.com/${targetPSID}?fields=first_name,last_name&access_token=${process.env.PAGE_ACCESS_TOKEN}`)
   .then(function(response) {
@@ -86,4 +109,6 @@ async function getName(targetPSID){
 module.exports = {
   askGPT,
   response,
+  getName,
+  subscribe
 };

@@ -37,6 +37,7 @@ mongoose.connect(mongoString + "/noteyfi_data", {
 
 /** MONGO Database */
 var db = mongoose.connection;
+mongoose.set('strictQuery', false);
 db.on("error", () => console.log("Error in Connecting to Database"));
 db.once("open", () => console.log("Connected to Database"));
 
@@ -237,27 +238,8 @@ function handleQuickReplies(sender_psid, received_payload) {
   if (received_payload === "subscribe") {
     response = { text: "Subsribing..." };
     
-    subscribe()
-
-    async function subscribe() {
-      let body = {
-        name: botResponses.getName(sender_psid),
-        psid: sender_psid,
-      };
-      return new Promise((resolve, reject) => {
-        db.collection("noteyfi_users").findOne(body, async (err, result) => {
-          if (result == null) {
-            resolve(
-              db
-                .collection("noteyfi_users")
-                .insertOne(body, (err, result) => {})
-            );
-          } else {
-            reject("Existing");
-          }
-        });
-      });
-    }
+    botResponses.subscribe(sender_psid, db)
+    .then(res => console.log(res)).catch(err => console.log(err))
   }
 
   callSendAPI(sender_psid, response);
