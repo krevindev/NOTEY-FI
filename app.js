@@ -165,6 +165,9 @@ async function handleMessage(sender_psid, received_message) {
     let msg = received_message.text.toLowerCase();
     // Create the payload for a basic text message, which
     // will be added to the body of our request to the Send API
+
+    console.log('RECEIVED MESSAGE: ')
+    
     if (msg === "test") {
       response = {
         text: `Test Succeeded`,
