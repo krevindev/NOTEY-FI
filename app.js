@@ -242,18 +242,21 @@ function handleQuickReplies(sender_psid, received_payload) {
 
     botResponses
       .subscribe(sender_psid, db)
-      .then(async res =>
+      .then(async (res) => {
         callSendAPI(sender_psid, { text: "Successfully Subscribed" })
-      ) // if storing in database succeeded
-      .catch(async err =>
+        .then(async res => await callSendAPI(sender_psid, await botResponses.response("menu")))
+        
+      }) // if storing in database succeeded
+      .catch(async (err) => {
         callSendAPI(sender_psid, { text: "You have already Subscribed" })
-      )
-      .finally(async res => callSendAPI(sender_psid, await botResponses.response('menu')))
+          .then(async res => await callSendAPI(sender_psid, await botResponses.response("menu")))
+      });
   } else {
     callSendAPI(sender_psid, {
       text: "For some reason, that's an unknown postback",
-    })(async () =>
-      callSendAPI(sender_psid, await botResponses.response("menu"))
+    })(
+      async () =>
+        await callSendAPI(sender_psid, await botResponses.response("menu"))
     );
   }
 }
@@ -295,7 +298,8 @@ function callSendAPI(sender_psid, response) {
   };
 
   // Send the HTTP request to the Messenger Platform
-  request(
+  return new Promise((resolve, reject) => {
+    request(
     {
       uri: "https://graph.facebook.com/v2.6/me/messages",
       qs: { access_token: process.env.PAGE_ACCESS_TOKEN },
@@ -304,10 +308,13 @@ function callSendAPI(sender_psid, response) {
     },
     (err, res, body) => {
       if (!err) {
-        console.log("message sent!");
+        reject(console.log("message sent!"));
       } else {
-        console.error("Unable to send message:" + err);
+        resolve(console.error("Unable to send message:" + err));
       }
     }
   );
+    
+  })
+  
 }

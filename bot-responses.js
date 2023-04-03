@@ -94,7 +94,7 @@ async function response(msg) {
 }
 
 async function subscribe(sender_psid, db) {
-    const name = axios.get(
+    const name = await axios.get(
         `https://graph.facebook.com/${sender_psid}?fields=first_name,last_name&access_token=${process.env.PAGE_ACCESS_TOKEN}`
     )
         .then(function (response) {
