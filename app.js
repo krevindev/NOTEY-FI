@@ -169,25 +169,10 @@ async function handleMessage(sender_psid, received_message) {
       response = {
         text: `Test Succeeded`,
       };
-    } else if (msg === "sub") {
+    } else if (msg === "get started") {
       
-      response = {
-        text: "Pick a color:",
-        quick_replies: [
-          {
-            content_type: "text",
-            title: "Red",
-            payload: "<POSTBACK_PAYLOAD>",
-            image_url: "http://example.com/img/red.png",
-          },
-          {
-            content_type: "text",
-            title: "Green",
-            payload: "<POSTBACK_PAYLOAD>",
-            image_url: "http://example.com/img/green.png",
-          },
-        ],
-      };
+      response = await botResponses.response(msg)
+      
     } else if (msg[0] === "/") {
       response = {
         text: await botResponses.askGPT(msg),
@@ -233,13 +218,22 @@ async function handleMessage(sender_psid, received_message) {
   callSendAPI(sender_psid, response);
 }
 
+
+
 // Handles messaging_postbacks events
 function handlePostback(sender_psid, received_postback) {
   let response;
 
   // Get the payload for the postback
   let payload = received_postback.payload;
+  console.log('Received: '+rec)
 
+  
+  if (payload === "subscribe") {
+    response = { text: "Subscribing..." };
+    console.log(payload)
+  }
+  
   // Set the response based on the postback payload
   if (payload === "yes") {
     response = { text: "Thanks!" };
@@ -247,9 +241,7 @@ function handlePostback(sender_psid, received_postback) {
     response = { text: "Oops, try sending another image." };
   }
 
-  if (payload === "subscribe") {
-    response = { text: "Subscribing..." };
-  }
+  
   // Send the message to acknowledge the postback
   callSendAPI(sender_psid, response);
 }

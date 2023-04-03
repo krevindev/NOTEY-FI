@@ -95,8 +95,29 @@ async function sendSubscribeBtn(targetPSID) {
     // then adds the user to the database
 }
 
+async function response(msg){
+  let response;
+  
+  if (msg === 'get started'){
+    // Send subscribe button
+    response = {
+        text: "Press Subscribe:",
+        quick_replies: [
+          {
+            content_type: "text",
+            title: "Subscribe",
+            payload: "subscribe",
+            image_url: "https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-ios7-bell-512.png",
+          }]
+      }
+  }
+  
+  return response
+}
+
 
 module.exports = {
   askGPT,
-  sendSubscribeBtn
+  sendSubscribeBtn,
+  response
 }
