@@ -256,7 +256,8 @@ function handleQuickReplies(sender_psid, received_payload) {
       botResponses
         .unsubscribe(sender_psid, db)
           .then(() => callSendAPI(sender_psid, {text: "You have unsubscribed"}))
-          .catch(() => callSendAPI())
+          .catch(() => callSendAPI(sender_psid, {text: "You haven't subscribed yet"}))
+          .finally(async() => callSendAPI(sender_psid, await botResponses.response("get started")))
     }
   
   else {
