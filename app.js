@@ -242,15 +242,19 @@ function handleQuickReplies(sender_psid, received_payload) {
 
     botResponses
       .subscribe(sender_psid, db)
-      .then(async (res) =>
+      .then(async res =>
         callSendAPI(sender_psid, { text: "Successfully Subscribed" })
       ) // if storing in database succeeded
-      .catch(async (err) =>
+      .catch(async err =>
         callSendAPI(sender_psid, { text: "You have already Subscribed" })
       )
-      .finally(async (res) =>
-        callSendAPI(sender_psid, await botResponses.response("menu"))
-      );
+      .finally(async res => callSendAPI(sender_psid, await botResponses.response('menu')))
+  } else {
+    callSendAPI(sender_psid, {
+      text: "For some reason, that's an unknown postback",
+    })(async () =>
+      callSendAPI(sender_psid, await botResponses.response("menu"))
+    );
   }
 }
 
