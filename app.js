@@ -170,9 +170,7 @@ async function handleMessage(sender_psid, received_message) {
         text: `Test Succeeded`,
       };
     } else if (msg === "get started") {
-      
-      response = await botResponses.response(msg)
-      
+      response = await botResponses.response(msg);
     } else if (msg[0] === "/") {
       response = {
         text: await botResponses.askGPT(msg),
@@ -218,22 +216,20 @@ async function handleMessage(sender_psid, received_message) {
   callSendAPI(sender_psid, response);
 }
 
-
-
 // Handles messaging_postbacks events
 function handlePostback(sender_psid, received_postback) {
   let response;
 
   // Get the payload for the postback
   let payload = received_postback.payload;
-  console.log('Received: '+rec)
+  console.log("RECEIVED POSTBACK:");
+  console.log(received_postback);
 
-  
   if (payload === "subscribe") {
     response = { text: "Subscribing..." };
-    console.log(payload)
+    console.log("RECEIVED QR");
   }
-  
+
   // Set the response based on the postback payload
   if (payload === "yes") {
     response = { text: "Thanks!" };
@@ -241,7 +237,6 @@ function handlePostback(sender_psid, received_postback) {
     response = { text: "Oops, try sending another image." };
   }
 
-  
   // Send the message to acknowledge the postback
   callSendAPI(sender_psid, response);
 }
