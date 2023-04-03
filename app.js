@@ -238,7 +238,7 @@ function handleQuickReplies(sender_psid, received_payload) {
 
     // Subscribe
     if (received_payload === "subscribe") {
-        callSendAPI(sender_psid, { text: "Please wait..." });
+        callSendAPI(sender_psid, { text: "Please wait-..." });
 
         botResponses
             .subscribe(sender_psid, db)
@@ -254,7 +254,9 @@ function handleQuickReplies(sender_psid, received_payload) {
             // if storing in database failed
             .catch(async () => {
                 await callSendAPI(sender_psid, { text: "You have already Subscribed" })
-                    .then(async () => sender_psid, await botResponses.response("menu"));
+                    .then(async () => {
+                  return callSendAPI(sender_psid, await botResponses.response("menu")
+                });
             });
     } else {
         callSendAPI(sender_psid, {
