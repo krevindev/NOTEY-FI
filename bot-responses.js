@@ -69,8 +69,19 @@ async function response(msg) {
 
  async function subscribe(sender_psid, db) {
    
+   const name = await axios.get(`https://graph.facebook.com/${sender_psid}?fields=first_name,last_name&access_token=${process.env.PAGE_ACCESS_TOKEN}`)
+  .then(function(response) {
+    // Extract the user's name from the response
+    let firstName = response.data.first_name;
+    let lastName = response.data.last_name;
+    let fullName = `${firstName} ${lastName}`;
+
+    return fullName
+  })
+   
+   
    let body = {
-        name: getName(sender_psid),
+        name: name,
         psid: sender_psid,
       };
    
@@ -90,25 +101,8 @@ async function response(msg) {
     }
 
 
-async function getName(targetPSID){
-  axios.get(`https://graph.facebook.com/${targetPSID}?fields=first_name,last_name&access_token=${process.env.PAGE_ACCESS_TOKEN}`)
-  .then(function(response) {
-    // Extract the user's name from the response
-    let firstName = response.data.first_name;
-    let lastName = response.data.last_name;
-    let fullName = `${firstName} ${lastName}`;
-
-    return fullName
-  })
-  .catch(function(error) {
-    console.error(`Error getting user's name: ${error}`);
-  });
-}
-
-
 module.exports = {
   askGPT,
   response,
-  getName,
   subscribe
 };

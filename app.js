@@ -37,7 +37,7 @@ mongoose.connect(mongoString + "/noteyfi_data", {
 
 /** MONGO Database */
 var db = mongoose.connection;
-mongoose.set('strictQuery', false);
+mongoose.set("strictQuery", false);
 db.on("error", () => console.log("Error in Connecting to Database"));
 db.once("open", () => console.log("Connected to Database"));
 
@@ -160,8 +160,8 @@ const botResponses = require("./bot-responses");
 // Handles messages events
 async function handleMessage(sender_psid, received_message) {
   let response;
-  console.log('FFFFFFF')
-  console.log(received_message)
+  console.log("FFFFFFF");
+  console.log(received_message);
 
   // Checks if the message contains text
   if (received_message.text) {
@@ -235,14 +235,17 @@ async function handleMessage(sender_psid, received_message) {
 // Handles QuickReplies
 function handleQuickReplies(sender_psid, received_payload) {
   let response;
+  
+  
   if (received_payload === "subscribe") {
     response = { text: "Subsribing..." };
-    
-    botResponses.subscribe(sender_psid, db)
-    .then(res => console.log(res)).catch(err => console.log(err))
-  }
 
-  callSendAPI(sender_psid, response);
+    botResponses
+      .subscribe(sender_psid, db)
+    .then(res => callSendAPI(sender_psid, { text: 'Successfully Subscribed' })) // if succeeded
+      .then((res) => console.log(res))
+      .catch((err) => console.log(err));     // if user is already existing
+  }
 }
 
 // Handles messaging_postbacks events
