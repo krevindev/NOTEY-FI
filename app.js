@@ -160,6 +160,8 @@ const botResponses = require("./bot-responses");
 async function handleMessage(sender_psid, received_message) {
   let response;
 
+  
+  
   // Checks if the message contains text
   if (received_message.text) {
     let msg = received_message.text.toLowerCase();
@@ -172,19 +174,12 @@ async function handleMessage(sender_psid, received_message) {
     // if the message is a quick reply
     if (received_message.quick_reply) {
       let payload = received_message.quick_reply.payload;
-      console.log(payload);
+      
+      handleQuickReplies(sender_psid, payload)
+      
+      // if it's just plain text
     } else {
       
-      
-      
-      
-    }
-    
-    
-    
-    
-    
-
     if (msg === "test") {
       response = {
         text: `Test Succeeded`,
@@ -197,9 +192,12 @@ async function handleMessage(sender_psid, received_message) {
       };
     } else {
       response = {
-        text: `You sent the message: "${received_message.text}". Now send me an attachment!`,
+        text: `'${received_message.text}' is an invalid command!`,
       };
     }
+      
+    }
+
   } else if (received_message.attachments) {
     // Get the URL of the message attachment
     let attachment_url = received_message.attachments[0].payload.url;
@@ -233,6 +231,18 @@ async function handleMessage(sender_psid, received_message) {
   }
 
   // Send the response message
+  callSendAPI(sender_psid, response);
+}
+
+
+// Handles QuickReplies
+function handleQuickReplies(sender_psid, received_payload){
+  
+  let response;
+  if(received_payload === 'subscribe'){
+    response = { text: 'Subsribing...' }
+  }
+  
   callSendAPI(sender_psid, response);
 }
 
