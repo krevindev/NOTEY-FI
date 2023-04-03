@@ -155,7 +155,14 @@ app.get("/oauth2callback", async (req, res) => {
   });
 });
 
+
+
 const botResponses = require("./bot-responses");
+
+
+
+
+
 
 // Handles messages events
 async function handleMessage(sender_psid, received_message) {
@@ -235,16 +242,23 @@ async function handleMessage(sender_psid, received_message) {
 // Handles QuickReplies
 function handleQuickReplies(sender_psid, received_payload) {
   let response;
-  
-  
+
+  // Subscribe
   if (received_payload === "subscribe") {
     response = { text: "Subsribing..." };
 
     botResponses
       .subscribe(sender_psid, db)
-    .then(res => callSendAPI(sender_psid, { text: 'Successfully Subscribed' })) // if succeeded
+      .then((res) =>
+        callSendAPI(sender_psid, { text: "Successfully Subscribed" })
+      ) // if storoing in database succeeded
       .then((res) => console.log(res))
-      .catch((err) => console.log(err));     // if user is already existing
+      .catch((err) =>
+        callSendAPI(sender_psid, { text: "You have already Subscribed" })
+             .then()
+      ); // if user is already existing
+  }else {
+    
   }
 }
 
@@ -272,6 +286,7 @@ function handlePostback(sender_psid, received_postback) {
   // Send the message to acknowledge the postback
   callSendAPI(sender_psid, response);
 }
+
 
 // Sends response messages via the Send API
 function callSendAPI(sender_psid, response) {

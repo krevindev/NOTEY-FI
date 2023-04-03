@@ -61,6 +61,33 @@ async function response(msg) {
         },
       ],
     };
+  }else if (msg === 'menu'){
+    response = {
+      text: "Menu: ",
+      quick_replies: [
+        {
+          content_type: "text",
+          title: "Set Reminder",
+          payload: "set_reminder",
+          image_url:
+            "https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-ios7-bell-512.png",
+        },
+        {
+          content_type: "text",
+          title: "Add VLE Account",
+          payload: "add_vle_account",
+          image_url:
+            "https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-ios7-bell-512.png",
+        },
+        {
+          content_type: "text",
+          title: "Unsubscribe",
+          payload: "unsubscribe",
+          image_url:
+            "https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-ios7-bell-512.png",
+        },
+      ],
+    }
   }
 
   return response;
