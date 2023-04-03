@@ -156,7 +156,6 @@ app.get("/oauth2callback", async (req, res) => {
   });
 });
 
-
 async function askGPT(question) {
   const apiEndpoint =
     "https://api.openai.com/v1/engines/text-davinci-003/completions";
@@ -186,7 +185,8 @@ async function askGPT(question) {
     }
   }
 
-  const answer = await askQuestion(question);
+  const answer = await askQuestion(question).then((res) => res);
+
   /*
     if (answer) {
         console.log(`Q: ${question}\nA: ${answer}`);
@@ -200,7 +200,7 @@ async function askGPT(question) {
 }
 
 // Handles messages events
-function handleMessage(sender_psid, received_message) {
+async function handleMessage(sender_psid, received_message) {
   let response;
 
   // Checks if the message contains text
@@ -233,7 +233,7 @@ function handleMessage(sender_psid, received_message) {
         },
       };
     } else if (msg[0] === "/") {
-      
+      console.log(await askGPT(msg))
     } else {
       response = {
         text: `You sent the message: "${received_message.text}". Now send me an attachment!`,
