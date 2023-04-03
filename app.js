@@ -54,7 +54,7 @@ app.get("/success", (req, res) => {
   res.send("Sign In Successfully");
 });
 
-app.post("/webhook", (req, res) => {
+app.post("/webhoofk", (req, res) => {
   // Parse the request body from the POST
   let body = req.body;
 
