@@ -255,6 +255,8 @@ function handleQuickReplies(sender_psid, received_payload) {
     } else if(received_payload === "unsubscribe"){
       botResponses
         .unsubscribe(sender_psid, db)
+          .then(() => callSendAPI(sender_psid, {text: "You have unsubscribed"}))
+          .catch(() => callSendAPI())
     }
   
   else {
