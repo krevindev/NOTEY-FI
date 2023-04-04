@@ -160,7 +160,6 @@ const botResponses = require("./bot-responses");
 // Handles messages events
 async function handleMessage(sender_psid, received_message) {
     let response;
-    console.log("FFFFFFF");
     console.log(received_message);
 
     // Checks if the message contains text
