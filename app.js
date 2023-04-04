@@ -193,7 +193,7 @@ async function handleMessage(sender_psid, received_message) {
                                     payload: "yes",
                                 },
                                 {
-                                    type: "postback",
+                                    type: "postback",  
                                     title: "No!",
                                     payload: "no",
                                 },
