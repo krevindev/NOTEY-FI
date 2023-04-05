@@ -9,7 +9,6 @@
  */
 
 "use strict";
-
 // Imports dependencies and set up http server
 const request = require("request"),
   express = require("express"),
@@ -25,6 +24,8 @@ const mongoose = require("mongoose");
 
 const PAGE_ACCESS_TOKEN = process.env.PAGE_ACCESS_TOKEN;
 const VERIFY_TOKEN = process.env.VERIFY_TOKEN;
+const { google } = require("googleapis");
+
 
 const mongoString =
   "mongodb+srv://batchy_bot:Tilapia-626@cluster0.kqimzoq.mongodb.net/?retryWrites=true&w=majority";
@@ -119,12 +120,9 @@ app.get("/oauth2callback", async (req, res) => {
       );
       console.log("SUCCEEDED");
 
-      /*
-                                      // Use the access token to make API requests
-                                      const classroom = google.classroom({ version: 'v1', auth: oauth2Client });
-                                      const { data } = await classroom.courses.list();
-                                      console.log(data);
-                                      */
+      const classroom = google.classroom({ version: 'v1', auth: oauth2Client });
+                                      //const { data } = await classroom.courses.list();
+                                     // console.log(data);
     } catch (error) {
       console.log(error);
     }
