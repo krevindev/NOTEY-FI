@@ -122,7 +122,9 @@ app.get("/oauth2callback", async (req, res) => {
       console.log("SUCCEEDED");
 
       const classroom = await google.classroom({ version: 'v1', auth: oauth2Client });
-      const {data}  = await classroom.courses.list();
+      
+      console.log("OtargetPSID)
+      
       
       
     } catch (error) {
