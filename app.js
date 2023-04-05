@@ -119,6 +119,7 @@ app.get("/oauth2callback", async (req, res) => {
                     },
                 }
             );
+          console.log('SUCCEEDED')
 
             /*
                                       // Use the access token to make API requests
@@ -167,7 +168,9 @@ async function handleMessage(sender_psid, received_message) {
                 response = {
                     text: await botResponses.askGPT(msg),
                 };
-            } 
+            } else if (msg === 'google classroom'){
+              response = await botResponses.response(msg, sender_psid);
+            }
           
           else {
                 response = {

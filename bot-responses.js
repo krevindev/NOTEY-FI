@@ -4,13 +4,13 @@ const request = require("request");
 const img_url =
   "https://cdn.pixabay.com/photo/2016/02/25/05/36/button-1221338_1280.png";
 
+const { OAuth2Client } = require("google-auth-library");
 
-const { OAuth2Client } = require('google-auth-library');
-
-const CLIENT_ID = '231696863119-lhr8odkfv58eir2l6m9bvdt8grnlnu4k.apps.googleusercontent.com';
-const CLIENT_SECRET = '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';
-var REDIRECT_URI = 'https://hollow-iodized-beanie.glitch.me/oauth2callback';
-const SCOPES = ['https://www.googleapis.com/auth/classroom.courses.readonly'];
+const CLIENT_ID =
+  "231696863119-lhr8odkfv58eir2l6m9bvdt8grnlnu4k.apps.googleusercontent.com";
+const CLIENT_SECRET = "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";
+var REDIRECT_URI = "https://hollow-iodized-beanie.glitch.me/oauth2callback";
+const SCOPES = ["https://www.googleapis.com/auth/classroom.courses.readonly"];
 
 // ChatGPT Q&A
 async function askGPT(question) {
@@ -56,9 +56,8 @@ async function askGPT(question) {
   }
 }
 
-
 // Bot Prompts
-async function response(msg) {
+async function response(msg, ...sender_psid) {
   let response;
 
   if (msg === "get started") {
@@ -105,43 +104,47 @@ async function response(msg) {
         },
         {
           content_type: "text",
-          title: "6",
-          payload: "3",
+          title: "View Your Google Courses",
+          payload: "view_google_courses",
           image_url: img_url,
         },
       ],
     };
-  }else if (msg === 'google classroom'){
-    const oauth2Client = new OAuth2Client(CLIENT_ID, CLIENT_SECRET, REDIRECT_URI);
+  } else if (msg === "google classroom") {
+    const oauth2Client = new OAuth2Client(
+      CLIENT_ID,
+      CLIENT_SECRET,
+      REDIRECT_URI
+    );
 
-      // Generate the authorization URL
+    // Generate the authorization URL
     const authUrl = oauth2Client.generateAuthUrl({
-        access_type: 'offline',
-        scope: SCOPES,
-        state: this.participantID
+      access_type: "offline",
+      scope: SCOPES,
+      state: sender_psid,
     });
 
-      response =  {
-            attachment: {
-                type: "template",
-                payload: {
-                    template_type: "button",
-                    text: "Sign in to VLE Platform",
-                    buttons:
-                        [{type: "web_url",
-                                url: authUrl,
-                                title: 'Click to Sign In',
-                                webview_height_ratio: "full"},]
-                },
+    response = {
+      attachment: {
+        type: "template",
+        payload: {
+          template_type: "button",
+          text: "Sign in to VLE Platform",
+          buttons: [
+            {
+              type: "web_url",
+              url: authUrl,
+              title: "Click to Sign In",
+              webview_height_ratio: "full",
             },
-        }
+          ],
+        },
+      },
+    };
   }
 
   return response;
 }
-
-
-
 
 /** Bot Actions */
 
@@ -178,7 +181,6 @@ async function subscribe(sender_psid, db) {
   });
 }
 
-
 // Unsubscribe User
 async function unsubscribe(sender_psid, db) {
   const body = { psid: sender_psid };
@@ -193,45 +195,38 @@ async function unsubscribe(sender_psid, db) {
   });
 }
 
-
-async function authorize(sender_psid, urlButtons){
+async function authorize(sender_psid, urlButtons) {
   const oauth2Client = new OAuth2Client(CLIENT_ID, CLIENT_SECRET, REDIRECT_URI);
 
-        // Generate the authorization URL
-        const authUrl = oauth2Client.generateAuthUrl({
-            access_type: 'offline',
-            scope: SCOPES,
-            state: this.participantID
-        });
-  
-        response =  {
-                  attachment: {
-                      type: "template",
-                      payload: {
-                          template_type: "button",
-                          text: "Sign in to VLE Platform",
-                          buttons:
-                              urlButtons.map(btn => {
-                                  return {
-                                      type: "web_url",
-                                      url: btn.url,
-                                      title: btn.name,
-                                      webview_height_ratio: "full",
-                                  }
-                              })
-                      },
-                  },
-              }
+  // Generate the authorization URL
+  const authUrl = oauth2Client.generateAuthUrl({
+    access_type: "offline",
+    scope: SCOPES,
+    state: this.participantID,
+  });
 
-
+  response = {
+    attachment: {
+      type: "template",
+      payload: {
+        template_type: "button",
+        text: "Sign in to VLE Platform",
+        buttons: urlButtons.map((btn) => {
+          return {
+            type: "web_url",
+            url: btn.url,
+            title: btn.name,
+            webview_height_ratio: "full",
+          };
+        }),
+      },
+    },
+  };
 }
-
-
-
 
 module.exports = {
   askGPT,
   response,
   unsubscribe,
-  subscribe
-}
+  subscribe,
+};
