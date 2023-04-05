@@ -167,7 +167,9 @@ async function handleMessage(sender_psid, received_message) {
                 response = {
                     text: await botResponses.askGPT(msg),
                 };
-            } else {
+            } 
+          
+          else {
                 response = {
                     text: `'${received_message.text}' is an invalid command!`,
                 };
