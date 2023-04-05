@@ -266,7 +266,7 @@ async function handleQuickReplies(sender_psid, received_payload) {
 }
 
 // Handles messaging_postbacks events
-function handlePostback(sender_psid, received_postback) {
+async function handlePostback(sender_psid, received_postback) {
   let response;
 
   // Get the payload for the postback
@@ -276,10 +276,9 @@ function handlePostback(sender_psid, received_postback) {
 
   if (payload === "subscribe") {
     response = { text: "Subscribing..." };
-    console.log("RECEIVED QR");
   }else if (payload === '<postback_payload>'){
-    callSendAPI(sender_psid, { text: 'send get started'})
-    
+    console.log('RECEIVED RECEIVED')
+    response = await botResponses.response("get started")
   }
 
   // Set the response based on the postback payload
