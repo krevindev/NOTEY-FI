@@ -123,10 +123,6 @@ app.get("/oauth2callback", async (req, res) => {
 
       const classroom = await google.classroom({ version: 'v1', auth: oauth2Client });
       
-      console.log("OtargetPSID)
-      
-      
-      
     } catch (error) {
       console.log(error);
     }
