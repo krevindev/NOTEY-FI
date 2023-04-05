@@ -168,10 +168,7 @@ async function handleMessage(sender_psid, received_message) {
                 response = {
                     text: await botResponses.askGPT(msg),
                 };
-            } else if (msg === 'google classroom'){
-              response = await botResponses.response(msg, sender_psid);
             }
-          
           else {
                 response = {
                     text: `'${received_message.text}' is an invalid command!`,
@@ -215,7 +212,7 @@ async function handleMessage(sender_psid, received_message) {
 }
 
 // Handles QuickReplies
-function handleQuickReplies(sender_psid, received_payload) {
+async function handleQuickReplies(sender_psid, received_payload) {
     let response;
 
     // Subscribe
@@ -240,7 +237,11 @@ function handleQuickReplies(sender_psid, received_payload) {
           .then(() => callSendAPI(sender_psid, {text: "You have unsubscribed"}))
           .catch(() => callSendAPI(sender_psid, {text: "You haven't subscribed yet"}))
           .finally(async() => callSendAPI(sender_psid, await botResponses.response("get started")))
-    }
+    }else if(received_payload === "add_vle_account"){
+      callSendAPI(sender_psid, await botResponses.response("prompt vle accounts"));
+    } else if(received_payload === "google_classroom_signin"){
+              response = await botResponses.response("google classroom", sender_psid);
+}
   
   else {
         callSendAPI(sender_psid, {

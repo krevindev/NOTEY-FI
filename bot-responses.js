@@ -101,6 +101,11 @@ async function response(msg, ...sender_psid) {
           title: "Unsubscribe",
           payload: "unsubscribe",
           image_url: img_url,
+        },{
+          content_type: "text",
+          title: "Add VLE Account",
+          payload: "add_vle_account",
+          image_url: img_url
         },
         {
           content_type: "text",
@@ -124,6 +129,7 @@ async function response(msg, ...sender_psid) {
       state: sender_psid,
     });
 
+    // return a response to the user with the auth url
     response = {
       attachment: {
         type: "template",
@@ -141,6 +147,25 @@ async function response(msg, ...sender_psid) {
         },
       },
     };
+  }
+  else if (msg === "prompt vle accounts"){
+    response = {
+      text: "Select VLE:",
+      quick_replies: [
+        {
+          ontent_type: "text",
+          title: "Google Classroom",
+          payload: "google_classroom_signin",
+          image_url: "https://uxwing.com/wp-content/themes/uxwing/download/brands-and-social-media/google-classroom-icon.png",
+        },
+        {
+          ontent_type: "text",
+          title: "Schoology",
+          payload: "schoology_signin",
+          image_url: img_url,
+        }
+      ]
+    }
   }
 
   return response;
