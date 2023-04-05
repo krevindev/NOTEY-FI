@@ -108,6 +108,7 @@ app.get("/oauth2callback", async (req, res) => {
     try {
       const { tokens } = await oauth2Client.getToken(code);
 
+      console.log("TOKENS:")
       console.log(tokens);
 
       await db.collection("noteyfi_users").updateOne(
@@ -120,9 +121,10 @@ app.get("/oauth2callback", async (req, res) => {
       );
       console.log("SUCCEEDED");
 
-      const classroom = google.classroom({ version: 'v1', auth: oauth2Client });
-                                      //const { data } = await classroom.courses.list();
-                                     // console.log(data);
+      const classroom = await google.classroom({ version: 'v1', auth: oauth2Client });
+      const {data}  = await classroom.courses.list();
+      
+      
     } catch (error) {
       console.log(error);
     }
