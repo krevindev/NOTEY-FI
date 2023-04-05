@@ -149,20 +149,22 @@ async function response(msg, ...sender_psid) {
     };
   }
   else if (msg === "prompt vle accounts"){
+    console.log('VLE Triggered')
+    
     response = {
       text: "Select VLE:",
       quick_replies: [
         {
-          ontent_type: "text",
+          content_type: "text",
           title: "Google Classroom",
           payload: "google_classroom_signin",
           image_url: "https://uxwing.com/wp-content/themes/uxwing/download/brands-and-social-media/google-classroom-icon.png",
         },
         {
-          ontent_type: "text",
+          content_type: "text",
           title: "Schoology",
           payload: "schoology_signin",
-          image_url: img_url,
+          image_url: "https://play-lh.googleusercontent.com/H5eXed9UvaW7Jn6SCAm-_d4T0hExQ3xFoh1ml1mAgMWqw1CG0C8ltBBS7Cq99iSg4XAJ",
         }
       ]
     }
