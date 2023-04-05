@@ -211,6 +211,8 @@ async function handleMessage(sender_psid, received_message) {
 // Handles QuickReplies
 async function handleQuickReplies(sender_psid, received_payload) {
   let response;
+  
+
 
   // Subscribe
   if (received_payload === "subscribe") {
@@ -253,7 +255,7 @@ async function handleQuickReplies(sender_psid, received_payload) {
     await callSendAPI(
     sender_psid,
     await botResponses.response("google classroom", sender_psid)
-    )
+    ).then(async () => await callSendAPI(sender_psid, {text: "Signed In"}))
   } else {
     callSendAPI(sender_psid, {
       text: "For some reason, that's an unknown postback",
@@ -275,6 +277,9 @@ function handlePostback(sender_psid, received_postback) {
   if (payload === "subscribe") {
     response = { text: "Subscribing..." };
     console.log("RECEIVED QR");
+  }else if (payload === '<postback_payload>'){
+    callSendAPI(sender_psid, { text: 'send get started'})
+    
   }
 
   // Set the response based on the postback payload

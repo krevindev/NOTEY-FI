@@ -135,7 +135,7 @@ async function response(msg, ...sender_psid) {
         type: "template",
         payload: {
           template_type: "button",
-          text: "Sign in to VLE Platform",
+          text: "Sign in to Google Classroom",
           buttons: [
             {
               type: "web_url",
