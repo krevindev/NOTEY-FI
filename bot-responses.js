@@ -229,7 +229,6 @@ async function unsubscribe(sender_psid, db) {
 }
 
 async function retrieveCourses(sender_psid) {
-  console.log("TOKEN:")
   let coursesReturn = [];
   console.log("retrieving...");
 
@@ -243,6 +242,8 @@ async function retrieveCourses(sender_psid) {
   
   // for each vle_token
       vleTokens.forEach(async (token) => {
+  console.log("TOKEN:")
+        
         const oauth2Client = new OAuth2Client(
           CLIENT_ID,
           CLIENT_SECRET,
