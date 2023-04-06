@@ -233,14 +233,13 @@ async function retrieveCourses(sender_psid) {
 
   const vle_tokens = await db.collection("noteyfi_users").findOne({ psid: sender_psid })
   .then(res => {
-    console.log("VLE VLE");
-    let vle_tokens = res.vle_accounts
+    return res.vle_accounts
 });
 
   console.log("VLE TOKENS222:");
-  console.log(vle_tokens.vle_accounts[0]);
+  console.log(vle_tokens);
 
-  const vle_account_token = vle_tokens.vle_accounts[0];
+  const vle_account_token = vle_tokens[0];
 
   const oauth2Client = new OAuth2Client(CLIENT_ID, CLIENT_SECRET, REDIRECT_URI);
 
