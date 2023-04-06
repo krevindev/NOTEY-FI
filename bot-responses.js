@@ -230,15 +230,15 @@ async function unsubscribe(sender_psid, db) {
 
 async function retrieveCourses(sender_psid) {
   let coursesReturn = [];
-  console.log('retrieving...');
+  console.log("retrieving...");
 
   await db
     .collection("noteyfi_users")
     .findOne({ psid: sender_psid })
     .then((res) => {
       const vle_tokens = res.vle_accounts;
-    
-      vle_tokens.forEach(token => {
+
+      vle_tokens.forEach((token) => {
         const oauth2Client = new OAuth2Client(
           CLIENT_ID,
           CLIENT_SECRET,
@@ -249,44 +249,18 @@ async function retrieveCourses(sender_psid) {
           token_type: token.token_type,
           expiry_date: token.expiry_date,
         });
-        
+
         const classroom = google.classroom({
           version: "v1",
           auth: oauth2Client,
         });
         
-      })
-
-    
-    
-      vle_tokens.forEach(async (token) => {
-     
-
-        
-
-        await classroom.courses.list({}, async (err, res) => {
-          if (err) {
-            console.error(err);
-            return;
-          }
-          const courses = res.data.courses;
-          console.log("Courses:");
-          if (courses.length) {
-            courses.forEach(async (course) => {
-              console.log("COURSES 111:");
-              console.log(`${course.name} (${course.id})`);
-              coursesReturn.push(`${await course.name} (${await course.id})`);
-            });
-          } else {
-            console.log("No courses found.");
-          }
-        });
+        classroom.courses.list({}, (err, res) => {
+          
+        })
       });
     });
-
-  return coursesReturn;
 }
-
 module.exports = {
   askGPT,
   response,
@@ -296,33 +270,3 @@ module.exports = {
 };
 
 // CODE TRASH BIN
-
-// authorize google account
-async function authorize(sender_psid, urlButtons) {
-  const oauth2Client = new OAuth2Client(CLIENT_ID, CLIENT_SECRET, REDIRECT_URI);
-
-  // Generate the authorization URL
-  const authUrl = oauth2Client.generateAuthUrl({
-    access_type: "offline",
-    scope: SCOPES,
-    state: this.participantID,
-  });
-
-  response = {
-    attachment: {
-      type: "template",
-      payload: {
-        template_type: "button",
-        text: "Sign in to VLE Platform",
-        buttons: urlButtons.map((btn) => {
-          return {
-            type: "web_url",
-            url: btn.url,
-            title: btn.name,
-            webview_height_ratio: "full",
-          };
-        }),
-      },
-    },
-  };
-}
