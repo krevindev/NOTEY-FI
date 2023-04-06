@@ -37,14 +37,17 @@ app.use(authRoutes)
 // Sets server port and logs message on success
 app.listen(process.env.PORT || 1337, () => console.log("webhook is listening"));
 
+// 
 app.get("/", (req, res) => {
   res.send("Running...");
 });
 
+// Display this on page if the user has signed in successfully
 app.get("/success", (req, res) => {
   res.send("Sign In Successfully");
 });
 
+// Messenger Webhook
 app.post("/webhook", (req, res) => {
   // Parse the request body from the POST
   let body = req.body;
@@ -91,7 +94,7 @@ async function handleMessage(sender_psid, received_message) {
     // will be added to the body of our request to the Send API
 
     console.log("RECEIVED MESSAGE: ");
-    console.log(received_message);
+    console.log(received_message.text);
 
     // if the message is a quick reply
     if (received_message.quick_reply) {

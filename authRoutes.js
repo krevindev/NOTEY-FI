@@ -72,6 +72,4 @@ authRouter.get("/oauth2callback", async (req, res) => {
   });
 });
 
-module.exports = {
-  authRouter
-}
+module.exports = authRouter;

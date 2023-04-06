@@ -1,5 +1,5 @@
 const axios = require("axios"),
-      request = require("request");
+  request = require("request");
 
 const img_url =
   "https://cdn.pixabay.com/photo/2016/02/25/05/36/button-1221338_1280.png";
@@ -12,7 +12,7 @@ const CLIENT_SECRET = "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";
 var REDIRECT_URI = "https://hollow-iodized-beanie.glitch.me/oauth2callback";
 const SCOPES = ["https://www.googleapis.com/auth/classroom.courses.readonly"];
 
-const mongoose = require('./useDB.js');
+const mongoose = require("./useDB.js");
 const db = mongoose.connection;
 
 // ChatGPT Q&A
@@ -104,11 +104,12 @@ async function response(msg, ...sender_psid) {
           title: "Unsubscribe",
           payload: "unsubscribe",
           image_url: img_url,
-        },{
+        },
+        {
           content_type: "text",
           title: "Add VLE Account",
           payload: "add_vle_account",
-          image_url: img_url
+          image_url: img_url,
         },
         {
           content_type: "text",
@@ -130,7 +131,7 @@ async function response(msg, ...sender_psid) {
       access_type: "offline",
       scope: SCOPES,
       state: sender_psid,
-      prompt: "consent"
+      prompt: "consent",
     });
 
     // return a response to the user with the auth url
@@ -151,10 +152,9 @@ async function response(msg, ...sender_psid) {
         },
       },
     };
-  }
-  else if (msg === "prompt vle accounts"){
-    console.log('VLE Triggered')
-    
+  } else if (msg === "prompt vle accounts") {
+    console.log("VLE Triggered");
+
     response = {
       text: "Select VLE:",
       quick_replies: [
@@ -162,16 +162,18 @@ async function response(msg, ...sender_psid) {
           content_type: "text",
           title: "Google Classroom",
           payload: "google_classroom_signin",
-          image_url: "https://uxwing.com/wp-content/themes/uxwing/download/brands-and-social-media/google-classroom-icon.png",
+          image_url:
+            "https://uxwing.com/wp-content/themes/uxwing/download/brands-and-social-media/google-classroom-icon.png",
         },
         {
           content_type: "text",
           title: "Schoology",
           payload: "schoology_signin",
-          image_url: "https://play-lh.googleusercontent.com/H5eXed9UvaW7Jn6SCAm-_d4T0hExQ3xFoh1ml1mAgMWqw1CG0C8ltBBS7Cq99iSg4XAJ",
-        }
-      ]
-    }
+          image_url:
+            "https://play-lh.googleusercontent.com/H5eXed9UvaW7Jn6SCAm-_d4T0hExQ3xFoh1ml1mAgMWqw1CG0C8ltBBS7Cq99iSg4XAJ",
+        },
+      ],
+    };
   }
 
   return response;
@@ -226,18 +228,29 @@ async function unsubscribe(sender_psid, db) {
   });
 }
 
-async function retrieveCourses(sender_psid){
-  return new Promise(async(resolve, reject) => {
-    await db.collection("noteyfi_users").findOne(
-  {psid: sender_psid}, (err, res) => {
-    if(err){
-      console.log(err)
-    }else{
-      console.log(res)
-    }
-  })
-  })
+async function retrieveCourses(sender_psid) {
+  const vle_tokens = await db
+    .collection("noteyfi_users")
+    .findOne({ psid: sender_psid }, (err, res) => {
+      if (err) {
+        console.log(err);
+      } else {
+        console.log(res.vle_accounts);
+      }
+    });
+  
+  
 }
+
+module.exports = {
+  askGPT,
+  response,
+  unsubscribe,
+  subscribe,
+  retrieveCourses,
+};
+
+// CODE TRASH BIN
 
 // authorize google account
 async function authorize(sender_psid, urlButtons) {
@@ -268,11 +281,3 @@ async function authorize(sender_psid, urlButtons) {
     },
   };
 }
-
-module.exports = {
-  askGPT,
-  response,
-  unsubscribe,
-  subscribe,
-  retrieveCourses
-};
