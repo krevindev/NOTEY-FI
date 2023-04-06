@@ -242,7 +242,7 @@ async function retrieveCourses(sender_psid) {
   
   // for each vle_token
       vleTokens.forEach(async (token) => {
-  console.log("TOKEN:")
+      console.log("TOKEN:")
         
         const oauth2Client = new OAuth2Client(
           CLIENT_ID,
