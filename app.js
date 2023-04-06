@@ -26,7 +26,6 @@ const PAGE_ACCESS_TOKEN = process.env.PAGE_ACCESS_TOKEN;
 const VERIFY_TOKEN = process.env.VERIFY_TOKEN;
 const { google } = require("googleapis");
 
-
 const mongoString =
   "mongodb+srv://batchy_bot:Tilapia-626@cluster0.kqimzoq.mongodb.net/?retryWrites=true&w=majority";
 
@@ -108,7 +107,7 @@ app.get("/oauth2callback", async (req, res) => {
     try {
       const { tokens } = await oauth2Client.getToken(code);
 
-      console.log("TOKENS:")
+      console.log("TOKENS:");
       console.log(tokens);
 
       await db.collection("noteyfi_users").updateOne(
@@ -121,8 +120,29 @@ app.get("/oauth2callback", async (req, res) => {
       );
       console.log("SUCCEEDED");
 
-      const classroom = await google.classroom({ version: 'v1', auth: oauth2Client });
-      
+      oauth2Client.setCredentials({
+        access_token: tokens.access_token,
+        token_type: tokens.token_type,
+        expiry_date: tokens.expiry_date,
+      });
+
+      const classroom = google.classroom({ version: "v1", auth: oauth2Client });
+
+      classroom.courses.list({}, (err, res) => {
+        if (err) {
+          console.error(err);
+          return;
+        }
+        const courses = res.data.courses;
+        console.log("Courses:");
+        if (courses.length) {
+          courses.forEach((course) => {
+            console.log(`${course.name} (${course.id})`);
+          });
+        } else {
+          console.log("No courses found.");
+        }
+      });
     } catch (error) {
       console.log(error);
     }
@@ -209,8 +229,6 @@ async function handleMessage(sender_psid, received_message) {
 // Handles QuickReplies
 async function handleQuickReplies(sender_psid, received_payload) {
   let response;
-  
-
 
   // Subscribe
   if (received_payload === "subscribe") {
@@ -251,15 +269,16 @@ async function handleQuickReplies(sender_psid, received_payload) {
     );
   } else if (received_payload === "google_classroom_signin") {
     await callSendAPI(
-    sender_psid,
-    await botResponses.response("google classroom", sender_psid)
-    ).then(async () => await callSendAPI(sender_psid, {text: "Signed In"}))
+      sender_psid,
+      await botResponses.response("google classroom", sender_psid)
+    ).then(async () => await callSendAPI(sender_psid, { text: "Signed In" }));
   } else {
     callSendAPI(sender_psid, {
       text: "For some reason, that's an unknown postback",
     }).then(
-        async () => await callSendAPI(sender_psid, await botResponses.response("menu"))
-      )
+      async () =>
+        await callSendAPI(sender_psid, await botResponses.response("menu"))
+    );
   }
 }
 
@@ -274,9 +293,9 @@ async function handlePostback(sender_psid, received_postback) {
 
   if (payload === "subscribe") {
     response = { text: "Subscribing..." };
-  }else if (payload === '<postback_payload>'){
-    console.log('RECEIVED RECEIVED')
-    response = await botResponses.response("get started")
+  } else if (payload === "<postback_payload>") {
+    console.log("RECEIVED RECEIVED");
+    response = await botResponses.response("get started");
   }
 
   // Set the response based on the postback payload
