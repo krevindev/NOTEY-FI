@@ -294,28 +294,32 @@ async function retrieveCourses(sender_psid) {
     });
 
     // List the courses
-    const fCourses = async () => classroom.courses.list({}, async (err, res) => {
-      return new Promise((resolve, reject) => {
-        if (err) {
-          reject(err);
-        } else {
-          const courses = res.data.courses;
-
-          if (courses.length) {
-            resolve(
-              courses.map(
-                (course) => `Name: ${course.name} \n ID: ${course.id}`
-              )
-            );
+    const dFunc = () => {
+      return new Promise(async (resolve, reject) => {
+        await classroom.courses.list({}, async (err, res) => {
+          if (err) {
+            reject(err);
           } else {
-            reject("No courses found")
+            const courses = await res.data.courses;
+
+            if (courses.length) {
+              const ret = courses.map(
+                (course) => `Name: ${course.name} \n ID: ${course.id}`
+              );
+
+              resolve(ret);
+            } else {
+              reject("No courses found");
+            }
           }
-        }
+        });
       });
-    });
-    console.log(await fCourses().then(res => res));
+    };
+    console.log(await dFunc().then((res) => res));
+    coursesReturn = await dFunc().then((res) => res);
   });
 
+  console.log()
   return await coursesReturn;
 }
 module.exports = {
