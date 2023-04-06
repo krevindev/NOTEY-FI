@@ -255,9 +255,7 @@ async function retrieveCourses(sender_psid) {
           auth: oauth2Client,
         });
         
-        classroom.courses.list({}, (err, res) => {
-          
-        })
+        console.log(classroom.courses.list)
       });
     });
 }
