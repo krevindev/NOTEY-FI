@@ -12,10 +12,9 @@ const { google } = require("googleapis");
 authRouter.get("/oauth2callback", async (req, res) => {
   const targetPSID = req.query.state;
 
-  const CLIENT_ID =
-    "231696863119-lhr8odkfv58eir2l6m9bvdt8grnlnu4k.apps.googleusercontent.com";
-  const CLIENT_SECRET = "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";
-  var REDIRECT_URI = "https://hollow-iodized-beanie.glitch.me/oauth2callback";
+  const CLIENT_ID = process.env.CLIENT_ID;
+  const CLIENT_SECRET = process.env.CLIENT_secret;
+  
   const SCOPES = ["https://www.googleapis.com/auth/classroom.courses.readonly"];
 
   return new Promise(async (resolve, reject) => {
