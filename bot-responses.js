@@ -127,6 +127,7 @@ async function response(msg, ...sender_psid) {
       access_type: "offline",
       scope: SCOPES,
       state: sender_psid,
+      prompt: "consent"
     });
 
     // return a response to the user with the auth url
