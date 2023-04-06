@@ -282,9 +282,23 @@ async function retrieveCourses(sender_psid) {
       }
     });
     
+    return new Promise(async (resolve, reject) => {
+      
+    await classroom.courses.list({}, async (err, res) => {
+      if(err){
+        console.log(err)
+      }else{
+        const courses = await res.data.courses.map(course => `Name: ${course.name} ID: ${course.id}`);
+        return courses
+      }
+    });
+    })
+      
   })
   
-  console.log(oof)
+  console.log(oof.then(res => res))
+  
+  //console.log(oof)
 
   // for each vle_token
   /*
