@@ -13,8 +13,8 @@ authRouter.get("/oauth2callback", async (req, res) => {
   const targetPSID = req.query.state;
 
   const CLIENT_ID = process.env.CLIENT_ID;
-  const CLIENT_SECRET = process.env.CLIENT_secret;
-  
+  const CLIENT_SECRET = process.env.CLIENT_SECRET;
+  const REDIRECT_URI = process.env.REDIRECT_URI;
   const SCOPES = ["https://www.googleapis.com/auth/classroom.courses.readonly"];
 
   return new Promise(async (resolve, reject) => {
@@ -39,31 +39,6 @@ authRouter.get("/oauth2callback", async (req, res) => {
           },
         }
       );
-      console.log("SUCCEEDED");
-
-      oauth2Client.setCredentials({
-        access_token: tokens.access_token,
-        token_type: tokens.token_type,
-        expiry_date: tokens.expiry_date,
-      });
-
-      const classroom = google.classroom({ version: "v1", auth: oauth2Client });
-
-      classroom.courses.list({}, (err, res) => {
-        if (err) {
-          console.error(err);
-          return;
-        }
-        const courses = res.data.courses;
-        console.log("Courses:");
-        if (courses.length) {
-          courses.forEach((course) => {
-            console.log(`${course.name} (${course.id})`);
-          });
-        } else {
-          console.log("No courses found.");
-        }
-      });
     } catch (error) {
       console.log(error);
     }
