@@ -251,8 +251,8 @@ async function retrieveCourses(sender_psid) {
   
   let coursesReturn = [];
   
-  const oof = vleTokens.map(async token => {
-    let tokenCourses = []
+  const mapMe = vleTokens.map(async token => {
+    
     
     const oauth2Client = new OAuth2Client(
       CLIENT_ID,
@@ -282,25 +282,20 @@ async function retrieveCourses(sender_psid) {
       }
     });
     
-    async() => {
-      return new Promise(async (resolve, reject) => {
-      
-    await classroom.courses.list({}, async (err, res) => {
-      if(err){
-        reject(err)
-      }else{
-        const courses = await res.data.courses.map(course => `Name: ${course.name} ID: ${course.id}`);
-        resolve(courses)
-      }
-    });
-    }).then(res => {
-      console.log("RETURNED:");
-      tokenCourses = res
-    })
-    }
-  })
+    let tokenCourses = []
+    
+    
+    tokenCourses = await classroom.courses.list({}, async (err, res) => {
+        if(err){
+          console.log(err)
+        }else{
+          return await res.data.courses.map(course => `Name: ${course.name} ID: ${course.id}`);
+        }
+      });
+    
+    console.log(tokenCourses)
+  });
   
-  console.log(await oof)
   
   //console.log(oof)
 
