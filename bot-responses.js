@@ -275,24 +275,20 @@ async function retrieveCourses(sender_psid) {
       if (err) {
         console.error(err);
         return;
-      }
-
-      const courses = res.data.courses;
-      const rCourses = [];
-
-      if (courses.length) {
-        courses.forEach((course) => {
-          console.log(`${course.name} (${course.id})`);
-          rCourses.push(`Course Name: ${course.name} Course ID: ${course.id}`);
-        });
       } else {
-        console.log("No courses found.");
-      }
-      return rCourses;
-    });
-  });
+        const courses = res.data.courses;
 
-  console.log(coursesReturn);
+        if (courses.length) {
+          return courses.map(
+            (course) => `Name: ${course.name} \n ID: ${course.id}`
+          );
+        } else {
+          console.log("No courses found.");
+        }
+      }
+    });
+    console.log(fCourses);
+  });
 
   return await coursesReturn;
 }
