@@ -231,7 +231,7 @@ async function retrieveCourses(sender_psid){
     await db.collection("noteyfi_users").findOne(
   {psid: sender_psid}, (err, res) => {
     if(err){
-      reject(err)
+      console.log(err)
     }else{
       console.log(res)
     }

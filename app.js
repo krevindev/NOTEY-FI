@@ -14,9 +14,8 @@ const request = require("request"),
   express = require("express"),
   body_parser = require("body-parser"),
   app = express().use(body_parser.json()),
-      axios = require("axios"); // creates express http server
+  axios = require("axios"); 
 
-const { OAuth2Client } = require("google-auth-library");
 const { urlencoded, json } = require("body-parser");
 
 // Google Access Tokens
@@ -28,9 +27,12 @@ const { google } = require("googleapis");
 const mongoose = require('./useDB.js');
 const db = mongoose.connection;
 
+const authRoutes = require('./authRoutes');
+
 // Middlewares
 app.use(urlencoded({ extended: true }));
 app.use(json());
+app.use(authRoutes)
 
 // Sets server port and logs message on success
 app.listen(process.env.PORT || 1337, () => console.log("webhook is listening"));
@@ -73,69 +75,6 @@ app.post("/webhook", (req, res) => {
     // Return a '404 Not Found' if event is not from a page subscription
     res.sendStatus(404);
   }
-});
-
-app.get("/oauth2callback", async (req, res) => {
-  const targetPSID = req.query.state;
-
-  const CLIENT_ID =
-    "231696863119-lhr8odkfv58eir2l6m9bvdt8grnlnu4k.apps.googleusercontent.com";
-  const CLIENT_SECRET = "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";
-  var REDIRECT_URI = "https://hollow-iodized-beanie.glitch.me/oauth2callback";
-  const SCOPES = ["https://www.googleapis.com/auth/classroom.courses.readonly"];
-
-  return new Promise(async (resolve, reject) => {
-    const oauth2Client = new OAuth2Client(
-      CLIENT_ID,
-      CLIENT_SECRET,
-      REDIRECT_URI
-    );
-    const { code } = req.query;
-
-    try {
-      const { tokens } = await oauth2Client.getToken(code);
-
-      console.log("TOKENS:");
-      console.log(tokens);
-
-      await db.collection("noteyfi_users").updateOne(
-        { psid: targetPSID },
-        {
-          $push: {
-            vle_accounts: tokens,
-          },
-        }
-      );
-      console.log("SUCCEEDED");
-
-      oauth2Client.setCredentials({
-        access_token: tokens.access_token,
-        token_type: tokens.token_type,
-        expiry_date: tokens.expiry_date,
-      });
-
-      const classroom = google.classroom({ version: "v1", auth: oauth2Client });
-
-      classroom.courses.list({}, (err, res) => {
-        if (err) {
-          console.error(err);
-          return;
-        }
-        const courses = res.data.courses;
-        console.log("Courses:");
-        if (courses.length) {
-          courses.forEach((course) => {
-            console.log(`${course.name} (${course.id})`);
-          });
-        } else {
-          console.log("No courses found.");
-        }
-      });
-    } catch (error) {
-      console.log(error);
-    }
-    res.redirect("/success");
-  });
 });
 
 const botResponses = require("./bot-responses");
