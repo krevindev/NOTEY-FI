@@ -390,4 +390,4 @@ async function testGetUsers(){
     console.log(arr)
 }
 
-testGuet
+testGetUsers()
