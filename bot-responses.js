@@ -238,7 +238,7 @@ async function retrieveCourses(sender_psid) {
     .then((res) => {
       const vle_tokens = res.vle_accounts;
 
-      vle_tokens.forEach((token) => {
+      vle_tokens.forEach(async (token) => {
         const oauth2Client = new OAuth2Client(
           CLIENT_ID,
           CLIENT_SECRET,
@@ -255,9 +255,30 @@ async function retrieveCourses(sender_psid) {
           auth: oauth2Client,
         });
         
-        console.log(classroom.courses.list)
+        // Load the refresh token from storage
+
+        
+        // List the courses
+classroom.courses.list({}, (err, res) => {
+  if (err) {
+    console.error(err);
+    return;
+  }
+  const courses = res.data.courses;
+  console.log("Courses:");
+  if (courses.length) {
+    courses.forEach((course) => {
+      console.log(`${course.name} (${course.id})`);
+      coursesReturn.push(`Course Name: ${course.name} Course ID: ${course.id}`)
+    });
+  } else {
+    console.log("No courses found.");
+  }
+});
       });
     });
+  
+  return coursesReturn;
 }
 module.exports = {
   askGPT,
@@ -266,5 +287,6 @@ module.exports = {
   subscribe,
   retrieveCourses,
 };
+
 
 // CODE TRASH BIN
