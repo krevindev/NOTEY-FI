@@ -10,7 +10,7 @@ const { google } = require("googleapis");
 const CLIENT_ID = process.env.CLIENT_ID;
 const CLIENT_SECRET = process.env.CLIENT_SECRET;
 const REDIRECT_URI = process.env.REDIRECT_URI;
-const SCOPES = ["https://www.googleapis.com/auth/classroom.courses.readonly"];
+  const SCOPES = ["https://www.googleapis.com/auth/classroom.courses.readonly"];
 
 const mongoose = require("./useDB.js");
 const db = mongoose.connection;
@@ -125,6 +125,16 @@ async function response(msg, ...sender_psid) {
       CLIENT_SECRET,
       REDIRECT_URI
     );
+    
+    oauth2Client.getToken('authCode', (err, tokens) => {
+  if (err) {
+    console.error('Error getting access token:', err);
+  } else {
+    console.log('Access token:', tokens.access_token);
+    console.log('Refresh token:', tokens.refresh_token);
+    // Store the access token and refresh token in your database or other storage mechanism
+  }
+});
 
     // Generate the authorization URL
     const authUrl = oauth2Client.generateAuthUrl({
@@ -254,6 +264,16 @@ async function retrieveCourses(sender_psid) {
       token_type: token.token_type,
       expiry_date: token.expiry_date,
     });
+    
+    oauth2Client.getToken('authCode', (err, tokens) => {
+  if (err) {
+    console.error('Error getting access token:', err);
+  } else {
+    console.log('Access token:', tokens.access_token);
+    console.log('Refresh token:', tokens.refresh_token);
+    // Store the access token and refresh token in your database or other storage mechanism
+  }
+});
 
     const classroom = google.classroom({
       version: "v1",
