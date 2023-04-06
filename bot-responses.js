@@ -236,59 +236,63 @@ async function retrieveCourses(sender_psid) {
   const userData = await db
     .collection("noteyfi_users")
     .findOne({ psid: sender_psid })
-    .then(res => res);
-  
+    .then((res) => res);
+
   const vleTokens = await userData.vle_accounts;
-  
+
   // for each vle_token
-      vleTokens.forEach(async (token) => {
-      console.log("TOKEN:")
-        
-        const oauth2Client = new OAuth2Client(
-          CLIENT_ID,
-          CLIENT_SECRET,
-          REDIRECT_URI
-        );
-        oauth2Client.setCredentials({
-          access_token: token.access_token,
-          token_type: token.token_type,
-          expiry_date: token.expiry_date,
+  vleTokens.forEach(async (token) => {
+    console.log("TOKEN:");
+
+    const oauth2Client = new OAuth2Client(
+      CLIENT_ID,
+      CLIENT_SECRET,
+      REDIRECT_URI
+    );
+    oauth2Client.setCredentials({
+      access_token: token.access_token,
+      token_type: token.token_type,
+      expiry_date: token.expiry_date,
+    });
+
+    const classroom = google.classroom({
+      version: "v1",
+      auth: oauth2Client,
+    });
+
+    // Call the refreshAccessToken method to refresh the access token
+    oauth2Client.refreshAccessToken((err, tokens) => {
+      if (err) {
+        console.error("Error refreshing access token:", err);
+      } else {
+        console.log("Access token refreshed:", tokens.access_token);
+        // Store the new access token in your database or other storage mechanism
+      }
+    });
+
+    // List the courses
+    const fCourses = await classroom.courses.list({}, (err, res) => {
+      if (err) {
+        console.error(err);
+        return;
+      }
+
+      const courses = res.data.courses;
+      const rCourses = [];
+
+      if (courses.length) {
+        courses.forEach((course) => {
+          console.log(`${course.name} (${course.id})`);
+          rCourses.push(`Course Name: ${course.name} Course ID: ${course.id}`);
         });
+      } else {
+        console.log("No courses found.");
+      }
+      return rCourses;
+    });
+  });
 
-        const classroom = google.classroom({
-          version: "v1",
-          auth: oauth2Client,
-        });
-
-        // List the courses
-        const fCourses = await classroom.courses.list({}, (err, res) => {
-          if (err) {
-            console.error(err);
-            return;
-          }
-
-          const courses = res.data.courses;
-          const rCourses = []
-
-          if (courses.length) {
-            courses.forEach((course) => {
-              //console.log(`${course.name} (${course.id})`);
-              rCourses.push(
-                `Course Name: ${course.name} Course ID: ${course.id}`
-              );
-            });
-          } else {
-            console.log("No courses found.");
-          }
-          return rCourses
-          
-          });
-        console.log("FCOURSE:  ")
-        console.log(fCourses)
-        
-      });
-  
-  console.log(coursesReturn)
+  console.log(coursesReturn);
 
   return await coursesReturn;
 }
