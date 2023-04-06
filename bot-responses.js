@@ -230,50 +230,51 @@ async function unsubscribe(sender_psid, db) {
 
 async function retrieveCourses(sender_psid) {
   let coursesReturn = [];
+  console.log('retrieving...')
 
-  const vle_tokens = await db.collection("noteyfi_users").findOne({ psid: sender_psid })
-  .then(res => {
-    return res.vle_accounts
-});
+  const vle_tokens = await db
+    .collection("noteyfi_users")
+    .findOne({ psid: sender_psid })
+    .then((res) => {
+      const vle_tokens = res.vle_accounts;
 
-  console.log("VLE TOKENS222:");
-  console.log(vle_tokens);
+      vle_tokens.forEach(async (token) => {
+        const oauth2Client = new OAuth2Client(
+          CLIENT_ID,
+          CLIENT_SECRET,
+          REDIRECT_URI
+        );
 
-  const vle_account_token = vle_tokens[0];
+        await oauth2Client.setCredentials({
+          access_token: token.access_token,
+          token_type: token.token_type,
+          expiry_date: token.expiry_date,
+        });
 
-  const oauth2Client = new OAuth2Client(CLIENT_ID, CLIENT_SECRET, REDIRECT_URI);
+        const classroom = await google.classroom({
+          version: "v1",
+          auth: oauth2Client,
+        });
 
-  await oauth2Client.setCredentials({
-    access_token: vle_account_token.access_token,
-    token_type: vle_account_token.token_type,
-    expiry_date: vle_account_token.expiry_date,
-  });
-
-  const classroom = await google.classroom({
-    version: "v1",
-    auth: oauth2Client,
-  });
-
-  await classroom.courses.list({}, async(err, res) => {
-    if (err) {
-      console.error(err);
-      return;
-    }
-    const courses = res.data.courses;
-    console.log("Courses:");
-    if (courses.length) {
-      courses.forEach(async (course) => {
-        console.log('COURSES 111:')
-        console.log(`${course.name} (${course.id})`);
-        coursesReturn.push(`${await course.name} (${await course.id})`);
+        await classroom.courses.list({}, async (err, res) => {
+          if (err) {
+            console.error(err);
+            return;
+          }
+          const courses = res.data.courses;
+          console.log("Courses:");
+          if (courses.length) {
+            courses.forEach(async (course) => {
+              console.log("COURSES 111:");
+              console.log(`${course.name} (${course.id})`);
+              coursesReturn.push(`${await course.name} (${await course.id})`);
+            });
+          } else {
+            console.log("No courses found.");
+          }
+        });
       });
-    } else {
-      console.log("No courses found.");
-    }
-  });
-
-  console.log("RETURNED COURSES");
-  console.log(coursesReturn);
+    });
 
   return coursesReturn;
 }
