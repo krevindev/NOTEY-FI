@@ -274,7 +274,3 @@ function callSendAPI(sender_psid, response) {
 
 
 
-
-const notification = require('./notification')
-
-  const arr = db.collection("noteyfi_users").find({}).toArray()
