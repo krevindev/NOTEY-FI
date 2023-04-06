@@ -364,11 +364,9 @@ async function retrieveCourses1(sender_psid){
     oAuth2Client.setCredentials({ refresh_token: vleTokens[0].refresh_token });
 
     const classroom = google.classroom({ version: 'v1', auth: oAuth2Client });
-    const { data } = await classroom.courses.list(
-      {
-        courseState: 'ACTIVE'
-      }
-    );
+     const { data } = await classroom.courses.list({
+      courseStates: 'ACTIVE' // Filter by unarchived courses
+    });
 
     const courses = data.courses;
 

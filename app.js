@@ -157,7 +157,9 @@ async function handleQuickReplies(sender_psid, received_payload) {
 
   if (received_payload === "view_google_courses") {
         const m = await botResponses.retrieveCourses1(sender_psid)
-        m.map(course => callSendAPI(sender_psid, {text: course}))
+          await m.map(course => callSendAPI(sender_psid, {text: course}))
+          callSendAPI(sender_psid, await botResponses.response("menu"))
+    
       }
   // Subscribe
   
