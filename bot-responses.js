@@ -10,7 +10,7 @@ const { google } = require("googleapis");
 const CLIENT_ID = process.env.CLIENT_ID;
 const CLIENT_SECRET = process.env.CLIENT_SECRET;
 const REDIRECT_URI = process.env.REDIRECT_URI;
-  const SCOPES = ["https://www.googleapis.com/auth/classroom.courses.readonly"];
+const SCOPES = ["https://www.googleapis.com/auth/classroom.courses.readonly"];
 
 const mongoose = require("./useDB.js");
 const db = mongoose.connection;
@@ -125,16 +125,16 @@ async function response(msg, ...sender_psid) {
       CLIENT_SECRET,
       REDIRECT_URI
     );
-    
-    oauth2Client.getToken('authCode', (err, tokens) => {
-  if (err) {
-    console.error('Error getting access token:', err);
-  } else {
-    console.log('Access token:', tokens.access_token);
-    console.log('Refresh token:', tokens.refresh_token);
-    // Store the access token and refresh token in your database or other storage mechanism
-  }
-});
+
+    oauth2Client.getToken("authCode", (err, tokens) => {
+      if (err) {
+        console.error("Error getting access token:", err);
+      } else {
+        console.log("Access token:", tokens.access_token);
+        console.log("Refresh token:", tokens.refresh_token);
+        // Store the access token and refresh token in your database or other storage mechanism
+      }
+    });
 
     // Generate the authorization URL
     const authUrl = oauth2Client.generateAuthUrl({
@@ -263,10 +263,10 @@ async function retrieveCourses(sender_psid) {
       access_token: token.access_token,
       token_type: token.token_type,
       expiry_date: token.expiry_date,
-      refresh_token: token.refresh_token
+      refresh_token: token.refresh_token,
     });
-    
-   /*
+
+    /*
     oauth2Client.getToken('authCode', (err, tokens) => {
   if (err) {
     console.error('Error getting access token:', err);
@@ -294,23 +294,26 @@ async function retrieveCourses(sender_psid) {
     });
 
     // List the courses
-    const fCourses = await classroom.courses.list({}, (err, res) => {
-      if (err) {
-        console.error(err);
-        return;
-      } else {
-        const courses = res.data.courses;
-
-        if (courses.length) {
-          return courses.map(
-            (course) => `Name: ${course.name} \n ID: ${course.id}`
-          );
+    const fCourses = async () => classroom.courses.list({}, async (err, res) => {
+      return new Promise((resolve, reject) => {
+        if (err) {
+          reject(err);
         } else {
-          console.log("No courses found.");
+          const courses = res.data.courses;
+
+          if (courses.length) {
+            resolve(
+              courses.map(
+                (course) => `Name: ${course.name} \n ID: ${course.id}`
+              )
+            );
+          } else {
+            reject("No courses found")
+          }
         }
-      }
+      });
     });
-    console.log(fCourses);
+    console.log(await fCourses().then(res => res));
   });
 
   return await coursesReturn;
