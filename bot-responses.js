@@ -282,21 +282,25 @@ async function retrieveCourses(sender_psid) {
       }
     });
     
-    return new Promise(async (resolve, reject) => {
+    async() => {
+      return new Promise(async (resolve, reject) => {
       
     await classroom.courses.list({}, async (err, res) => {
       if(err){
-        console.log(err)
+        reject(err)
       }else{
         const courses = await res.data.courses.map(course => `Name: ${course.name} ID: ${course.id}`);
-        return courses
+        resolve(courses)
       }
     });
+    }).then(res => {
+      console.log("RETURNED:");
+      tokenCourses = res
     })
-      
+    }
   })
   
-  console.log(oof.then(res => res))
+  console.log(await oof)
   
   //console.log(oof)
 
