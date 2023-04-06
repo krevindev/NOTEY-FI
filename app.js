@@ -105,7 +105,6 @@ async function handleMessage(sender_psid, received_message) {
     } else {
       if (msg === "test") {
         const m = await botResponses.retrieveCourses(sender_psid)
-        console.log(m)
       } else if (msg === "get started") {
         response = await botResponses.response(msg);
       } else if (msg[0] === "/") {

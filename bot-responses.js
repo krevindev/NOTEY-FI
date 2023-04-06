@@ -239,7 +239,6 @@ async function unsubscribe(sender_psid, db) {
 }
 
 async function retrieveCourses(sender_psid) {
-  let coursesReturn = [];
   console.log("retrieving...");
 
   // retrieve user vle tokens
@@ -249,35 +248,25 @@ async function retrieveCourses(sender_psid) {
     .then((res) => res);
 
   const vleTokens = await userData.vle_accounts;
-
-  // for each vle_token
-  vleTokens.forEach(async (token) => {
-    console.log("TOKEN:");
-
+  
+  let coursesReturn = [];
+  
+  const oof = vleTokens.map(async token => {
+    let tokenCourses = []
+    
     const oauth2Client = new OAuth2Client(
       CLIENT_ID,
       CLIENT_SECRET,
       REDIRECT_URI
     );
+    
     await oauth2Client.setCredentials({
       access_token: token.access_token,
       token_type: token.token_type,
       expiry_date: token.expiry_date,
       refresh_token: token.refresh_token,
     });
-
-    /*
-    oauth2Client.getToken('authCode', (err, tokens) => {
-  if (err) {
-    console.error('Error getting access token:', err);
-  } else {
-    console.log('Access token:', tokens.access_token);
-    console.log('Refresh token:', tokens.refresh_token);
-    // Store the access token and refresh token in your database or other storage mechanism
-  }
-});
-   */
-
+    
     const classroom = await google.classroom({
       version: "v1",
       auth: oauth2Client,
@@ -292,6 +281,28 @@ async function retrieveCourses(sender_psid) {
         // Store the new access token in your database or other storage mechanism
       }
     });
+    
+  })
+  
+  console.log(oof)
+
+  // for each vle_token
+  /*
+  vleTokens.forEach(async (token) => {
+
+    /*
+    oauth2Client.getToken('authCode', (err, tokens) => {
+  if (err) {
+    console.error('Error getting access token:', err);
+  } else {
+    console.log('Access token:', tokens.access_token);
+    console.log('Refresh token:', tokens.refresh_token);
+    // Store the access token and refresh token in your database or other storage mechanism
+  }
+});
+    
+
+    
 
     // List the courses
     const dFunc = () => {
@@ -315,12 +326,8 @@ async function retrieveCourses(sender_psid) {
         });
       });
     };
-    console.log(await dFunc().then((res) => res));
-    coursesReturn = await dFunc().then((res) => res);
-  });
-
-  console.log()
-  return await coursesReturn;
+    //console.log(await dFunc().then((res) => res));
+  })*/;
 }
 module.exports = {
   askGPT,
