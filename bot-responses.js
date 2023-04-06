@@ -367,9 +367,8 @@ async function retrieveCourses1(sender_psid){
     const { data } = await classroom.courses.list({});
 
     const courses = data.courses;
-    console.log(courses); // Or do whatever you want with the courses
 
-    return courses.map(course => `Name: ${course.name} ID: `);
+    return courses.map(course => `Name: ${course.name}`);
   } catch (err) {
     console.error(err);
   }

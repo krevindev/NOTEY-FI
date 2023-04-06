@@ -103,10 +103,7 @@ async function handleMessage(sender_psid, received_message) {
 
       // if it's just plain text
     } else {
-      if (msg === "test") {
-        const m = await botResponses.retrieveCourses1(sender_psid)
-        callSendAPI(sender_psid, {text: m})
-      } else if (msg === "get started") {
+      if (msg === "get started") {
         response = await botResponses.response(msg);
       } else if (msg[0] === "/") {
         response = {
@@ -158,8 +155,13 @@ async function handleMessage(sender_psid, received_message) {
 async function handleQuickReplies(sender_psid, received_payload) {
   let response;
 
+  if (received_payload === "view_google_courses") {
+        const m = await botResponses.retrieveCourses1(sender_psid)
+        m.map(course => callSendAPI(sender_psid, {text: course}))
+      }
   // Subscribe
-  if (received_payload === "subscribe") {
+  
+  else if (received_payload === "subscribe") {
     callSendAPI(sender_psid, { text: "Please wait-..." });
 
     botResponses
