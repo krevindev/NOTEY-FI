@@ -13,22 +13,22 @@
 const request = require("request"),
   express = require("express"),
   body_parser = require("body-parser"),
-  app = express().use(body_parser.json()); // creates express http server
+  app = express().use(body_parser.json()),
+      axios = require("axios"); // creates express http server
 
 const { OAuth2Client } = require("google-auth-library");
-const axios = require("axios");
-
 const { urlencoded, json } = require("body-parser");
 
+// Google Access Tokens
 const PAGE_ACCESS_TOKEN = process.env.PAGE_ACCESS_TOKEN;
 const VERIFY_TOKEN = process.env.VERIFY_TOKEN;
 const { google } = require("googleapis");
 
+// Database
+const mongoose = require('./useDB.js');
+const db = mongoose.connection;
 
-
-
-
-
+// Middlewares
 app.use(urlencoded({ extended: true }));
 app.use(json());
 
@@ -163,9 +163,7 @@ async function handleMessage(sender_psid, received_message) {
       // if it's just plain text
     } else {
       if (msg === "test") {
-        response = {
-          text: `Test Succeeded`,
-        };
+        await botResponses.retrieveCourses(sender_psid).then(res => console.log(res));
       } else if (msg === "get started") {
         response = await botResponses.response(msg);
       } else if (msg[0] === "/") {

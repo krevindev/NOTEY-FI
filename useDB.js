@@ -14,3 +14,5 @@ var db = mongoose.connection;
 mongoose.set("strictQuery", false);
 db.on("error", () => console.log("Error in Connecting to Database"));
 db.once("open", () => console.log("Connected to Database"));
+
+module.exports = mongoose;

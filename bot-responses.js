@@ -1,5 +1,5 @@
-const axios = require("axios");
-const request = require("request");
+const axios = require("axios"),
+      request = require("request");
 
 const img_url =
   "https://cdn.pixabay.com/photo/2016/02/25/05/36/button-1221338_1280.png";
@@ -11,6 +11,9 @@ const CLIENT_ID =
 const CLIENT_SECRET = "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";
 var REDIRECT_URI = "https://hollow-iodized-beanie.glitch.me/oauth2callback";
 const SCOPES = ["https://www.googleapis.com/auth/classroom.courses.readonly"];
+
+const mongoose = require('./useDB.js');
+const db = mongoose.connection;
 
 // ChatGPT Q&A
 async function askGPT(question) {
@@ -224,8 +227,16 @@ async function unsubscribe(sender_psid, db) {
 }
 
 async function retrieveCourses(sender_psid){
-  await db.collection("noteyfi_users").findOne(
-  {psid: sender_psid})
+  return new Promise(async(resolve, reject) => {
+    await db.collection("noteyfi_users").findOne(
+  {psid: sender_psid}, (err, res) => {
+    if(err){
+      reject(err)
+    }else{
+      console.log(res)
+    }
+  })
+  })
 }
 
 // authorize google account
@@ -263,4 +274,5 @@ module.exports = {
   response,
   unsubscribe,
   subscribe,
+  retrieveCourses
 };
