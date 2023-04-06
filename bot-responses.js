@@ -254,8 +254,6 @@ async function retrieveCourses(sender_psid) {
   const mapMe = await Promise.all(
     
     vleTokens.map(async token => {
-    
-    
     const oauth2Client = new OAuth2Client(
       CLIENT_ID,
       CLIENT_SECRET,
@@ -283,21 +281,20 @@ async function retrieveCourses(sender_psid) {
         // Store the new access token in your database or other storage mechanism
       }
     });
-    
-    // returns the course in a token
-    const tokenCourses = async() => {
-      return new Promise(async(resolve, reject) => {
-        await classroom.courses.list({}, async (err, res) => {
-        if(err){
-          reject(err)
-        }else{
-          resolve(res.data.courses.map(course => `Name: ${course.name} ID: ${course.id}`));
-        }
-      });
-      })
-    }
-    
-   return await tokenCourses().then(res => {
+      
+      const getCourses = async () => {
+      return new Promise(async (resolve, reject) => {
+        await classroom.courses.list({}, (err, res) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(res.data.courses);
+          }
+        });
+      })}
+        
+  
+   return await getCourses().then(res => {
      res.map(course => `Name: ${course.name} ID: ${course.id}`)
    })
   }));
@@ -350,12 +347,39 @@ async function retrieveCourses(sender_psid) {
     //console.log(await dFunc().then((res) => res));
   })*/;
 }
+
+async function retrieveCourses1(sender_psid){
+  
+  // retrieve user vle tokens
+  const userData = await db
+    .collection("noteyfi_users")
+    .findOne({ psid: sender_psid })
+    .then((res) => res);
+
+  const vleTokens = await userData.vle_accounts;
+  
+  
+  try {
+    const oAuth2Client = new OAuth2Client(process.env.CLIENT_ID, process.env.CLIENT_SECRET, process.env.REDIRECT_URI);
+    oAuth2Client.setCredentials({ refresh_token: vleTokens[0].refresh_token });
+
+    const classroom = google.classroom({ version: 'v1', auth: oAuth2Client });
+    const { data } = await classroom.courses.list({});
+
+    const courses = data.courses;
+    console.log(courses); // Or do whatever you want with the courses
+
+    return courses.map(course => `Name: ${course.name} ID: `);
+  } catch (err) {
+    console.error(err);
+  }
+}
 module.exports = {
   askGPT,
   response,
   unsubscribe,
   subscribe,
-  retrieveCourses,
+  retrieveCourses1,
 };
 
 // CODE TRASH BIN
