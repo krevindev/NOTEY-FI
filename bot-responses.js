@@ -231,27 +231,31 @@ async function unsubscribe(sender_psid, db) {
 async function retrieveCourses(sender_psid) {
   let coursesReturn = [];
 
-  const vle_tokens = await db.collection("noteyfi_users").findOne({ psid: sender_psid });
+  const vle_tokens = await db.collection("noteyfi_users").findOne({ psid: sender_psid })
+  .then(res => {
+    console.log("VLE VLE");
+    let vle_tokens = res.vle_accounts
+});
 
   console.log("VLE TOKENS222:");
-  console.log(vle_tokens);
+  console.log(vle_tokens.vle_accounts[0]);
 
   const vle_account_token = vle_tokens.vle_accounts[0];
 
   const oauth2Client = new OAuth2Client(CLIENT_ID, CLIENT_SECRET, REDIRECT_URI);
 
-  oauth2Client.setCredentials({
+  await oauth2Client.setCredentials({
     access_token: vle_account_token.access_token,
     token_type: vle_account_token.token_type,
     expiry_date: vle_account_token.expiry_date,
   });
 
-  const classroom = google.classroom({
+  const classroom = await google.classroom({
     version: "v1",
     auth: oauth2Client,
   });
 
-  classroom.courses.list({}, (err, res) => {
+  await classroom.courses.list({}, async(err, res) => {
     if (err) {
       console.error(err);
       return;
@@ -259,9 +263,10 @@ async function retrieveCourses(sender_psid) {
     const courses = res.data.courses;
     console.log("Courses:");
     if (courses.length) {
-      courses.forEach((course) => {
-        //console.log(`${course.name} (${course.id})`);
-        coursesReturn.push(`${course.name} (${course.id})`);
+      courses.forEach(async (course) => {
+        console.log('COURSES 111:')
+        console.log(`${course.name} (${course.id})`);
+        coursesReturn.push(`${await course.name} (${await course.id})`);
       });
     } else {
       console.log("No courses found.");
