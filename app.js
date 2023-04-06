@@ -157,8 +157,17 @@ async function handleQuickReplies(sender_psid, received_payload) {
 
   if (received_payload === "view_google_courses") {
         const m = await botResponses.retrieveCourses1(sender_psid)
-          await m.map(course => callSendAPI(sender_psid, {text: course}))
-          callSendAPI(sender_psid, await botResponses.response("menu"))
+        
+        async function sendCourseMenu(sender_psid) {
+  try {
+    const courses = await getUnarchivedCourses();
+    const m = courses.map(course => `${course.name} (${course.id})`);
+    await Promise.all(m.map(course => callSendAPI(sender_psid, {text: course})));
+    await callSendAPI(sender_psid, await botResponses.response("menu"));
+  } catch (err) {
+    console.error(err);
+  }
+}
     
       }
   // Subscribe
