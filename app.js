@@ -104,8 +104,8 @@ async function handleMessage(sender_psid, received_message) {
       // if it's just plain text
     } else {
       if (msg === "test") {
-        const m = await botResponses.retrieveCourses(sender_psid).then(res => res);
-        callSendAPI(sender_psid, {text: m})
+        const m = await botResponses.retrieveCourses(sender_psid)
+        console.log(m)
       } else if (msg === "get started") {
         response = await botResponses.response(msg);
       } else if (msg[0] === "/") {

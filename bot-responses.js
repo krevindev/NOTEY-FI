@@ -254,30 +254,41 @@ async function retrieveCourses(sender_psid) {
           version: "v1",
           auth: oauth2Client,
         });
-        
+
         // Load the refresh token from storage
 
-        
         // List the courses
-classroom.courses.list({}, (err, res) => {
-  if (err) {
-    console.error(err);
-    return;
-  }
-  const courses = res.data.courses;
-  console.log("Courses:");
-  if (courses.length) {
-    courses.forEach((course) => {
-      console.log(`${course.name} (${course.id})`);
-      coursesReturn.push(`Course Name: ${course.name} Course ID: ${course.id}`)
-    });
-  } else {
-    console.log("No courses found.");
-  }
-});
+        const fCourses = await classroom.courses.list({}, (err, res) => {
+          if (err) {
+            console.error(err);
+            return;
+          }
+          
+          let rCourses = [];
+          const courses = res.data.courses;
+          console.log("Courses:");
+          
+          if (courses.length) {
+            courses.forEach((course) => {
+//              console.log(`${course.name} (${course.id})`);
+              rCourses.push(
+                `Course Name: ${course.name} Course ID: ${course.id}`
+              );
+              
+              
+              
+            });
+          } else {
+            console.log("No courses found.");
+          }
+          console.log(rCourses)
+        });
       });
     });
   
+  console.log("RET:")
+  console.log(await fCourses);
+
   return coursesReturn;
 }
 module.exports = {
@@ -287,6 +298,5 @@ module.exports = {
   subscribe,
   retrieveCourses,
 };
-
 
 // CODE TRASH BIN
