@@ -230,31 +230,39 @@ async function unsubscribe(sender_psid, db) {
 
 async function retrieveCourses(sender_psid) {
   let coursesReturn = [];
-  console.log('retrieving...')
+  console.log('retrieving...');
 
-  const vle_tokens = await db
+  await db
     .collection("noteyfi_users")
     .findOne({ psid: sender_psid })
     .then((res) => {
       const vle_tokens = res.vle_accounts;
-
-      vle_tokens.forEach(async (token) => {
+    
+      vle_tokens.forEach(token => {
         const oauth2Client = new OAuth2Client(
           CLIENT_ID,
           CLIENT_SECRET,
           REDIRECT_URI
         );
-
-        await oauth2Client.setCredentials({
+        oauth2Client.setCredentials({
           access_token: token.access_token,
           token_type: token.token_type,
           expiry_date: token.expiry_date,
         });
-
-        const classroom = await google.classroom({
+        
+        const classroom = google.classroom({
           version: "v1",
           auth: oauth2Client,
         });
+        
+      })
+
+    
+    
+      vle_tokens.forEach(async (token) => {
+     
+
+        
 
         await classroom.courses.list({}, async (err, res) => {
           if (err) {
