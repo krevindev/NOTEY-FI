@@ -169,34 +169,6 @@ async function response(msg, ...sender_psid) {
         }
       ]
     }
-  }else if (msg === "send_courses"){
-    response = {
-      attachment: {
-        type: "template",
-        payload: {
-          template_type: "generic",
-          elements: [
-            {
-              title: "Is this the right picture?",
-              subtitle: "Tap a button to answer.",
-              image_url: attachment_url,
-              buttons: [
-                {
-                  type: "postback",
-                  title: "Yes!",
-                  payload: "yes",
-                },
-                {
-                  type: "postback",
-                  title: "No!",
-                  payload: "no",
-                },
-              ],
-            },
-          ],
-        },
-      },
-    };
   }
 
   return response;
@@ -251,6 +223,10 @@ async function unsubscribe(sender_psid, db) {
   });
 }
 
+async function retrieveCourses(sender_psid){
+  await db.collection("noteyfi_users").findOne(
+  {psid: sender_psid})
+}
 
 // authorize google account
 async function authorize(sender_psid, urlButtons) {
