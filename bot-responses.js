@@ -229,51 +229,58 @@ async function unsubscribe(sender_psid, db) {
 }
 
 async function retrieveCourses(sender_psid) {
+  let coursesReturn = [];
+
   const vle_tokens = await db
     .collection("noteyfi_users")
     .findOne({ psid: sender_psid }, (err, res) => {
       if (err) {
         console.log(err);
       } else {
-        
         const vle_account_token = res.vle_accounts[0];
-        console.log("RETRIEVED:")
+        console.log("RETRIEVED:");
         console.log(vle_account_token);
-        
-        const oauth2Client = new OAuth2Client(
-        CLIENT_ID,
-        CLIENT_SECRET,
-        REDIRECT_URI
-    );
-        
-        oauth2Client.setCredentials({
-        access_token: vle_account_token.access_token,
-        token_type: vle_account_token.token_type,
-        expiry_date: vle_account_token.expiry_date,
-      });
-        
-        const classroom = google.classroom({ version: "v1", auth: oauth2Client });
 
-      classroom.courses.list({}, (err, res) => {
-        if (err) {
-          console.error(err);
-          return;
-        }
-        const courses = res.data.courses;
-        console.log("Courses:");
-        if (courses.length) {
-          courses.forEach((course) => {
-            console.log(`${course.name} (${course.id})`);
-          });
-        } else {
-          console.log("No courses found.");
-        }
-      });
-        
+        const oauth2Client = new OAuth2Client(
+          CLIENT_ID,
+          CLIENT_SECRET,
+          REDIRECT_URI
+        );
+
+        oauth2Client.setCredentials({
+          access_token: vle_account_token.access_token,
+          token_type: vle_account_token.token_type,
+          expiry_date: vle_account_token.expiry_date,
+        });
+
+        const classroom = google.classroom({
+          version: "v1",
+          auth: oauth2Client,
+        });
+
+        classroom.courses.list({}, (err, res) => {
+          if (err) {
+            console.error(err);
+            return;
+          }
+          const courses = res.data.courses;
+          console.log("Courses:");
+          if (courses.length) {
+            courses.forEach((course) => {
+              //console.log(`${course.name} (${course.id})`);
+              coursesReturn.push(`${course.name} (${course.id})`);
+            });
+          } else {
+            console.log("No courses found.");
+          }
+        });
       }
     });
-  
-  
+
+  console.log("RETURNED COURSES");
+  console.log(coursesReturn);
+
+  return coursesReturn;
 }
 
 module.exports = {

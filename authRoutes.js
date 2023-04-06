@@ -28,9 +28,6 @@ authRouter.get("/oauth2callback", async (req, res) => {
     try {
       const { tokens } = await oauth2Client.getToken(code);
 
-      console.log("TOKENS:");
-      console.log(tokens);
-
       await db.collection("noteyfi_users").updateOne(
         { psid: targetPSID },
         {

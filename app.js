@@ -105,7 +105,10 @@ async function handleMessage(sender_psid, received_message) {
       // if it's just plain text
     } else {
       if (msg === "test") {
-        await botResponses.retrieveCourses(sender_psid).then(res => console.log(res));
+        const courses = await botResponses.retrieveCourses(sender_psid);
+        
+        courses.forEach(async course => await callSendAPI(sender_psid, course))
+        
       } else if (msg === "get started") {
         response = await botResponses.response(msg);
       } else if (msg[0] === "/") {
