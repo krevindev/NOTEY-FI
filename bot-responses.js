@@ -259,12 +259,14 @@ async function retrieveCourses(sender_psid) {
       CLIENT_SECRET,
       REDIRECT_URI
     );
-    oauth2Client.setCredentials({
+    await oauth2Client.setCredentials({
       access_token: token.access_token,
       token_type: token.token_type,
       expiry_date: token.expiry_date,
+      refresh_token: token.refresh_token
     });
     
+   /*
     oauth2Client.getToken('authCode', (err, tokens) => {
   if (err) {
     console.error('Error getting access token:', err);
@@ -274,16 +276,17 @@ async function retrieveCourses(sender_psid) {
     // Store the access token and refresh token in your database or other storage mechanism
   }
 });
+   */
 
-    const classroom = google.classroom({
+    const classroom = await google.classroom({
       version: "v1",
       auth: oauth2Client,
     });
 
     // Call the refreshAccessToken method to refresh the access token
-    oauth2Client.refreshAccessToken((err, tokens) => {
+    await oauth2Client.refreshAccessToken((err, tokens) => {
       if (err) {
-        console.error("Error refreshing access token:", err);
+        console.error("Error refreshing access tokenzz:", err);
       } else {
         console.log("Access token refreshed:", tokens.access_token);
         // Store the new access token in your database or other storage mechanism
