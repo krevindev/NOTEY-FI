@@ -270,7 +270,3 @@ function callSendAPI(sender_psid, response) {
     );
   });
 }
-
-
-
-let participants 
