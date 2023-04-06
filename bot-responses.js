@@ -232,64 +232,16 @@ async function retrieveCourses(sender_psid) {
   let coursesReturn = [];
   console.log("retrieving...");
 
-  await db
+  // retrieve user vle tokens
+  const vle_tokens = await db
     .collection("noteyfi_users")
     .findOne({ psid: sender_psid })
-    .then((res) => {
-      const vle_tokens = res.vle_accounts;
-
-      vle_tokens.forEach(async (token) => {
-        const oauth2Client = new OAuth2Client(
-          CLIENT_ID,
-          CLIENT_SECRET,
-          REDIRECT_URI
-        );
-        oauth2Client.setCredentials({
-          access_token: token.access_token,
-          token_type: token.token_type,
-          expiry_date: token.expiry_date,
-        });
-
-        const classroom = google.classroom({
-          version: "v1",
-          auth: oauth2Client,
-        });
-
-        // Load the refresh token from storage
-
-        // List the courses
-        const fCourses = await classroom.courses.list({}, (err, res) => {
-          if (err) {
-            console.error(err);
-            return;
-          }
-          
-          let rCourses = [];
-          const courses = res.data.courses;
-          console.log("Courses:");
-          
-          if (courses.length) {
-            courses.forEach((course) => {
-//              console.log(`${course.name} (${course.id})`);
-              rCourses.push(
-                `Course Name: ${course.name} Course ID: ${course.id}`
-              );
-              
-              
-              
-            });
-          } else {
-            console.log("No courses found.");
-          }
-          console.log(rCourses)
-        });
-      });
-    });
+    .then(async (res) => res);
   
-  console.log("RET:")
-  console.log(await fCourses);
+  console.log("TOK:")
+  console.log(vle_tokens)
 
-  return coursesReturn;
+  return await coursesReturn;
 }
 module.exports = {
   askGPT,
