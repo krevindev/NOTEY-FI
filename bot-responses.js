@@ -373,23 +373,26 @@ async function retrieveCourses1(sender_psid){
 
     const courses = data.courses;
     
-
-    console.log(courses)
-    
-    const params = {
-  courseId: courseId,
-  requestBody: {}
-  }
-};
-
-// Call the courses.watch() method
-classroom.courses.watch(params, (err, res) => {
-  if (err) {
-    console.error(err);
-    return;
-  }
-  console.log(res);
-});
+    courses.forEach((course) => {
+      classroom.courses.watch(
+        {
+          courseId: course.id,
+          requestBody: {
+            address: "https://hollow-iodized-beanie.glitch.me/notifications",
+            expirationTimeMillis: "3600000", // 1 hour
+            payload: "NONE",
+            type: "ALL", // or 'ALL'
+          },
+        },
+        (err, response) => {
+          if (err) {
+            console.error("Error creating subscription:", err);
+          } else {
+            console.log("Subscription created:", response.data);
+          }
+        }
+      );
+    });
     
     
     
