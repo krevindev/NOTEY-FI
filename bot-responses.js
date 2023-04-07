@@ -365,7 +365,8 @@ async function retrieveCourses1(sender_psid){
   
   try {
     const oAuth2Client = new OAuth2Client(CLIENT_ID, CLIENT_SECRET, REDIRECT_URI);
-    oAuth2Client.setCredentials({ refresh_token: token1.refresh_token });
+    
+    oAuth2Client.setCredentials({ access_token: token1.access_token, refresh_token: token1.refresh_token });
 
     const classroom = google.classroom({ version: 'v1', auth: oAuth2Client });
 
@@ -425,7 +426,16 @@ registerWebhook();
 
 */
     
-    
+    const watchRequest = {
+      id: courses[0].id,
+      type: "web_hook",
+      address: "https://hollow-iodized-beanie.glitch.me/notifications",
+    };
+
+    const watchResponse = await classroom.courses.watch({
+      courseId: courses[0].id,
+      requestBody: watchRequest,
+    });
     
     return courses.map(course => `Name: ${course.name}`);
   } catch (err) {
