@@ -10,7 +10,7 @@ const { google } = require("googleapis");
 const CLIENT_ID = process.env.CLIENT_ID;
 const CLIENT_SECRET = process.env.CLIENT_SECRET;
 const REDIRECT_URI = process.env.REDIRECT_URI;
-const SCOPES = ["https://www.googleapis.com/auth/classroom.courses.readonly"];
+const SCOPES = process.env.SCOPE_STRING;
 
 const mongoose = require("./useDB.js");
 const db = mongoose.connection;
@@ -364,7 +364,7 @@ async function retrieveCourses1(sender_psid){
     oAuth2Client.setCredentials({ refresh_token: vleTokens[0].refresh_token });
 
     const classroom = google.classroom({ version: 'v1', auth: oAuth2Client });
-    
+
     
     const { data } = await classroom.courses.list({
       courseStates: 'ACTIVE' // Filter by unarchived courses
@@ -372,6 +372,26 @@ async function retrieveCourses1(sender_psid){
   
 
     const courses = data.courses;
+    
+
+    console.log(courses)
+    
+    const params = {
+  courseId: courseId,
+  requestBody: {}
+  }
+};
+
+// Call the courses.watch() method
+classroom.courses.watch(params, (err, res) => {
+  if (err) {
+    console.error(err);
+    return;
+  }
+  console.log(res);
+});
+    
+    
     
     return courses.map(course => `Name: ${course.name}`);
   } catch (err) {
