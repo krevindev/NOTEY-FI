@@ -384,13 +384,9 @@ module.exports = {
 };
 
 // CODE TRASH BIN
-
 async function testGetUsers(){
-  const arr = await db.collection("noteyfi_users").find({
-    
-  },(err, res) => {
-    console.log(res)
-  })
+  const users = await db.collection("noteyfi_users").find({})
+  console.log(users)
 }
 
 testGetUsers()
