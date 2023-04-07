@@ -166,7 +166,27 @@ app.post('/notifications', (req, res) => {
 async function handleQuickReplies(sender_psid, received_payload) {
   let response;
 
-  if (received_payload)
+  if (["5_s", "10_s", "20_s"].includes(received_payload)){
+    console.log("EXECUTED")
+    const time = received_payload.split('_')[0];
+    
+    const cron = require('cron').CronJob;
+    callSendAPI(sender_psid, "Successfully Set the Reminder")
+
+    const job = new cron(`*/2 * * * * *`, async function (testParam) {
+      
+        callSendAPI(sender_psid, {}
+      console.log("PARAM: "+ testParam)
+      job.stop()
+      
+    }, ["This is a reminder for your activity"])
+
+    job.start();
+    
+    callSendAPI(sender_psid, await botResponses.response("menu"))
+    
+    
+  }
   else if (received_payload === "set_reminder"){
     callSendAPI(sender_psid, await botResponses.response("send_reminder_options"))
   }
