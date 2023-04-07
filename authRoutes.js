@@ -15,7 +15,7 @@ authRouter.get("/oauth2callback", async (req, res) => {
   const CLIENT_ID = process.env.CLIENT_ID;
   const CLIENT_SECRET = process.env.CLIENT_SECRET;
   const REDIRECT_URI = process.env.REDIRECT_URI;
-  const SCOPES = ["https://www.googleapis.com/auth/classroom.courses.readonly"];
+  const SCOPES = process.env.SCOPE_STRING;
 
   return new Promise(async (resolve, reject) => {
     const oauth2Client = new OAuth2Client(

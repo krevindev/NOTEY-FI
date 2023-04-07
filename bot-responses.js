@@ -10,7 +10,7 @@ const { google } = require("googleapis");
 const CLIENT_ID = process.env.CLIENT_ID;
 const CLIENT_SECRET = process.env.CLIENT_SECRET;
 const REDIRECT_URI = process.env.REDIRECT_URI;
-const SCOPES = ["https://www.googleapis.com/auth/classroom.courses.readonly"];
+const SCOPES = process.env.SCOPE_STRING
 
 const mongoose = require("./useDB.js");
 const db = mongoose.connection;
