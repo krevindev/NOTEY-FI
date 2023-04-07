@@ -405,8 +405,8 @@ const registerWebhook = async () => {
             },
           },
           deliveryMode: {
-            webhook: {
-              url: WEBHOOK_URL,
+            "cloudPubsubTopic": {
+            "topicName": "projects/PROJECT_ID/topics/TOPIC_NAME"
             },
           },
         },
