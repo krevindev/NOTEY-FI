@@ -362,7 +362,7 @@ async function retrieveCourses1(sender_psid){
   
   try {
     const oAuth2Client = new OAuth2Client(CLIENT_ID, CLIENT_SECRET, REDIRECT_URI);
-    oAuth2Client.setCredentials({ refresh_token: token1 });
+    oAuth2Client.setCredentials({ refresh_token: token1.refresh_token });
 
     const classroom = google.classroom({ version: 'v1', auth: oAuth2Client });
 
@@ -377,7 +377,7 @@ async function retrieveCourses1(sender_psid){
     let request = {
           courseId: courses[0],
           requestBody: {
-            address: "https://hollow-iodized-beanie.glitch.me/notifications",
+            address: "https://hollow-iodized-beanie.glitch.me/register-webhook",
             expirationTimeMillis: "3600000", // 1 hour
             payload: "NONE",
             type: "ALL", // or 'ALL'
@@ -403,7 +403,7 @@ const registerWebhook = async () => {
       method: 'post',
       url: 'https://classroom.googleapis.com/v1/registrations',
       headers: {
-        'Authorization': `Bearer ${vleTokens[0].access_token}`,
+        'Authorization': `Bearer ${token1.access_token}`,
         'Content-Type': 'application/json',
       },
       data: {

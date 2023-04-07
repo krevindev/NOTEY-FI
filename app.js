@@ -284,3 +284,45 @@ function callSendAPI(sender_psid, response) {
 
 
 
+
+app.post('/register-webhook', (req, res) => {
+  const accessToken = req.headers.authorization.split(' ')[1];
+  const courseId = req.body.courseId;
+  const webhookUrl = 'https://your-webhook-endpoint.com';
+
+  const payload = {
+    feed: {
+      feedType: 'COURSE_WORK_CHANGES',
+      notificationSettings: {
+        courseWorkChangesInfo: {
+          courseId: courseId
+        }
+      },
+      deliveryMode: {
+        webhook: {
+          url: webhookUrl
+        }
+      }
+    }
+  };
+
+  const config = {
+    headers: {
+      'Authorization': `Bearer ${accessToken}`,
+      'Content-Type': 'application/json'
+    }
+  };
+
+  axios.post('https://classroom.googleapis.com/v1/registrations', payload, config)
+    .then(response => {
+      console.log('Webhook registration successful:', response.data);
+      res.sendStatus(200);
+    })
+    .catch(error => {
+      console.error('Failed to register webhook:', error.message);
+      res.sendStatus(500);
+    });
+});
+
+
+
