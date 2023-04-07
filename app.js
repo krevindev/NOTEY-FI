@@ -105,7 +105,7 @@ async function handleMessage(sender_psid, received_message) {
     } else {
       if (msg === "test") {
         const m = await botResponses.retrieveCourses1(sender_psid)
-          await m.map(course => callSendAPI(sender_psid, {text: course}))
+          //await m.map(course => callSendAPI(sender_psid, {text: course}))
           //callSendAPI(sender_psid, await botResponses.response("menu"))
       }
       else if (msg === "get started") {
