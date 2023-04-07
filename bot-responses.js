@@ -367,8 +367,32 @@ async function retrieveCourses1(sender_psid){
      const { data } = await classroom.courses.list({
       courseStates: 'ACTIVE' // Filter by unarchived courses
     });
+  
 
     const courses = data.courses;
+    
+    courses.forEach(course => {
+      classroom.courses.watch({
+        courseId: course.id,
+        requestBody: {
+          address: 'YOUR_NOTIFICATION_URL',
+          expirationTimeMillis: '3600000', // 1 hour
+          payload: 'NONE',
+          type: 'ALL' // or 'ALL'
+        }
+      }, (err, response) => {
+        if (err) {
+          console.error('Error creating subscription:', err);
+        } else {
+          console.log('Subscription created:', response.data);
+        }
+      });
+    })
+    
+    
+    
+    
+    
 
     return courses.map(course => `Name: ${course.name}`);
   } catch (err) {

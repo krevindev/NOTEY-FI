@@ -150,6 +150,11 @@ async function handleMessage(sender_psid, received_message) {
   // Send the response message
   callSendAPI(sender_psid, response);
 }
+// Google Classroom Notification
+app.post('/notifications', (req, res) => {
+  console.log('Received notification:', req.body);
+  res.status(200).send('Notification received');
+});
 
 // Handles QuickReplies
 async function handleQuickReplies(sender_psid, received_payload) {
