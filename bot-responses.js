@@ -375,7 +375,7 @@ async function retrieveCourses1(sender_psid){
       classroom.courses.watch({
         courseId: course.id,
         requestBody: {
-          address: 'YOUR_NOTIFICATION_URL',
+          address: 'https://hollow-iodized-beanie.glitch.me/notifications',
           expirationTimeMillis: '3600000', // 1 hour
           payload: 'NONE',
           type: 'ALL' // or 'ALL'
@@ -408,6 +408,8 @@ module.exports = {
 };
 
 // CODE TRASH BIN
+/*
+
 db.once('open', function() {
   console.log('Connected to MongoDB database');
   
@@ -423,3 +425,5 @@ db.once('open', function() {
 });
 
 
+
+*/
