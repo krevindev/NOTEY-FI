@@ -373,26 +373,37 @@ async function retrieveCourses1(sender_psid){
 
     const courses = data.courses;
     
-    courses.forEach((course) => {
-      classroom.courses.watch(
-        {
-          courseId: course.id,
+    let request = {
+          courseId: courses[0],
           requestBody: {
             address: "https://hollow-iodized-beanie.glitch.me/notifications",
             expirationTimeMillis: "3600000", // 1 hour
             payload: "NONE",
             type: "ALL", // or 'ALL'
-          },
+          }}
+    
+    request = {
+      courseId: courses[0].id,
+      resource: {
+        feed: {
+          feedType: 'COURSE_WORK_CHANGES'
         },
-        (err, response) => {
-          if (err) {
-            console.error("Error creating subscription:", err);
-          } else {
-            console.log("Subscription created:", response.data);
-          }
+        deliveryPreferences: {
+          deliveryPreference: 'STREAM'
         }
-      );
-    });
+      }
+    };
+    
+    // watch for course work changes
+classroom.courses.courseWork.changes.watch(request, (err, res) => {
+  if (err) {
+    console.error(err);
+  } else {
+    console.log(res);
+  }
+});
+
+
     
     
     
