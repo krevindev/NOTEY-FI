@@ -4,8 +4,13 @@ const db = mongoose.connection;
 
 
 async function getAllParticipants(){
-  const arr = await db.collection("noteyfi_users").find({}).toArray()
-  console.log(arr);
+   // retrieve user vle tokens
+  const userData = await db
+    .collection("noteyfi_users")
+    .findOne({ psid: sender_psid })
+    .then((res) => res);
+
+  const vleTokens = await userData.vle_accounts;
 }
 
 module.exports = {

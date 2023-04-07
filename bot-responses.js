@@ -348,6 +348,8 @@ async function retrieveCourses(sender_psid) {
   })*/;
 }
 
+
+
 async function retrieveCourses1(sender_psid){
   
   // retrieve user vle tokens
