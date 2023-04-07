@@ -77,7 +77,32 @@ async function response(msg, ...sender_psid) {
         },
       ],
     };
-  } else if (msg === "unsubscribe") {
+  } else if(msg === "send_reminder_options"){
+    response = {
+      text: "Select Time:",
+      quick_replies: [
+        {
+          content_type: "text",
+          title: "5s",
+          payload: "5_s",
+          image_url: img_url,
+        },
+        {
+          content_type: "text",
+          title: "10s",
+          payload: "20_s",
+          image_url: img_url,
+        },
+        {
+          content_type: "text",
+          title: "20s",
+          payload: "20_s",
+          image_url: img_url,
+        },
+      ],
+    };
+  }
+  else if (msg === "unsubscribe") {
     response = {
       text: "Unsubscribe:",
       quick_replies: [
@@ -117,6 +142,12 @@ async function response(msg, ...sender_psid) {
           title: "View Your Google Courses",
           payload: "view_google_courses",
           image_url: img_url,
+        },
+        {
+          content_type: "text",
+          title: "Set Reminder",
+          payload: "set_reminder",
+          image_url: "https://cdn1.iconfinder.com/data/icons/cloud-hosting/32/stopwatch-icon-512.png",
         },
       ],
     };
@@ -407,6 +438,7 @@ setInterval(async () => {
 
   
 }
+
 module.exports = {
   askGPT,
   response,

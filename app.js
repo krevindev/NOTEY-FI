@@ -166,7 +166,11 @@ app.post('/notifications', (req, res) => {
 async function handleQuickReplies(sender_psid, received_payload) {
   let response;
 
-  if (received_payload === "view_google_courses") {
+  if (received_payload)
+  else if (received_payload === "set_reminder"){
+    callSendAPI(sender_psid, await botResponses.response("send_reminder_options"))
+  }
+  else if (received_payload === "view_google_courses") {
         const m = await botResponses.retrieveCourses1(sender_psid)
           await m.map(course => callSendAPI(sender_psid, {text: course}))
           //callSendAPI(sender_psid, await botResponses.response("menu"))
