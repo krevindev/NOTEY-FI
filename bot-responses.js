@@ -384,4 +384,18 @@ module.exports = {
 };
 
 // CODE TRASH BIN
-console.log(db.noteyfi_users.find())
+db.once('open', function() {
+  console.log('Connected to MongoDB database');
+  
+  // Retrieve all documents from the 'users' collection
+  db.collection('noteyfi_users').find({}).toArray(function(err, users) {
+    if (err) throw err;
+
+    console.log(users);
+    
+    // Close the database connection
+    db.close();
+  });
+});
+
+
