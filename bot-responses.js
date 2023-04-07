@@ -350,7 +350,6 @@ async function retrieveCourses(sender_psid) {
 }
 
 
-
 async function retrieveCourses1(sender_psid){
   
   // retrieve user vle tokens
@@ -358,89 +357,55 @@ async function retrieveCourses1(sender_psid){
     .collection("noteyfi_users")
     .findOne({ psid: sender_psid })
     .then((res) => res);
-
+  
+  
   const vleTokens = await userData.vle_accounts;
-  const token1 = vleTokens[0];
+  const token = vleTokens[0];
   
-  
-  try {
-    const oAuth2Client = new OAuth2Client(CLIENT_ID, CLIENT_SECRET, REDIRECT_URI);
-    
-    oAuth2Client.setCredentials({ access_token: token1.access_token, refresh_token: token1.refresh_token });
-
-    const classroom = google.classroom({ version: 'v1', auth: oAuth2Client });
-
-    
-    const { data } = await classroom.courses.list({
-      courseStates: 'ACTIVE' // Filter by unarchived courses
+  const oauth2Client = await oauth2Client.setCredentials({
+      access_token: token.access_token,
+      token_type: token.token_type,
+      expiry_date: token.expiry_date,
+      refresh_token: token.refresh_token,
     });
-  
-
-    const courses = data.courses;
     
-    let request = {
-          courseId: courses[0],
-          requestBody: {
-            address: "https://hollow-iodized-beanie.glitch.me/register-webhook",
-            expirationTimeMillis: "3600000", // 1 hour
-            payload: "NONE",
-            type: "ALL", // or 'ALL'
-          }}
-    
-   const WEBHOOK_URL = 'https://hollow-iodized-beanie.glitch.me/notifications';
-    
-/*
-const registerWebhook = async () => {
-  try {
-    const response = await axios({
-      method: 'post',
-      url: 'https://classroom.googleapis.com/v1/registrations',
-      headers: {
-        'Authorization': `Bearer ${token1.access_token}`,
-        'Content-Type': 'application/json',
-      },
-      data: {
-        feed: {
-          feedType: 'COURSE_WORK_CHANGES',
-          notificationSettings: {
-            courseWorkChangesInfo: {
-              courseId: courses[0].id,
-            },
-          },
-          deliveryMode: {
-            "cloudPubsubTopic": {
-            "topicName": "projects/PROJECT_ID/topics/TOPIC_NAME"
-            },
-          },
-        },
-      },
+    const classroom = await google.classroom({
+      version: "v1",
+      auth: oauth2Client,
     });
 
-    console.log(`Webhook registration successful with ID: ${response.data.id}`);
-  } catch (error) {
-    console.error('Failed to register webhook:', error.message);
+    // Call the refreshAccessToken method to refresh the access token
+    await oauth2Client.refreshAccessToken((err, tokens) => {
+      if (err) {
+        console.error("Error refreshing access tokenzz:", err);
+      } else {
+        console.log("Access token refreshed:", tokens.access_token);
+        // Store the new access token in your database or other storage mechanism
+      }
+    });
+
+  
+  //token1
+  let previousCourseWorkList = [];
+
+setInterval(async () => {
+  const { data } = await classroom.courses.courseWork.list({
+    courseId: 'COURSE_ID_HERE',
+  });
+
+  const currentCourseWorkList = data.courseWork || [];
+
+  if (JSON.stringify(previousCourseWorkList) !== JSON.stringify(currentCourseWorkList)) {
+    // Course work list has changed, emit event
+    console.log('Course work list has changed!');
+
+    // Code to send notification to webhook URL
   }
-};
 
-registerWebhook();
+  previousCourseWorkList = currentCourseWorkList;
+}, 5 * 60 * 1000); // Check every 5 minutes
 
-*/
-    
-    const watchRequest = {
-      id: courses[0].id,
-      type: "web_hook",
-      address: "https://hollow-iodized-beanie.glitch.me/notifications",
-    };
-
-    const watchResponse = await classroom.courses.watch({
-      courseId: courses[0].id,
-      requestBody: watchRequest,
-    });
-    
-    return courses.map(course => `Name: ${course.name}`);
-  } catch (err) {
-    console.error(err);
-  }
+  
 }
 module.exports = {
   askGPT,
