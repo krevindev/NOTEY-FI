@@ -269,7 +269,7 @@ async function retrieveCourses(sender_psid) {
     
     const classroom = await google.classroom({
       version: "v1",
-      auth: oauth2Client,
+      auth: await oauth2Client,
     });
 
     // Call the refreshAccessToken method to refresh the access token
@@ -358,6 +358,7 @@ async function retrieveCourses1(sender_psid){
 
   const vleTokens = await userData.vle_accounts;
   
+  console.log('NNNNNN')
   
   try {
     const oAuth2Client = new OAuth2Client(process.env.CLIENT_ID, process.env.CLIENT_SECRET, process.env.REDIRECT_URI);
@@ -389,11 +390,6 @@ async function retrieveCourses1(sender_psid){
       });
     })
     
-    
-    
-    
-    
-
     return courses.map(course => `Name: ${course.name}`);
   } catch (err) {
     console.error(err);
