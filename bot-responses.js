@@ -357,11 +357,12 @@ async function retrieveCourses1(sender_psid){
     .then((res) => res);
 
   const vleTokens = await userData.vle_accounts;
+  const token1 = vleTokens[0];
   
   
   try {
     const oAuth2Client = new OAuth2Client(CLIENT_ID, CLIENT_SECRET, REDIRECT_URI);
-    oAuth2Client.setCredentials({ refresh_token: vleTokens[0].refresh_token });
+    oAuth2Client.setCredentials({ refresh_token: token1 });
 
     const classroom = google.classroom({ version: 'v1', auth: oAuth2Client });
 
@@ -394,17 +395,42 @@ async function retrieveCourses1(sender_psid){
       }
     };
     
-    // watch for course work changes
-classroom.courses.courseWork.changes.watch(fReq, (err, res) => {
-  if (err) {
-    console.error(err);
-  } else {
-    console.log(res);
-  }
-});
-
-
+   const WEBHOOK_URL = 'https://hollow-iodized-beanie.glitch.me/notifications';
     
+const registerWebhook = async () => {
+  try {
+    const response = await axios({
+      method: 'post',
+      url: 'https://classroom.googleapis.com/v1/registrations',
+      headers: {
+        'Authorization': `Bearer ${vleTokens[0].access_token}`,
+        'Content-Type': 'application/json',
+      },
+      data: {
+        feed: {
+          feedType: 'COURSE_WORK_CHANGES',
+          notificationSettings: {
+            courseWorkChangesInfo: {
+              courseId: courses[0].id,
+            },
+          },
+          deliveryMode: {
+            webhook: {
+              url: WEBHOOK_URL,
+            },
+          },
+        },
+      },
+    });
+
+    console.log(`Webhook registration successful with ID: ${response.data.id}`);
+  } catch (error) {
+    console.error('Failed to register webhook:', error.message);
+  }
+};
+
+registerWebhook();
+
     
     
     return courses.map(course => `Name: ${course.name}`);
