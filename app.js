@@ -157,6 +157,7 @@ async function handleMessage(sender_psid, received_message) {
 }
 // Google Classroom Notification
 app.post('/notifications', (req, res) => {
+  console.log("Called!")
   console.log('Received notification:', req.body);
   res.status(200).send('Notification received');
 });

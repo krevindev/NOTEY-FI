@@ -385,18 +385,6 @@ async function retrieveCourses1(sender_psid){
             type: "ALL", // or 'ALL'
           }}
     
-    const fReq = {
-      courseId: courses[0].id,
-      resource: {
-        feed: {
-          feedType: 'COURSE_WORK_CHANGES'
-        },
-        deliveryPreferences: {
-          deliveryPreference: 'STREAM'
-        }
-      }
-    };
-    
    const WEBHOOK_URL = 'https://hollow-iodized-beanie.glitch.me/notifications';
     
 const registerWebhook = async () => {
