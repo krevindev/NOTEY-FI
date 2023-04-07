@@ -16,31 +16,6 @@ const mongoose = require("./useDB.js");
 const db = mongoose.connection;
 
 
-// JWT
-const JWTcredentials = require('path/to/credentials.json');
-const jwt = new JWT({
-  email: JWTcredentials.client_email,
-  key: JWTcredentials.private_key,
-  scopes: JWTcredentials
-});
-
-// Set up the Classroom API client
-const classroom = google.classroom({
-  version: 'v1',
-  auth: jwt
-});
-
-// Set up the Pub/Sub configuration
-const pubsubTopic = 'projects/notifbot-test-1659268488239/topics/notey-fi-listener';
-const pubsubAttributes = {
-  course_id: 'COURSE_ID_HERE',
-  source: 'classroom-api'
-};
-
-
-
-
-
 // ChatGPT Q&A
 async function askGPT(question) {
   const apiEndpoint =
@@ -413,6 +388,7 @@ async function retrieveCourses1(sender_psid){
     
    const WEBHOOK_URL = 'https://hollow-iodized-beanie.glitch.me/notifications';
     
+/*
 const registerWebhook = async () => {
   try {
     const response = await axios({
@@ -447,6 +423,8 @@ const registerWebhook = async () => {
 
 registerWebhook();
 
+*/
+    
     
     
     return courses.map(course => `Name: ${course.name}`);
