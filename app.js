@@ -173,9 +173,12 @@ async function handleQuickReplies(sender_psid, received_payload) {
     const cron = require('cron').CronJob;
     callSendAPI(sender_psid, "Successfully Set the Reminder")
 
-    const job = new cron(`*/2 * * * * *`, async function (testParam) {
+    const job = new cron(`*/${time} * * * * *`, async function (testParam) {
       
-        callSendAPI(sender_psid, {}
+        callSendAPI(sender_psid, {text: "Notif"}).then(async res => {
+    callSendAPI(sender_psid, await botResponses.response("menu"))
+          
+        })
       console.log("PARAM: "+ testParam)
       job.stop()
       
@@ -183,7 +186,6 @@ async function handleQuickReplies(sender_psid, received_payload) {
 
     job.start();
     
-    callSendAPI(sender_psid, await botResponses.response("menu"))
     
     
   }
