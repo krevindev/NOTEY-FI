@@ -382,7 +382,7 @@ async function retrieveCourses1(sender_psid){
             type: "ALL", // or 'ALL'
           }}
     
-    request = {
+    const fReq = {
       courseId: courses[0].id,
       resource: {
         feed: {
@@ -395,7 +395,7 @@ async function retrieveCourses1(sender_psid){
     };
     
     // watch for course work changes
-classroom.courses.courseWork.changes.watch(request, (err, res) => {
+classroom.courses.courseWork.changes.watch(fReq, (err, res) => {
   if (err) {
     console.error(err);
   } else {
