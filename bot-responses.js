@@ -10,7 +10,7 @@ const { google } = require("googleapis");
 const CLIENT_ID = process.env.CLIENT_ID;
 const CLIENT_SECRET = process.env.CLIENT_SECRET;
 const REDIRECT_URI = process.env.REDIRECT_URI;
-const SCOPES = process.env.SCOPE_STRING;
+const SCOPES = ["https://www.googleapis.com/auth/classroom.courses.readonly"];
 
 const mongoose = require("./useDB.js");
 const db = mongoose.connection;
@@ -248,59 +248,60 @@ async function retrieveCourses(sender_psid) {
     .then((res) => res);
 
   const vleTokens = await userData.vle_accounts;
-
+  
   let coursesReturn = [];
-
+  
   const mapMe = await Promise.all(
-    vleTokens.map(async (token) => {
-      const oauth2Client = new OAuth2Client(
-        CLIENT_ID,
-        CLIENT_SECRET,
-        REDIRECT_URI
-      );
+    
+    vleTokens.map(async token => {
+    const oauth2Client = new OAuth2Client(
+      CLIENT_ID,
+      CLIENT_SECRET,
+      REDIRECT_URI
+    );
+    
+    await oauth2Client.setCredentials({
+      access_token: token.access_token,
+      token_type: token.token_type,
+      expiry_date: token.expiry_date,
+      refresh_token: token.refresh_token,
+    });
+    
+    const classroom = await google.classroom({
+      version: "v1",
+      auth: oauth2Client,
+    });
 
-      await oauth2Client.setCredentials({
-        access_token: token.access_token,
-        token_type: token.token_type,
-        expiry_date: token.expiry_date,
-        refresh_token: token.refresh_token,
-      });
-
-      const classroom = await google.classroom({
-        version: "v1",
-        auth: await oauth2Client,
-      });
-
-      // Call the refreshAccessToken method to refresh the access token
-      await oauth2Client.refreshAccessToken((err, tokens) => {
-        if (err) {
-          console.error("Error refreshing access tokenzz:", err);
-        } else {
-          console.log("Access token refreshed:", tokens.access_token);
-          // Store the new access token in your database or other storage mechanism
-        }
-      });
-
+    // Call the refreshAccessToken method to refresh the access token
+    await oauth2Client.refreshAccessToken((err, tokens) => {
+      if (err) {
+        console.error("Error refreshing access tokenzz:", err);
+      } else {
+        console.log("Access token refreshed:", tokens.access_token);
+        // Store the new access token in your database or other storage mechanism
+      }
+    });
+      
       const getCourses = async () => {
-        return new Promise(async (resolve, reject) => {
-          await classroom.courses.list({}, (err, res) => {
-            if (err) {
-              reject(err);
-            } else {
-              resolve(res.data.courses);
-            }
-          });
+      return new Promise(async (resolve, reject) => {
+        await classroom.courses.list({}, (err, res) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(res.data.courses);
+          }
         });
-      };
-
-      return await getCourses().then((res) => {
-        res.map((course) => `Name: ${course.name} ID: ${course.id}`);
-      });
-    })
-  );
-
-  console.log(await mapMe);
-
+      })}
+        
+  
+   return await getCourses().then(res => {
+     res.map(course => `Name: ${course.name} ID: ${course.id}`)
+   })
+  }));
+  
+  console.log(await mapMe)
+  
+  
   //console.log(oof)
 
   // for each vle_token
@@ -344,10 +345,11 @@ async function retrieveCourses(sender_psid) {
       });
     };
     //console.log(await dFunc().then((res) => res));
-  })*/
+  })*/;
 }
 
-async function retrieveCourses1(sender_psid) {
+async function retrieveCourses1(sender_psid){
+  
   // retrieve user vle tokens
   const userData = await db
     .collection("noteyfi_users")
@@ -355,35 +357,42 @@ async function retrieveCourses1(sender_psid) {
     .then((res) => res);
 
   const vleTokens = await userData.vle_accounts;
-
-
+  
+  
   try {
-    
-    const oAuth2Client = new OAuth2Client(
-      process.env.CLIENT_ID,
-      process.env.CLIENT_SECRET,
-      process.env.REDIRECT_URI
-    );
-    
+    const oAuth2Client = new OAuth2Client(process.env.CLIENT_ID, process.env.CLIENT_SECRET, process.env.REDIRECT_URI);
     oAuth2Client.setCredentials({ refresh_token: vleTokens[0].refresh_token });
 
-    
-    
-    console.log("NNNNNN");
-    
-    
-    console.log(classroom)
-    
-    const { data } = await classroom.courses.list({
-      courseStates: "ACTIVE", // Filter by unarchived courses
+    const classroom = google.classroom({ version: 'v1', auth: oAuth2Client });
+     const { data } = await classroom.courses.list({
+      courseStates: 'ACTIVE' // Filter by unarchived courses
     });
+  
 
     const courses = data.courses;
+    
+    
+    
+    
+    classroom.courses.watch({
+        courseId: 'COURSE_ID',
+        requestBody: {
+          address: 'YOUR_NOTIFICATION_URL',
+          expirationTimeMillis: '3600000', // 1 hour
+          payload: 'NONE',
+          type: 'COURSE_WORK_CHANGES' // or 'ALL'
+        }
+      }, (err, response) => {
+        if (err) {
+          console.error('Error creating subscription:', err);
+        } else {
+          console.log('Subscription created:', response.data);
+        }
+      });
+    
+    
 
-    return courses.map((course) => `Name: ${course.name}`);
-  
-  
-  
+    return courses.map(course => `Name: ${course.name}`);
   } catch (err) {
     console.error(err);
   }
@@ -397,8 +406,6 @@ module.exports = {
 };
 
 // CODE TRASH BIN
-/*
-
 db.once('open', function() {
   console.log('Connected to MongoDB database');
   
@@ -414,5 +421,3 @@ db.once('open', function() {
 });
 
 
-
-*/
