@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const mongoString =
-  "mongodb+srv://batchy_bot:Tilapia-626@cluster0.kqimzoq.mongodb.net/?retryWrites=true&w=majority";
+      "mongodb+srv://batchy_bot:Tilapia-626@cluster0.kqimzoq.mongodb.net/?retryWrites=true&w=majority"
 
 mongoose.connect(mongoString + "/noteyfi_data", {
   useNewUrlParser: true,

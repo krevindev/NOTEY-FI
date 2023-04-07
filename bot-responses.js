@@ -360,38 +360,19 @@ async function retrieveCourses1(sender_psid){
   
   
   try {
-    const oAuth2Client = new OAuth2Client(process.env.CLIENT_ID, process.env.CLIENT_SECRET, process.env.REDIRECT_URI);
+    const oAuth2Client = new OAuth2Client(CLIENT_ID, CLIENT_SECRET, REDIRECT_URI);
     oAuth2Client.setCredentials({ refresh_token: vleTokens[0].refresh_token });
 
     const classroom = google.classroom({ version: 'v1', auth: oAuth2Client });
-     const { data } = await classroom.courses.list({
+    
+    
+    const { data } = await classroom.courses.list({
       courseStates: 'ACTIVE' // Filter by unarchived courses
     });
   
 
     const courses = data.courses;
     
-    
-    
-    
-    classroom.courses.watch({
-        courseId: 'COURSE_ID',
-        requestBody: {
-          address: 'YOUR_NOTIFICATION_URL',
-          expirationTimeMillis: '3600000', // 1 hour
-          payload: 'NONE',
-          type: 'COURSE_WORK_CHANGES' // or 'ALL'
-        }
-      }, (err, response) => {
-        if (err) {
-          console.error('Error creating subscription:', err);
-        } else {
-          console.log('Subscription created:', response.data);
-        }
-      });
-    
-    
-
     return courses.map(course => `Name: ${course.name}`);
   } catch (err) {
     console.error(err);
@@ -406,18 +387,4 @@ module.exports = {
 };
 
 // CODE TRASH BIN
-db.once('open', function() {
-  console.log('Connected to MongoDB database');
-  
-  // Retrieve all documents from the 'users' collection
-  db.collection('noteyfi_users').find({}).toArray(function(err, users) {
-    if (err) throw err;
-
-    console.log(users);
-    
-    // Close the database connection
-    db.close();
-  });
-});
-
 
