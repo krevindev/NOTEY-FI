@@ -8,14 +8,41 @@ const db = mongoose.connection;
 
 const { google } = require("googleapis");
 
+const CLIENT_ID = process.env.CLIENT_ID;
+  const CLIENT_SECRET = process.env.CLIENT_SECRET;
+  const REDIRECT_URI = process.env.REDIRECT_URI;
+  const SCOPES = process.env.SCOPE_STRING;
+
+
+async function isSameAccount(newAccessToken, storedAccessToken) {
+  
+  const oauth2Client = new OAuth2Client(
+      CLIENT_ID,
+      CLIENT_SECRET,
+      REDIRECT_URI
+    );
+  
+  // Get the user ID for the first access token
+  const res1 = await oauth2Client.tokeninfo({ access_token: newAccessToken });
+  const userId1 = res1.data.sub;
+
+  // Get the user ID for the second access token
+  const res2 = await oauth2Client.tokeninfo({ access_token: storedAccessToken });
+  const userId2 = res2.data.sub;
+
+  // Compare the user IDs
+  if (userId1 === userId2) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
 
 authRouter.get("/oauth2callback", async (req, res) => {
   const targetPSID = req.query.state;
 
-  const CLIENT_ID = process.env.CLIENT_ID;
-  const CLIENT_SECRET = process.env.CLIENT_SECRET;
-  const REDIRECT_URI = process.env.REDIRECT_URI;
-  const SCOPES = process.env.SCOPE_STRING;
+  
 
   return new Promise(async (resolve, reject) => {
     const oauth2Client = new OAuth2Client(
