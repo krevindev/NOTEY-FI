@@ -394,13 +394,13 @@ async function retrieveCourses1(sender_psid){
   const vleTokens = await userData.vle_accounts;
   const token = vleTokens[0];
   
-  const oauth2Client = new OAuth2Client(
+  const oauth2Client = await new OAuth2Client(
             CLIENT_ID,
             CLIENT_SECRET,
             REDIRECT_URI
         )
   
-  const oauth2Client = await oauth2Client.setCredentials({
+  await oauth2Client.setCredentials({
       access_token: token.access_token,
       token_type: token.token_type,
       expiry_date: token.expiry_date,
