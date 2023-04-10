@@ -83,8 +83,6 @@ const tokenInfo = await oauth2Client.getTokenInfo(tokens.access_token);
 });
 
 
-
-
 // Sends response messages via the Send API
 function callSendAPI(sender_psid, response) {
   // Construct the message body
