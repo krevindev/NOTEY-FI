@@ -239,7 +239,7 @@ async function handleQuickReplies(sender_psid, received_payload) {
     await callSendAPI(
       sender_psid,
       await botResponses.response("google classroom", sender_psid)
-    ).then(async () => await callSendAPI(sender_psid, { text: "Signed In" }));
+    ).then(async () => await callSendAPI(sender_psid, { text: "Signing in..." }));
   } else {
     callSendAPI(sender_psid, {
       text: "For some reason, that's an unknown postback",
