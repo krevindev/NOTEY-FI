@@ -259,7 +259,10 @@ async function handlePostback(sender_psid, received_postback) {
   console.log("RECEIVED POSTBACK:");
   console.log(received_postback);
 
-  if (payload === "subscribe") {
+  if(payload === "menu"){
+    response = await botResponses.response("menu")
+  }
+  else if (payload === "subscribe") {
     response = { text: "Subscribing..." };
   } else if (payload === "<postback_payload>") {
     console.log("RECEIVED RECEIVED");
