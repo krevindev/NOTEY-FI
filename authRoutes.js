@@ -22,31 +22,6 @@ const oauth2Client = new OAuth2Client(
 );
 
 
-
-async function getUsers() {
-    db.once('open', async () => {
-        const users = await db.collection('noteyfi_users').find().toArray((err, res) => res);
-
-        users.forEach(user => {
-            try {
-                // if the user has a vle_accounts property
-                if (user.vle_accounts) {
-                    // if user is not on subscribedUsers
-                    // create CourseListeners to the user
-                    new CourseListener(user).listenCourseChange();
-                    new CourseListener(user).pushNotification();
-                }
-            } catch (err) {
-                console.log("User DB Error");
-                console.log("Error: " + err)
-            }
-        })
-
-    })
-}
-
-getUsers();
-
 async function isSameAccount(newAccessToken, storedAccessToken) {
 
     // Get the user ID for the first access token
@@ -120,6 +95,19 @@ authRouter.get("/oauth2callback", async (req, res) => {
         res.redirect("/success");
     });
 });
+
+/** Get users and add listeners to them*/
+db.once('open', async () => {
+    let users = await db.collection('noteyfi_users').find().toArray((err, res) => {
+      if(err){
+        console.log(err);
+      }else{
+        return res
+      }
+    });
+    console.log(users)
+});
+
 
 
 // Sends response messages via the Send API

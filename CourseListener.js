@@ -436,8 +436,6 @@ class CourseListener {
         })
     }
 
-
-
     async getCourses(token) {
 
         const oauth2Client = new OAuth2Client(
@@ -474,6 +472,7 @@ class CourseListener {
     }
 
 }
+
 
 module.exports = {
   CourseListener
