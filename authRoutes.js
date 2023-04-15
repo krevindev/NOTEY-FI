@@ -101,7 +101,7 @@ async function listenToUser(user){
   new CourseListener(user).pushNotification();
 }
 
-/** Get the existing users and add listeners to them*/
+/** listen to existing users in the database when this server is running */
 async function listenToExistingUsers() {
     db.once('open', async () => {
         await db.collection('noteyfi_users').find().toArray((err, res) => {
