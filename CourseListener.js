@@ -107,26 +107,27 @@ class CourseListener {
             REDIRECT_URI
         );
 
+        // Set the credentials for the Google Classroom API
         auth.setCredentials({
-            // Replace the following with your own values
             access_token: this.token.access_token,
             refresh_token: this.token.refresh_token
         });
 
+        // Create a new Google Classroom client with the authenticated credentials
         const classroom = google.classroom({
             version: 'v1',
             auth: auth
         });
-
-        // Set up a unique channel ID to use for push notifications
-        // Keep track of the latest activity time by course ID
 
         // Keep track of the latest activity time by course ID
         let latestActivityTimeByCourseId = {};
         let earliestActivityTimeByCourseId = {};
         let existingCourseworkIds = {};
 
+        // Function to check for changes in activity
         async function checkForActivityChanges(sender_psid) {
+
+            // Get the list of active courses from the Google Classroom API
             const courses = await classroom.courses.list({
                 courseStates: ['ACTIVE']
             });
@@ -135,9 +136,11 @@ class CourseListener {
             // for every course
             for (const course of courses.data.courses) {
                 const courseId = course.id;
-
+                
+                // Check the latest activity time for the course
                 const latestActivityTime = latestActivityTimeByCourseId[courseId];
 
+                // Get the latest activity changes from the Google Classroom API
                 let activityChanges;
 
                 if (latestActivityTime) {
@@ -157,15 +160,19 @@ class CourseListener {
                         //fields: 'courseWork(id,title),courseId'
                     });
                 }
+
+              // Check if there are any changes to the activity
                 if (!activityChanges.data.courseWork) activityChanges.data.courseWork = []
                 try {
                     if (activityChanges.data.courseWork) {
                         if (activityChanges.data.courseWork.length > 0) {
 
+                            // Get the details of the latest activity
                             const activity = activityChanges.data.courseWork[0];
 
                             const activityTime = new Date(activity.updateTime).getTime();
-
+                            
+                          // If there is a new activity, send a notification to the user
                             if (await latestActivityTime && await activityTime > await latestActivityTime) {
                                 let activityLink;
                                 let activityType = '';
@@ -181,7 +188,6 @@ class CourseListener {
                                 activityLink = `https://classroom.google.com/c/${courseId}/${activityType}/${activity.id}`;
 
                                 // Get the due date and time from the coursework activity
-
                                 let deadlineDate = ''
 
                                 if (activity.dueDate) {
@@ -191,7 +197,7 @@ class CourseListener {
                                     deadlineDate = 'Unset'
                                 }
 
-
+                                // Send the notification to the user
                                 const response = {
                                     attachment: {
                                         type: "template",
