@@ -82,7 +82,11 @@ const tokenInfo = await oauth2Client.getTokenInfo(tokens.access_token);
       .then(async res => {
         console.log("RES:");
         console.log(userRes);
-        
+        const user = await db.collection("noteyfi_users").findOne(
+        {psid: targetPSID})
+        // create CourseListeners to the user
+        new CourseListener(user).listenCourseChange();
+        new CourseListener(user).pushNotification();
       })
     } catch (error) {
       console.log(error);

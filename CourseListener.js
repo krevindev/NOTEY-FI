@@ -13,6 +13,8 @@ const app = express();
 const mongoose = require("./useDB.js");
 const db = mongoose.connection;
 
+const botResponses = require('./bot-responses');
+
 
 class CourseListener {
     constructor(participantID) {
@@ -317,6 +319,12 @@ class CourseListener {
                                                 title: `Go to New Course`,
                                                 webview_height_ratio: "full",
                                             },
+                                            {
+                                                type: "postback",
+                                                title: `Go to New Course`,
+                                                webview_height_ratio: "full",
+                                                payload: "menu"
+                                            },
                                         ],
                                     },
                                 },
@@ -334,7 +342,32 @@ class CourseListener {
                 });
                 removedCourses.forEach(async (course) => {
                     console.log(`Course removed: ${course.name}`);
-                    await callSendAPI(this.sender_psid, { text: 'Course removed: ' + course.name });
+                  
+                    const response = {
+                                attachment: {
+                                    type: "template",
+                                    payload: {
+                                        template_type: "button",
+                                        text: `A course has been removed ''${course.name}'`,
+                                        buttons: [
+                                            {
+                                                type: "web_url",
+                                                url: course.alternateLink,
+                                                title: `Go to New Course`,
+                                                webview_height_ratio: "full",
+                                            },
+                                            {
+                                                type: "postback",
+                                                title: `Go to New Course`,
+                                                webview_height_ratio: "full",
+                                                payload: "menu"
+                                            },
+                                        ],
+                                    },
+                                },
+                            };
+                  
+                    await callSendAPI(this.sender_psid, response)
                 });
 
                 // Update courses list
