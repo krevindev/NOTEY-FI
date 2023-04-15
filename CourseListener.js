@@ -98,7 +98,8 @@ class CourseListener {
         }, 1000);
 
     }
-
+  
+  /*
     async pushNotification() {
         console.log('PUSH')
         const auth = new google.auth.OAuth2(
@@ -131,6 +132,8 @@ class CourseListener {
                 courseStates: ['ACTIVE']
             });
 
+          
+            // for every course
             for (const course of courses.data.courses) {
                 const courseId = course.id;
 
@@ -252,7 +255,49 @@ class CourseListener {
 
 
     }
+*/
+  async pushNotification() {
+        console.log('PUSH')
+        const auth = new google.auth.OAuth2(
+            CLIENT_ID,
+            CLIENT_SECRET,
+            REDIRECT_URI
+        );
 
+        auth.setCredentials({
+            // Replace the following with your own values
+            access_token: this.token.access_token,
+            refresh_token: this.token.refresh_token
+        });
+
+        const classroom = google.classroom({
+            version: 'v1',
+            auth: auth
+        });
+
+        // Set up a unique channel ID to use for push notifications
+        // Keep track of the latest activity time by course ID
+
+        // Keep track of the latest activity time by course ID
+        let latestActivityTimeByCourseId = {};
+        let earliestActivityTimeByCourseId = {};
+        let existingCourseworkIds = {};
+
+        async function checkForActivityChanges(sender_psid) {
+            const courses = await classroom.courses.list({
+                courseStates: ['ACTIVE']
+            });
+
+          
+            // for every course
+            
+        }
+
+
+        setInterval(() => checkForActivityChanges(this.sender_psid), 2000); // Check for activity changes every 30 seconds
+
+
+    }
 
     async listenCourseChange() {
         const auth = new google.auth.OAuth2(
