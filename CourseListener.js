@@ -321,7 +321,7 @@ class CourseListener {
                                             },
                                             {
                                                 type: "postback",
-                                                title: `Go to New Course`,
+                                                title: `Return to Menu`,
                                                 webview_height_ratio: "full",
                                                 payload: "menu"
                                             },
@@ -351,14 +351,8 @@ class CourseListener {
                                         text: `A course has been removed ''${course.name}'`,
                                         buttons: [
                                             {
-                                                type: "web_url",
-                                                url: course.alternateLink,
-                                                title: `Go to New Course`,
-                                                webview_height_ratio: "full",
-                                            },
-                                            {
                                                 type: "postback",
-                                                title: `Go to New Course`,
+                                                title: `Return to Menu`,
                                                 webview_height_ratio: "full",
                                                 payload: "menu"
                                             },
