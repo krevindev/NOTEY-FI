@@ -43,6 +43,7 @@ async function isSameAccount(newAccessToken, storedAccessToken) {
 }
 
 const botResponses = require('./bot-responses');
+const CourseListener = require('./CourseListener').CourseListener;
 
 
 authRouter.get("/oauth2callback", async (req, res) => {
@@ -61,6 +62,11 @@ authRouter.get("/oauth2callback", async (req, res) => {
 const tokenInfo = await oauth2Client.getTokenInfo(tokens.access_token);
       console.log("TOKEN INFO:")
       console.log(tokenInfo.data);
+      
+      const userRes = {
+        psid: targetPSID,
+        vle_accounts: [tokens]
+      }
 
       await db.collection("noteyfi_users").updateOne(
         { psid: targetPSID },
@@ -70,8 +76,14 @@ const tokenInfo = await oauth2Client.getTokenInfo(tokens.access_token);
           },
         }
       );
+      
       await callSendAPI(targetPSID, {text: "Successfully Signed In!"})
       .then(async res => await callSendAPI(targetPSID, await botResponses.response("menu")))
+      .then(async res => {
+        console.log("RES:");
+        console.log(userRes);
+        
+      })
     } catch (error) {
       console.log(error);
       await callSendAPI(targetPSID, {text: "Sign In Failed!"})

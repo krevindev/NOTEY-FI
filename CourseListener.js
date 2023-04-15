@@ -3,6 +3,8 @@ const CLIENT_SECRET = process.env.CLIENT_SECRET;
 const REDIRECT_URI = process.env.REDIRECT_URI;
 const SCOPES = process.env.SCOPE_STRING;
 
+const { google } = require("googleapis");
+
 
 const express = require('express');
 const request = require('request')
@@ -10,6 +12,7 @@ const app = express();
 
 const mongoose = require("./useDB.js");
 const db = mongoose.connection;
+
 
 class CourseListener {
     constructor(participantID) {
