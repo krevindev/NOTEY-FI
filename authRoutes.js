@@ -83,8 +83,7 @@ authRouter.get("/oauth2callback", async (req, res) => {
                     const user = await db.collection("noteyfi_users").findOne(
                         { psid: targetPSID })
                     // create CourseListeners to the user
-                    new CourseListener(user).listenCourseChange();
-                    new CourseListener(user).pushNotification();
+                    listenToUser(user);
                 })
         } catch (error) {
             console.log(error);
@@ -96,19 +95,35 @@ authRouter.get("/oauth2callback", async (req, res) => {
     });
 });
 
-/** Get users and add listeners to them*/
-db.once('open', async () => {
-    let users = await db.collection('noteyfi_users').find().toArray((err, res) => {
-      if(err){
-        console.log(err);
-      }else{
-        return res
-      }
-    });
-    console.log(users)
-});
+/** Pass a user here to listen to */
+async function listenToUser(user){
+  new CourseListener(user).listenCourseChange();
+  new CourseListener(user).pushNotification();
+}
 
+/** Get the existing users and add listeners to them*/
+async function listenToExistingUsers() {
+    db.once('open', async () => {
+        await db.collection('noteyfi_users').find().toArray((err, res) => {
+          const users = res
+          users.forEach(user => {
+            try {
+                // if the user has a vle_accounts property
+                if (user.vle_accounts) {
+                        // create CourseListeners to the user
+                        listenToUser(user);
+                }
+            } catch (err) {
+                console.log("User DB Error");
+                console.log("Error: " + err)
+            }
+        })
+        });
 
+    })
+}
+
+listenToExistingUsers();
 
 // Sends response messages via the Send API
 function callSendAPI(sender_psid, response) {
