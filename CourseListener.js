@@ -180,22 +180,13 @@ class CourseListener {
 
                                 // Get the due date and time from the coursework activity
 
-                                let dateTime = ''
+                                let deadlineDate = ''
 
                                 if (activity.dueDate) {
-                                    var dueDate = new Date(activity.dueDate.year, activity.dueDate.month, activity.dueDate.day);
-                                    var dueTime = new Date(activity.dueTime);
-
-                                    var formattedHour = dueTime.getHours().toLocaleString('en-US', { hour: 'long' });
-                                    var formattedMinutes = dueTime.getMinutes().toLocaleString('en-US', { minute: 'long' })
-
-                                    // Format the due date and time in a long format
-                                    var formattedDate = dueDate.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-
-                                    // Display the formatted date and time
-                                    //dateTime = `Date: ${String(formattedDate)} Time: ${String(formattedTime)}`
+                                  let deadlineDate = new Date(activity.dueDate.year, activity.dueDate.month, activity.dueDate.day).toLocaleDateString('en-US');
+                                  console.log(deadlineDate)
                                 } else {
-                                    dateTime = 'Unset'
+                                    deadlineDate = 'Unset'
                                 }
 
 
@@ -208,7 +199,7 @@ class CourseListener {
                                             \nCourse:\n${course.name}
                                             \nActivity:\n${activity.title}
                                             \n\nDESCRIPTION:\n ${activity.description}
-                                            \nDEADLINE:\n${formattedDate} at ${formattedHour}:${formattedMinutes}`,
+                                            \nDEADLINE:\n${String(deadlineDate)}`,
                                             buttons: [
                                                 {
                                                     type: "web_url",
