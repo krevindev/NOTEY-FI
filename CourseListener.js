@@ -262,11 +262,62 @@ class CourseListener {
    
     */
   
-  
-  
- 
- 
+    async pushNotification() {
+        const auth = new google.auth.OAuth2(
+            CLIENT_ID,
+            CLIENT_SECRET,
+            REDIRECT_URI
+        );
 
+        // Set the credentials for the Google Classroom API
+        auth.setCredentials({
+            access_token: this.token.access_token,
+            refresh_token: this.token.refresh_token
+        });
+
+        // Create a new Google Classroom client with the authenticated credentials
+        const classroom = google.classroom({
+            version: 'v1',
+            auth: auth
+        });
+
+        // Keep track of the latest activity time by course ID
+        let latestActivityTimeByCourseId = {};
+        let earliestActivityTimeByCourseId = {};
+        let existingCourseworkIds = {};
+
+        // Function to check for changes in activity
+        async function checkForActivityChanges(sender_psid) {
+            console.log("CHECK")
+
+            // Get the list of active courses from the Google Classroom API
+            const courses = await classroom.courses.list({
+                courseStates: ['ACTIVE']
+            });
+
+          
+            // for every course
+          for(let course of courses.data.courses){
+            const courseID = course.id;
+            
+            let activities = await classroom.courses.courseWork.list({
+                        courseId: courseID,
+                        orderBy: 'updateTime desc',
+                        pageSize: 1,
+                        pageToken: null,
+                        //fields: 'courseWork(id,title),courseId'
+                    });
+            
+            console.log(activities.data.courseWork.map(work => work.title))
+          }
+        }
+
+
+        setInterval(() => checkForActivityChanges(this.sender_psid), 2000); // Check for activity changes every 30 seconds
+
+
+    }
+   
     async listenCourseChange() {
         const auth = new google.auth.OAuth2(
             CLIENT_ID,
