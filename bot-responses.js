@@ -116,6 +116,15 @@ async function response(msg, ...sender_psid) {
           
     const attachment_url = `https://play-lh.googleusercontent.com/w0s3au7cWptVf648ChCUP7sW6uzdwGFTSTenE178Tz87K_w1P1sFwI6h1CLZUlC2Ug`
     
+    let buttons = []
+    
+    for(let i in courses.data.courses.length){
+      buttons.push({
+        type: "postback",
+        title: ""
+      })
+    }
+    
     response = {
       attachment: {
         type: "template",
@@ -127,17 +136,17 @@ async function response(msg, ...sender_psid) {
               subtitle: "Select a course from your Google Classroom account",
               image_url: attachment_url,
               buttons: await courses.data.courses.map(course => {
+                return {
                   type: "postback",
-                  title: course.name,
-                  payload: "yes"})
+                  title: "FFFF",
+                  payload: "yes"+course.id
+                }
+              })
             },
           ],
         },
       },
     };
-    response = {
-      text: 'HELLO'
-    }
   }
   else if (msg === "unsubscribe") {
     response = {
