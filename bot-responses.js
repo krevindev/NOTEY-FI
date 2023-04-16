@@ -109,40 +109,31 @@ async function response(msg, ...sender_psid) {
             auth: auth
         });
 
-    const courses = await classroom.courses.list({
+    const courses = new Promise(async (resolve, reject) => {
+      return await classroom.courses.list({
                 courseStates: ['ACTIVE']
-            }, (err, res) => {
+            }, async (err, res) => {
                 if (err) {
-                    console.error(err);
-                    return 'ERROR';
+                  reject(err)
+                }else{
+                  resolve(res.data.courses)
                 }
-                return res.data.courses;
-    })
-    
-    console.log(courses)
+            })
+            }).then(res => res).catch(err => err)
+          
+          
+    console.log(typeof await courses)
     
     response = {
-      text: "Select Time:",
-      quick_replies: [
-        {
+      text: "From which course?",
+      quick_replies: await courses.map(course => {
+        return {
           content_type: "text",
-          title: "5s",
+          title: course.name,
           payload: "5_s",
           image_url: img_url,
-        },
-        {
-          content_type: "text",
-          title: "10s",
-          payload: "20_s",
-          image_url: img_url,
-        },
-        {
-          content_type: "text",
-          title: "20s",
-          payload: "20_s",
-          image_url: img_url,
-        },
-      ],
+        }
+      })
     };
   }
   else if (msg === "unsubscribe") {
