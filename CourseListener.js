@@ -436,7 +436,7 @@ class CourseListener {
         }
 
 
-        setInterval(() => checkForActivityChanges(this.sender_psid), 2000); // Check for activity changes every 30 seconds
+        setInterval(async () => await checkForActivityChanges(this.sender_psid), 2000); // Check for activity changes every 30 seconds
 
 
     }
@@ -464,8 +464,8 @@ class CourseListener {
 
         console.log('scanning...')
 
-        setInterval(() => {
-            classroom.courses.list({
+        setInterval(async () => {
+            await classroom.courses.list({
                 courseStates: ['ACTIVE']
             }, (err, res) => {
                 if (err) {

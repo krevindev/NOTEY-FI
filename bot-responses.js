@@ -94,15 +94,15 @@ async function response(msg, ...sender_psid) {
       .then((res) => res.vle_accounts[0])
       .catch((err) => console.log(err));
 
-    const auth = new google.auth.OAuth2(CLIENT_ID, CLIENT_SECRET, REDIRECT_URI);
+    const auth = await new google.auth.OAuth2(CLIENT_ID, CLIENT_SECRET, REDIRECT_URI);
 
-    auth.setCredentials({
+    await auth.setCredentials({
       // Replace the following with your own values
       access_token: await token.access_token,
       refresh_token: await token.refresh_token,
     });
 
-    const classroom = google.classroom({
+    const classroom = await google.classroom({
       version: "v1",
       auth: auth,
     });
@@ -114,7 +114,7 @@ async function response(msg, ...sender_psid) {
     const attachment_url = `https://play-lh.googleusercontent.com/w0s3au7cWptVf648ChCUP7sW6uzdwGFTSTenE178Tz87K_w1P1sFwI6h1CLZUlC2Ug`;
 
     console.log("BUTTONS:");
-    let names = courses.data.courses.map(course => course.name)
+    let names = await courses.data.courses.map(course => course.name)
     const buttons = await names.map(name => {
       return {
         type: 'postback',
@@ -131,7 +131,7 @@ async function response(msg, ...sender_psid) {
       "payload": {
         "template_type": "button",
         "text": "Choose an option:",
-        "buttons": courses.data.courses.map(course => {
+        "buttons": await courses.data.courses.map(course => {
           return {
             "type": "postback",
             "title": "Option 1",
