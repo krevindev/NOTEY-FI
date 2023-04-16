@@ -267,8 +267,8 @@ async function response(msg, ...sender_psid) {
         buttons: filteredCourses.map(course => {
         return {
             type: 'postback',
-            title: course.name.substring(0,20),
-            payload: `rem_sc:${course.id}`
+            title: course.name.substring(0,15),
+            payload: `rem_sc:`
           }
       })
       }
