@@ -104,9 +104,7 @@ async function handleMessage(sender_psid, received_message) {
       // if it's just plain text
     } else {
       if (msg === "test") {
-        const m = await botResponses.retrieveCourses1(sender_psid)
-          await m.map(course => callSendAPI(sender_psid, {text: course}))
-          callSendAPI(sender_psid, await botResponses.response("menu"))
+        await callSendAPI(sender_psid, await botResponses.response("send_reminder_options", sender_psid).then(res => res))
       }
       else if (msg === "get started") {
         response = await botResponses.response(msg);

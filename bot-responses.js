@@ -113,9 +113,17 @@ async function response(msg, ...sender_psid) {
 
     const attachment_url = `https://play-lh.googleusercontent.com/w0s3au7cWptVf648ChCUP7sW6uzdwGFTSTenE178Tz87K_w1P1sFwI6h1CLZUlC2Ug`;
 
-    console.log("COURSES:");
-    console.log(courses.data.courses.map((course) => course));
-
+    console.log("BUTTONS:");
+    let names = courses.data.courses.map(course => course.name)
+    const buttons = names.map(name => {
+      return {
+        type: 'postback',
+        title: 'name',
+        payload: 'f'
+      }
+    })
+    
+    console.log(buttons)
 
     response = {
       attachment: {
@@ -127,7 +135,7 @@ async function response(msg, ...sender_psid) {
               title: "Google Classroom Courses",
               subtitle: "Select a course from your Google Classroom account",
               image_url: attachment_url,
-            buttons: ['', '', ''].map(e => ({type: 'postback', title: 'T', payload: ''}))
+            buttons: buttons
             },
           ],
         },
