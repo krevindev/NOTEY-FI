@@ -115,7 +115,8 @@ async function response(msg, ...sender_psid) {
           
           
     console.log(await courses.data.courses.map(course => course.name))
-  
+    
+    const attachment_url = `https://play-lh.googleusercontent.com/w0s3au7cWptVf648ChCUP7sW6uzdwGFTSTenE178Tz87K_w1P1sFwI6h1CLZUlC2Ug`
     
     response = {
       attachment: {
@@ -124,9 +125,9 @@ async function response(msg, ...sender_psid) {
           template_type: "generic",
           elements: [
             {
-              title: "Is this the right picture?",
-              subtitle: "Tap a button to answer.",
-              //image_url: attachment_url,
+              title: "Google Classroom Courses",
+              subtitle: "Select a course from your Google Classroom account",
+              image_url: attachment_url,
               buttons: await courses.data.courses.map(course => {
                 return {
                   type: "postback",
@@ -257,7 +258,7 @@ async function response(msg, ...sender_psid) {
     };
   }
 
-  return response;
+  return await response;
 }
 
 /** Bot Actions */
