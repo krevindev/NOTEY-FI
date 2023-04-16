@@ -76,7 +76,8 @@ async function response(msg, ...sender_psid) {
         },
       ],
     };
-  } else if (msg.split(":")[0] === "reminder_selected_course") {
+    // selected a course for reminder
+  } else if (msg.split(":")[0] == "rem_sc") {
     const courseID = msg.split(":")[1];
 
     const user = async () => {
@@ -266,7 +267,7 @@ async function response(msg, ...sender_psid) {
         buttons: filteredCourses.map(course => {
         return {
             type: 'postback',
-            title: course.name.substring(0,5),
+            title: course.name.substring(0,15),
             payload: `rem_sc:${course.id}`
           }
       })
