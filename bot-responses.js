@@ -193,9 +193,8 @@ async function response(msg, ...sender_psid) {
 
     const attachment_url = `https://play-lh.googleusercontent.com/w0s3au7cWptVf648ChCUP7sW6uzdwGFTSTenE178Tz87K_w1P1sFwI6h1CLZUlC2Ug`;
     
-    const filteredCoursesBtns = await courses
-        .filter(async (course) => {
-          let courseActivities = await classroom.courses.courseWork.list({
+    const filteredCourses = await courses.filter(async course => {
+      let courseActivities = await classroom.courses.courseWork.list({
             courseId: course.id,
             orderBy: "updateTime desc",
             pageToken: null,
@@ -210,22 +209,20 @@ async function response(msg, ...sender_psid) {
           console.log(courseActivities.map(ca => ca.title))
           // return only the courseActivities with one or more length
           return (await courseActivities.length >= 1);
-        })
-        .map((course) => {
-          return {
-            content_type: "text",
-            title: course.name,
-            payload: `reminder_selected_course:${course.id}`,
-          };
-        })
+    });
+    
+    console.log(filteredCourses)
+    
+    /**/
     
     console.log("FILTERED BUTTONS:")
     console.log(filteredCoursesBtns.map(btn => btn))
+ 
 
     
     response = {
       text: "From which course?",
-      quick_replies: filteredCoursesBtns,
+      quick_replies: filteredCoursesBtns
     };
 
     return response;
