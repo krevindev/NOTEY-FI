@@ -336,22 +336,22 @@ class CourseListener {
                 // Get the due date and time from the coursework activity
                 let deadlineDate = '';
                 
-                const dueDT = {
-                  year: activity.dueDate.year,
-                  month: activity.dueDate.month,
-                }
+                const dueDate = activity.dueDate;
+                const dueTime = activity.dueTime;
+                
 
                 if (activity.dueDate) {
-                  deadlineDate = new Date(activity.dueDate.year, activity.dueDate.month, activity.dueDate.day).toLocaleDateString('en-US', { 
-                                                                                                                      weekday: 'long',
-                                                                                                                      year: 'numeric', 
-                                                                                                                      month: 'long', 
-                                                                                                                      day: 'numeric', 
-                                                                                                                      hour: 'numeric', 
-                                                                                                                      minute: 'numeric', 
-                                                                                                                      second: 'numeric',
-                                                                                                                      timeZone: 'UTC' 
-                                                                                                                    });
+                  deadlineDate = new Date(dueDate.year, dueDate.month-1, dueDate.day, (dueTime)?dueTime.hours:12, (dueTime)?dueTime.minutes:0)
+                    .toLocaleDateString('en-US', { 
+                      weekday: 'long',
+                      year: 'numeric', 
+                      month: 'long', 
+                      day: 'numeric', 
+                      hour: 'numeric', 
+                      minute: 'numeric', 
+                      second: 'numeric',
+                      timeZone: 'UTC' 
+                    });
                   console.log("DEADLINE: "+deadlineDate)
                 } else {
                     deadlineDate = 'Unset'
@@ -366,8 +366,8 @@ class CourseListener {
                             text: `NEW ACTIVITY ADDED!
                             \nCourse:\n${course.name}
                             \nActivity:\n${activity.title}
-                            \n\nDESCRIPTION:\n ${activity.description}
-                            \nDEADLINE:\n'${deadlineDate}''`,
+                            ${(activity.description) && `\n\nDESCRIPTION:\n ${activity.description}`}
+                            \nDEADLINE:\n${deadlineDate}`,
                             buttons: [
                                 {
                                     type: "web_url",
