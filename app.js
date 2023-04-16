@@ -244,7 +244,7 @@ async function handleQuickReplies(sender_psid, received_payload) {
     ).then(async () => await callSendAPI(sender_psid, { text: "Signing in..." }));
   } else {
     callSendAPI(sender_psid, {
-      text: "For some reason, that's an unknown postback",
+      text: "For some reason, that's an unknown payload",
     }).then(
       async () =>
         await callSendAPI(sender_psid, await botResponses.response("menu"))

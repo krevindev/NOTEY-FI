@@ -135,7 +135,7 @@ async function response(msg, ...sender_psid) {
       return {
           type: "postback",
           title: courseAct.title,
-          payload: `reminder_selected_act:${courseAct.id}`,
+          payload: `rem_sc:${courseAct.id}`,
         };
     })
     
