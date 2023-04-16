@@ -107,38 +107,24 @@ async function response(msg, ...sender_psid) {
       auth: auth,
     });
 
-    const courses = await classroom.courses.list({
+    let courses = await classroom.courses.list({
       courseStates: ["ACTIVE"],
     });
     
+    courses = courses.data.courses;
+    
     const attachment_url = `https://play-lh.googleusercontent.com/w0s3au7cWptVf648ChCUP7sW6uzdwGFTSTenE178Tz87K_w1P1sFwI6h1CLZUlC2Ug`;
 
-    console.log("BUTTONS:");
-    const courseButtons = await courses.data.courses.map(course => {
-        return {
-          type: 'postback',
-          title: course.name,
-          payload: `reminder_course_selected:${course.id}`
-        }
-    });
-    
-    await courseButtons.push({
-      type: 'postback',
-      title: 'Cancel',
-      payload: 'menu'
-    })
-    console.log(courseButtons)
-
     response = {
-      attachment: {
-      "type": "template",
-      "payload": {
-        "template_type": "button",
-        "text": "From which course:",
-        "buttons": courseButtons
+        text: 'From which course?',
+        quick_replies: await courses.map(course => {
+          return {
+            content_type: 'text',
+            title: course.name,
+            payload: `reminder_selected_course:${course.id}`
+          }
+        })
       }
-      },
-    };
     
     return response
   } else if (msg === "unsubscribe") {

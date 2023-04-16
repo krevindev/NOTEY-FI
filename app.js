@@ -164,7 +164,10 @@ app.post('/notifications', (req, res) => {
 async function handleQuickReplies(sender_psid, received_payload) {
   let response;
 
-  if (["5_s", "10_s", "20_s"].includes(received_payload)){
+  if (received_payload.split(':')[0] === 'reminder_selected_course'){
+    
+  }
+  else if (["5_s", "10_s", "20_s"].includes(received_payload)){
     console.log("EXECUTED")
     const time = received_payload.split('_')[0];
     
