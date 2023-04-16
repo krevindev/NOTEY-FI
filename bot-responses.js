@@ -259,21 +259,21 @@ async function response(msg, ...sender_psid) {
 
       /* Buttons*/
       const message = {
-    attachment: {
-      type: 'template',
-      payload: {
-        template_type: 'button',
-        text: 'Please select a course:',
-        buttons: filteredCourses.map(course => {
-        return {
-            type: 'postback',
-            title: course.name.substring(0,15),
-            payload: `rem_sc:`
-          }
-      })
+      attachment: {
+        type: 'template',
+        payload: {
+          template_type: 'button',
+          text: 'From which course?',
+          buttons: filteredCourses.map(course => {
+          return {
+              type: 'postback',
+              title: course.name.substring(0,20),
+              payload: `rem_sc:${course.id}`
+            }
+        })
+        }
       }
-    }
-  };
+    };
     
     response = {
       text: "From which course?",
@@ -286,7 +286,7 @@ async function response(msg, ...sender_psid) {
       })//filteredCoursesBtns
     };
 
-    return message;
+    return response;
   } else if (msg === "unsubscribe") {
     response = {
       text: "Unsubscribe:",
