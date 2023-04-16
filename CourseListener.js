@@ -98,7 +98,7 @@ class CourseListener {
         }, 1000);
 
     }
-  
+  /*
     async pushNotification() {
         console.log('PUSH')
         const auth = new google.auth.OAuth2(
@@ -260,7 +260,113 @@ class CourseListener {
 
 
     }
+  */
+   async pushNotification() {
+        console.log('PUSH')
+        const auth = new google.auth.OAuth2(
+            CLIENT_ID,
+            CLIENT_SECRET,
+            REDIRECT_URI
+        );
+
+        // Set the credentials for the Google Classroom API
+        auth.setCredentials({
+            access_token: this.token.access_token,
+            refresh_token: this.token.refresh_token
+        });
+
+        // Create a new Google Classroom client with the authenticated credentials
+        const classroom = google.classroom({
+            version: 'v1',
+            auth: auth
+        });
+
+        // Keep track of the latest activity time by course ID
+        let latestActivityTimeByCourseId = {};
+        let earliestActivityTimeByCourseId = {};
+        let existingCourseworkIds = {};
+
+        // Function to check for changes in activity
+        async function checkForActivityChanges(sender_psid) {
+    // Get the list of active courses from the Google Classroom API
+    const courses = await classroom.courses.list({
+        courseStates: ['ACTIVE']
+    });
+
+    // for every course
+    for (const course of courses.data.courses) {
+        const courseId = course.id;
+
+        // Check the latest activity time for the course
+        let latestActivityTime = latestActivityTimeByCourseId[courseId];
+        if (latestActivityTime === undefined) {
+            // There is no latest activity time for this course, set it to null
+            latestActivityTime = null;
+        }
+      
+        let existingCourseworkIds = new Set();
+
+
+        let activityChanges;
+
+        if (latestActivityTime) {
+            activityChanges = await classroom.courses.courseWork.list({
+                courseId: courseId,
+                orderBy: 'updateTime desc',
+                pageSize: 1,
+                pageToken: null,
+            });
+        } else {
+            activityChanges = await classroom.courses.courseWork.list({
+                courseId: courseId,
+                orderBy: 'updateTime desc',
+                pageSize: 1,
+                pageToken: null,
+            });
+        }
+
+        // Filter out the already existing courseWorks
+        activityChanges.data.courseWork = activityChanges.data.courseWork.filter(courseWork => !existingCourseworkIds.has(courseWork.id));
+        
+
+        // Check if there are any changes to the activity
+        if (!activityChanges.data.courseWork) activityChanges.data.courseWork = []
+        try {
+            if (activityChanges.data.courseWork) {
+                if (activityChanges.data.courseWork.length > 0) {
+
+                    // Get the details of the latest activity
+                    const activity = activityChanges.data.courseWork[0];
+                    const activityTime = new Date(activity.updateTime).getTime();
+                  
+                  if (await latestActivityTime && await activityTime > await latestActivityTime) {
+                        // Add the newly retrieved courseWork ID to the set
+                        existingCourseworkIds.add(activity.id);
+                      console.log("NEW ACTIVITY")
+
+                        // ... The rest of the code
+                    }
+
+
+                    latestActivityTimeByCourseId[courseId] = activityTime;
+                }
+            } else {
+                console.log("No Work");
+            }
+        } catch (err) {
+            console.error(`Error retrieving activity changes for course ${course.name}: ${err}`);
+        }
+    }
+}
+
+
+
+        setInterval(() => checkForActivityChanges(this.sender_psid), 2000); // Check for activity changes every 30 seconds
+
+
+    }
   
+ 
  
 
     async listenCourseChange() {
