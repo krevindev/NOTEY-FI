@@ -190,7 +190,11 @@ async function handleQuickReplies(sender_psid, received_payload) {
     
   }
   else if (received_payload === "set_reminder"){
-    callSendAPI(sender_psid, await botResponses.response("send_reminder_options", sender_psid))
+    
+    console.log("SENDINGGGG:")
+    console.log(await botResponses.response("send_reminder_options", sender_psid).attachment.payload.elements)
+    
+    await callSendAPI(sender_psid, await botResponses.response("send_reminder_options", sender_psid))
   }
   else if (received_payload === "view_google_courses") {
         const m = await botResponses.retrieveCourses1(sender_psid)

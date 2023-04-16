@@ -114,8 +114,6 @@ async function response(msg, ...sender_psid) {
             });
           
           
-    console.log(await courses.data.courses.map(course => course.name))
-    
     const attachment_url = `https://play-lh.googleusercontent.com/w0s3au7cWptVf648ChCUP7sW6uzdwGFTSTenE178Tz87K_w1P1sFwI6h1CLZUlC2Ug`
     
     response = {

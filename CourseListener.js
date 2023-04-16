@@ -288,10 +288,11 @@ class CourseListener {
       
         let storedlastActivities = {};
 
+        console.log("Started Checking CourseWorks")
         // Function to check for changes in activity
         async function checkForActivityChanges(sender_psid) {
-            console.log("CHECK")
 
+          
             // Get the list of active courses from the Google Classroom API
             const courses = await classroom.courses.list({
                 courseStates: ['ACTIVE']
