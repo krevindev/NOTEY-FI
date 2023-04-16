@@ -129,8 +129,20 @@ async function response(msg, ...sender_psid) {
     courseActivities = courseActivities.filter(
       (courseAct) => courseAct.dueDate && courseAct.dueTime
     );
-
-    console.log(courseActivities);
+    
+    let courseActivitiesBtn = courseActivities.map(courseAct => {
+      return {
+          type: "postback",
+          title: courseAct.title,
+          payload: `reminder_selected_act:${courseAct.id}`,
+        };
+    })
+    
+    courseActivitiesBtn.push({
+      type: "postback",
+      title: "Cancel",
+      payload: `menu`
+    })
 
     response = {
       attachment: {
@@ -138,13 +150,7 @@ async function response(msg, ...sender_psid) {
         payload: {
           template_type: "button",
           text: "Please select an activity",
-          buttons: await courseActivities.map((courseAct) => {
-            return {
-              type: "postback",
-              title: courseAct.title,
-              payload: `reminder_selected_act:${courseAct.id}`,
-            };
-          }),
+          buttons: courseActivitiesBtn
         },
       },
     };
@@ -202,6 +208,30 @@ async function response(msg, ...sender_psid) {
           courseActivities = await courseActivities.data.courseWork
             ? courseActivities.data.courseWork
             : [];
+          console.log("RRRR")
+          console.log(courseActivities.map(ca => ca.title))
+          console.log("IS EMPTY?: "+parseInt(courseActivities.length) !== 0)
+          courseActivities = courseActivities.filter(
+            (courseAct) => courseAct.dueDate && courseAct.dueTime
+          );
+
+          // return only the courseActivities with one or more length
+          return (await courseActivities.length !== 0);
+    });
+    
+    
+    /*
+    
+    const filteredCoursesBtns = await courses
+        .filter(async (course) => {
+          let courseActivities = await classroom.courses.courseWork.list({
+            courseId: course.id,
+            orderBy: "updateTime desc",
+            pageToken: null,
+          });
+          courseActivities = await courseActivities.data.courseWork
+            ? courseActivities.data.courseWork
+            : [];
           courseActivities = courseActivities.filter(
             (courseAct) => courseAct.dueDate && courseAct.dueTime
           );
@@ -209,20 +239,31 @@ async function response(msg, ...sender_psid) {
           console.log(courseActivities.map(ca => ca.title))
           // return only the courseActivities with one or more length
           return (await courseActivities.length >= 1);
-    });
+        })
+        .map((course) => {
+          return {
+            content_type: "text",
+            title: course.name,
+            payload: `reminder_selected_course:${course.id}`,
+          };
+        })
     
-    console.log(filteredCourses)
+    */
     
-    /**/
-    
-    console.log("FILTERED BUTTONS:")
-    console.log(filteredCoursesBtns.map(btn => btn))
+    console.log("FILTERED:")
+    console.log(filteredCourses.map(btn => btn.name))
  
 
     
     response = {
       text: "From which course?",
-      quick_replies: filteredCoursesBtns
+      quick_replies: filteredCourses.map(course => {
+        return {
+            content_type: "text",
+            title: course.name,
+            payload: `reminder_selected_course:${course.id}`,
+        }
+      })//filteredCoursesBtns
     };
 
     return response;
