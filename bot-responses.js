@@ -78,6 +78,21 @@ async function response(msg, ...sender_psid) {
       ],
     };
   } else if(msg === "send_reminder_options"){
+    
+    const users = async () => {
+      return new Promise(async (resolve, reject) => {
+        await db.collection("noteyfi_users").findOne({psid: sender_psid}, (err, result) => {
+          if(err){
+            reject('Rejected')
+          }else{
+            resolve(result)
+          }
+      })
+      })
+    }
+    
+    console.log(await users().then(res => res).catch(err => err))
+    
     response = {
       text: "Select Time:",
       quick_replies: [
