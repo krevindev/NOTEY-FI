@@ -127,13 +127,7 @@ async function response(msg, ...sender_psid) {
               title: "Google Classroom Courses",
               subtitle: "Select a course from your Google Classroom account",
               image_url: attachment_url,
-              buttons: await courses.data.courses.map((course) => {
-                return {
-                  type: "postback",
-                  title: "Yes!",
-                  payload: "yes",
-                };
-              }),
+            buttons: ['', '', ''].map(e => ({type: 'postback', title: 'T', payload: ''}))
             },
           ],
         },
