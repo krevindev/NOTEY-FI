@@ -339,9 +339,12 @@ class CourseListener {
                 const dueDate = activity.dueDate;
                 const dueTime = activity.dueTime;
                 
+                console.log("DDDDDDDDDDDDDDDDD:")
+                console.log(dueDate)
+                console.log(dueTime)
 
                 if (activity.dueDate) {
-                  deadlineDate = new Date(dueDate.year, dueDate.month-1, dueDate.day, (dueTime)?dueTime.hours:12, (dueTime)?dueTime.minutes:0)
+                  deadlineDate = new Date(dueDate.year, dueDate.month-1, dueDate.day, (dueTime)?(dueTime.hours > 12)? dueTime.hours - 12:dueTime.hours:12, (dueTime)?dueTime.minutes:0)
                     .toLocaleDateString('en-US', { 
                       weekday: 'long',
                       year: 'numeric', 
@@ -350,7 +353,7 @@ class CourseListener {
                       hour: 'numeric', 
                       minute: 'numeric', 
                       second: 'numeric',
-                      timeZone: 'UTC' 
+                      timeZone: 'Asia/Manila' 
                     });
                   console.log("DEADLINE: "+deadlineDate)
                 } else {
@@ -366,7 +369,7 @@ class CourseListener {
                             text: `NEW ACTIVITY ADDED!
                             \nCourse:\n${course.name}
                             \nActivity:\n${activity.title}
-                            ${(activity.description) && `\n\nDESCRIPTION:\n ${activity.description}`}
+                            ${(activity.description)? `\n\nDESCRIPTION:\n ${activity.description}`:''}
                             \nDEADLINE:\n${deadlineDate}`,
                             buttons: [
                                 {
