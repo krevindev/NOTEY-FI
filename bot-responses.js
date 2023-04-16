@@ -76,10 +76,7 @@ async function response(msg, ...sender_psid) {
         },
       ],
     };
-  } 
-  
-  
-  else if (msg.split(":")[0] === "reminder_selected_course") {
+  } else if (msg.split(":")[0] === "reminder_selected_course") {
     const courseID = msg.split(":")[1];
 
     const user = async () => {
@@ -122,40 +119,38 @@ async function response(msg, ...sender_psid) {
 
     let courseActivities = await classroom.courses.courseWork.list({
       courseId: courseID,
-      orderBy: 'updateTime desc',
+      orderBy: "updateTime desc",
       pageToken: null,
     });
-    
-    courseActivities = (courseActivities.data.courseWork)?courseActivities.data.courseWork:[];
-    courseActivities = courseActivities.filter(courseAct => (courseAct.dueDate && courseAct.dueTime))
-    
-    console.log(courseActivities)
-    
+
+    courseActivities = courseActivities.data.courseWork
+      ? courseActivities.data.courseWork
+      : [];
+    courseActivities = courseActivities.filter(
+      (courseAct) => courseAct.dueDate && courseAct.dueTime
+    );
+
+    console.log(courseActivities);
+
     response = {
-        "attachment": {
-          "type": "template",
-          "payload": {
-            "template_type": "button",
-            "text": "Please select an activity",
-            "buttons": 
-              await courseActivities.map(courseAct => {
-                return {
-                  type: "postback",
-                  title: courseAct.title,
-                  payload: `reminder_selected_act:${courseAct.id}`
-                }
-              })
-          }
-        }
-      }
+      attachment: {
+        type: "template",
+        payload: {
+          template_type: "button",
+          text: "Please select an activity",
+          buttons: await courseActivities.map((courseAct) => {
+            return {
+              type: "postback",
+              title: courseAct.title,
+              payload: `reminder_selected_act:${courseAct.id}`,
+            };
+          }),
+        },
+      },
+    };
 
     return response;
-  }
-  
-  
-  
-  
-  else if (msg === "send_reminder_options[course]") {
+  } else if (msg === "send_reminder_options[course]") {
     const user = async () => {
       return new Promise(async (resolve, reject) => {
         await db
@@ -197,29 +192,38 @@ async function response(msg, ...sender_psid) {
     courses = courses.data.courses;
 
     const attachment_url = `https://play-lh.googleusercontent.com/w0s3au7cWptVf648ChCUP7sW6uzdwGFTSTenE178Tz87K_w1P1sFwI6h1CLZUlC2Ug`;
+    
+    const filteredCoursesBtns = await courses
+        .filter(async (course) => {
+          let courseActivities = await classroom.courses.courseWork.list({
+            courseId: course.id,
+            orderBy: "updateTime desc",
+            pageToken: null,
+          });
+          courseActivities = await courseActivities.data.courseWork
+            ? courseActivities.data.courseWork
+            : [];
+          courseActivities = courseActivities.filter(
+            (courseAct) => courseAct.dueDate && courseAct.dueTime
+          );
 
+          console.log(courseActivities.map(ca => ca.title))
+          // return only the courseActivities with one or more length
+          return (await courseActivities.length) >= 1;
+        })
+        .map((course) => {
+          return {
+            content_type: "text",
+            title: course.name,
+            payload: `reminder_selected_course:${course.id}`,
+          };
+        })
+
+    
     response = {
       text: "From which course?",
-      quick_replies: await courses.filter(async course => {
-        let courseActivities = await classroom.courses.courseWork.list({
-            courseId: course.id,
-            orderBy: 'updateTime desc',
-            pageToken: null,
-        });
-        courseActivities = (courseActivities.data.courseWork)?courseActivities.data.courseWork:[];
-        courseActivities = courseActivities.filter(courseAct => (courseAct.dueDate && courseAct.dueTime))
-        
-        return (await courseActivities && await courseActivities.length <= 0)
-        
-      }).map((course) => {
-        return {
-          content_type: "text",
-          title: course.name,
-          payload: `reminder_selected_course:${course.id}`,
-        };
-      }),
+      quick_replies: filteredCoursesBtns,
     };
-  
 
     return response;
   } else if (msg === "unsubscribe") {
@@ -368,7 +372,7 @@ async function subscribe(sender_psid, db) {
     db.collection("noteyfi_users").findOne(body, async (err, result) => {
       if (result == null) {
         resolve(
-          db.collection("noteyfi_users").insertOne(body, (err, result) => {})
+          db.collection("noteyfi_users").insertOne(body, (err, result) => { })
         );
       } else {
         reject("Existing");
