@@ -256,19 +256,35 @@ async function response(msg, ...sender_psid) {
     console.log(filteredCourses.map(btn => btn.name))
  
 
+      const message = {
+    attachment: {
+      type: 'template',
+      payload: {
+        template_type: 'button',
+        text: 'Please select a course:',
+        buttons: filteredCourses.map(course => {
+        return {
+            type: 'postback',
+            title: course.name.substring(0,15),
+            payload: `reminder_selected_course:${course.id}`
+          }
+      })
+      }
+    }
+  };
     
     response = {
       text: "From which course?",
       quick_replies: filteredCourses.map(course => {
         return {
             content_type: "text",
-            title: course.name,
+            title: course.name.substring(0, 15),
             payload: `reminder_selected_course:${course.id}`,
         }
       })//filteredCoursesBtns
     };
 
-    return response;
+    return message;
   } else if (msg === "unsubscribe") {
     response = {
       text: "Unsubscribe:",
