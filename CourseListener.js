@@ -326,7 +326,7 @@ class CourseListener {
         }
 
         // Filter out the already existing courseWorks
-        activityChanges.data.courseWork = activityChanges.data.courseWork.filter(courseWork => !existingCourseworkIds.has(courseWork.id));
+        activityChanges.data.courseWork = (activityChanges.data.courseWork.length > 0)?activityChanges.data.courseWork.filter(courseWork => !existingCourseworkIds.has(courseWork.id)):[];
         
 
         // Check if there are any changes to the activity
@@ -342,7 +342,7 @@ class CourseListener {
                   if (await latestActivityTime && await activityTime > await latestActivityTime) {
                         // Add the newly retrieved courseWork ID to the set
                         existingCourseworkIds.add(activity.id);
-                      console.log("NEW ACTIVITY")
+                        console.log("NEW ACTIVITY")
 
                         // ... The rest of the code
                     }
