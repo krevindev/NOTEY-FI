@@ -110,30 +110,16 @@ async function response(msg, ...sender_psid) {
     const courses = await classroom.courses.list({
       courseStates: ["ACTIVE"],
     });
-
+    
     const attachment_url = `https://play-lh.googleusercontent.com/w0s3au7cWptVf648ChCUP7sW6uzdwGFTSTenE178Tz87K_w1P1sFwI6h1CLZUlC2Ug`;
 
     console.log("BUTTONS:");
-    let names = await courses.data.courses.map(course => course.name)
-    const buttons = await names.map(name => {
-      return {
-        type: 'postback',
-        title: name,
-        payload: 'f'
-      }
-    })
-    
-    console.log(buttons)
-    
-    const courseButtons = []
-    await courses.data.courses.forEach(course => {
-      if(course.name.length <= 5){
-        courseButtons.push( {
+    const courseButtons = await courses.data.courses.map(course => {
+        return {
           type: 'postback',
           title: course.name,
           payload: `reminder_course_selected:${course.id}`
-        })
-      }
+        }
     });
     
     await courseButtons.push({
@@ -141,6 +127,7 @@ async function response(msg, ...sender_psid) {
       title: 'Cancel',
       payload: 'menu'
     })
+    console.log(courseButtons)
 
     response = {
       attachment: {
@@ -153,8 +140,7 @@ async function response(msg, ...sender_psid) {
       },
     };
     
-    console.log("RESPONSE:")
-    console.log(response)
+    return response
   } else if (msg === "unsubscribe") {
     response = {
       text: "Unsubscribe:",
