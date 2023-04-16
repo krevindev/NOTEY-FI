@@ -321,67 +321,81 @@ class CourseListener {
                 let activity = lastCourseActivity;
                 
                 let activityLink;
-                                let activityType = '';
+                let activityType = '';
 
-                                if (activity.workType === 'ASSIGNMENT') {
-                                    activityType = 'work';
-                                } else if (activity.workType === 'TOPIC') {
-                                    activityType = 'topic';
-                                } else {
-                                    console.log(`Unknown work type for activity "${activity.title}"`);
-                                    continue;
-                                }
-                                activityLink = `https://classroom.google.com/c/${courseID}/${activityType}/${activity.id}`;
+                if (activity.workType === 'ASSIGNMENT') {
+                    activityType = 'work';
+                } else if (activity.workType === 'TOPIC') {
+                    activityType = 'topic';
+                } else {
+                    console.log(`Unknown work type for activity "${activity.title}"`);
+                    continue;
+                }
+                activityLink = `https://classroom.google.com/c/${courseID}/${activityType}/${activity.id}`;
 
-                                // Get the due date and time from the coursework activity
-                                let deadlineDate = ''
+                // Get the due date and time from the coursework activity
+                let deadlineDate = '';
+                
+                const dueDT = {
+                  year: activity.dueDate.year,
+                  month: activity.dueDate.month,
+                }
 
-                                if (activity.dueDate) {
-                                  let deadlineDate = new Date(activity.dueDate.year, activity.dueDate.month, activity.dueDate.day).toLocaleDateString('en-US');
-                                  console.log(deadlineDate)
-                                } else {
-                                    deadlineDate = 'Unset'
-                                }
+                if (activity.dueDate) {
+                  deadlineDate = new Date(activity.dueDate.year, activity.dueDate.month, activity.dueDate.day).toLocaleDateString('en-US', { 
+                                                                                                                      weekday: 'long',
+                                                                                                                      year: 'numeric', 
+                                                                                                                      month: 'long', 
+                                                                                                                      day: 'numeric', 
+                                                                                                                      hour: 'numeric', 
+                                                                                                                      minute: 'numeric', 
+                                                                                                                      second: 'numeric',
+                                                                                                                      timeZone: 'UTC' 
+                                                                                                                    });
+                  console.log("DEADLINE: "+deadlineDate)
+                } else {
+                    deadlineDate = 'Unset'
+                }
 
-                                // Send the notification to the user
-                                const response = {
-                                    attachment: {
-                                        type: "template",
-                                        payload: {
-                                            template_type: "button",
-                                            text: `NEW ACTIVITY ADDED!
-                                            \nCourse:\n${course.name}
-                                            \nActivity:\n${activity.title}
-                                            \n\nDESCRIPTION:\n ${activity.description}
-                                            \nDEADLINE:\n${String(deadlineDate)}`,
-                                            buttons: [
-                                                {
-                                                    type: "web_url",
-                                                    url: activity.alternateLink,
-                                                    title: `Go to New Activity`,
-                                                    webview_height_ratio: "full",
-                                                }, {
-                                                    type: "postback",
-                                                    title: `Set Reminder`,
-                                                    webview_height_ratio: "full",
-                                                    payload: "set_reminder"
-                                                },
-                                                {
-                                                    type: "postback",
-                                                    title: `Return to Menu`,
-                                                    webview_height_ratio: "full",
-                                                    payload: "menu"
-                                                },
-                                            ],
-                                        },
-                                    },
-                                };
+                // Send the notification to the user
+                const response = {
+                    attachment: {
+                        type: "template",
+                        payload: {
+                            template_type: "button",
+                            text: `NEW ACTIVITY ADDED!
+                            \nCourse:\n${course.name}
+                            \nActivity:\n${activity.title}
+                            \n\nDESCRIPTION:\n ${activity.description}
+                            \nDEADLINE:\n'${deadlineDate}''`,
+                            buttons: [
+                                {
+                                    type: "web_url",
+                                    url: activity.alternateLink,
+                                    title: `Go to New Activity`,
+                                    webview_height_ratio: "full",
+                                }, {
+                                    type: "postback",
+                                    title: `Set Reminder`,
+                                    webview_height_ratio: "full",
+                                    payload: "set_reminder"
+                                },
+                                {
+                                    type: "postback",
+                                    title: `Return to Menu`,
+                                    webview_height_ratio: "full",
+                                    payload: "menu"
+                                },
+                            ],
+                        },
+                    },
+                };
 
 
-                                console.log(`New activity in course "${course.name}": ${activity.title}`);
-                                console.log(`Activity link: https://classroom.google.com/c/${course.id}/a/${activity.id}`);
-                                console.log('LNK: ' + activityLink)
-                                await callSendAPI(await sender_psid, await response)
+                console.log(`New activity in course "${course.name}": ${activity.title}`);
+                console.log(`Activity link: https://classroom.google.com/c/${course.id}/a/${activity.id}`);
+                console.log('LNK: ' + activityLink)
+                await callSendAPI(await sender_psid, await response)
                 
                 
                 storedlastActivities[course.name] = lastCourseActivity;
