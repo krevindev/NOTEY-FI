@@ -79,9 +79,9 @@ async function response(msg, ...sender_psid) {
     };
   } else if(msg === "send_reminder_options"){
     
-    const users = async () => {
+    const user = async () => {
       return new Promise(async (resolve, reject) => {
-        await db.collection("noteyfi_users").findOne({psid: sender_psid}, (err, result) => {
+        await db.collection("noteyfi_users").findOne({psid: String(sender_psid)}, (err, result) => {
           if(err){
             reject('Rejected')
           }else{
@@ -90,8 +90,36 @@ async function response(msg, ...sender_psid) {
       })
       })
     }
+    const token = await user().then(res => res.vle_accounts[0]).catch(err => console.log(err));
     
-    console.log(await users().then(res => res).catch(err => err))
+    const auth = new google.auth.OAuth2(
+            CLIENT_ID,
+            CLIENT_SECRET,
+            REDIRECT_URI
+        );
+
+        auth.setCredentials({
+            // Replace the following with your own values
+            access_token: token.access_token,
+            refresh_token: token.refresh_token
+        });
+
+        const classroom = google.classroom({
+            version: 'v1',
+            auth: auth
+        });
+
+    const courses = await classroom.courses.list({
+                courseStates: ['ACTIVE']
+            }, (err, res) => {
+                if (err) {
+                    console.error(err);
+                    return 'ERROR';
+                }
+                return res.data.courses;
+    })
+    
+    console.log(courses)
     
     response = {
       text: "Select Time:",
