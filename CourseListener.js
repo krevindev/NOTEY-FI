@@ -334,7 +334,9 @@ class CourseListener {
                 activityLink = `https://classroom.google.com/c/${courseID}/${activityType}/${activity.id}`;
 
                 // Get the due date and time from the coursework activity
-                let deadlineDate = '';
+                let deadlineDate;
+                let deadlineDateString;
+                let reminderDate = new Date();
                 
                 const dueDate = activity.dueDate;
                 const dueTime = activity.dueTime;
@@ -345,7 +347,7 @@ class CourseListener {
 
                 if (activity.dueDate) {
                   deadlineDate = new Date(dueDate.year, dueDate.month-1, dueDate.day, (dueTime)?(dueTime.hours > 12)? dueTime.hours - 12:dueTime.hours:12, (dueTime)?dueTime.minutes:0)
-                    .toLocaleDateString('en-US', { 
+                  deadlineDateString = deadlineDate.toLocaleDateString('en-US', { 
                       weekday: 'long',
                       year: 'numeric', 
                       month: 'long', 
@@ -356,6 +358,17 @@ class CourseListener {
                       timeZone: 'Asia/Manila' 
                     });
                   console.log("DEADLINE: "+deadlineDate)
+                  reminderDate.setDate(deadlineDate.getDate() - 7)
+                  console.log(reminderDate.toLocaleDateString('en-US', { 
+                      weekday: 'long',
+                      year: 'numeric', 
+                      month: 'long', 
+                      day: 'numeric', 
+                      hour: 'numeric', 
+                      minute: 'numeric', 
+                      second: 'numeric',
+                      timeZone: 'Asia/Manila' 
+                    }))
                 } else {
                     deadlineDate = 'Unset'
                 }
@@ -370,7 +383,8 @@ class CourseListener {
                             \nCourse:\n${course.name}
                             \nActivity:\n${activity.title}
                             ${(activity.description)? `\n\nDESCRIPTION:\n ${activity.description}`:''}
-                            \nDEADLINE:\n${deadlineDate}`,
+                            \nDEADLINE:\n${deadlineDateString}
+                            \nREMINDER WEEK BEFORE: ${reminderDate}`,
                             buttons: [
                                 {
                                     type: "web_url",
