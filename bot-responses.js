@@ -100,8 +100,8 @@ async function response(msg, ...sender_psid) {
 
         auth.setCredentials({
             // Replace the following with your own values
-            access_token: token.access_token,
-            refresh_token: token.refresh_token
+            access_token: await token.access_token,
+            refresh_token: await token.refresh_token
         });
 
         const classroom = google.classroom({
@@ -114,7 +114,7 @@ async function response(msg, ...sender_psid) {
             });
           
           
-    console.log(typeof await courses)
+    console.log(await courses.data.courses.map(course => course.name))
   
     
     response = {
@@ -130,8 +130,8 @@ async function response(msg, ...sender_psid) {
               buttons: await courses.data.courses.map(course => {
                 return  {
                   type: "postback",
-                  title: course.name,
-                  payload: `reminder_course:${course.id}`,
+                  title: `${course.name}`,
+                  //payload: `reminder_course:${course.id}`,
                 }
               })
             },
@@ -139,6 +139,7 @@ async function response(msg, ...sender_psid) {
         },
       },
     };
+   
     
     
   }
