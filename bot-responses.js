@@ -127,17 +127,17 @@ async function response(msg, ...sender_psid) {
               subtitle: "Select a course from your Google Classroom account",
               image_url: attachment_url,
               buttons: await courses.data.courses.map(course => {
-                return {
                   type: "postback",
                   title: course.name,
-                  payload: "yes",
-                }
-              })
+                  payload: "yes"})
             },
           ],
         },
       },
     };
+    response = {
+      text: 'HELLO'
+    }
   }
   else if (msg === "unsubscribe") {
     response = {
