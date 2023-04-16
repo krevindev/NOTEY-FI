@@ -118,26 +118,28 @@ async function response(msg, ...sender_psid) {
     const buttons = await names.map(name => {
       return {
         type: 'postback',
-        title: 'name',
+        title: name,
         payload: 'f'
       }
     })
     
     console.log(buttons)
+    
+    const courseButtons = courses.data.courses.map(course => {
+        return {
+          type: 'postback',
+          title: course.name,
+          payload: `SELECT_COURSE_${course.id}`
+        };
+      });
 
     response = {
       attachment: {
       "type": "template",
       "payload": {
         "template_type": "button",
-        "text": "Choose an option:",
-        "buttons": await courses.data.courses.map(course => {
-          return {
-            "type": "postback",
-            "title": "Option 1",
-            "payload": "OPTION_1"
-          }
-        })
+        "text": "From which course:",
+        "buttons": courseButtons
       }
       },
     };
