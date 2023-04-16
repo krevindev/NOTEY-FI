@@ -127,6 +127,7 @@ async function response(msg, ...sender_psid) {
     });
     
     courseActivities = (courseActivities.data.courseWork)?courseActivities.data.courseWork:[];
+    courseActivities = courseActivities.filter(courseAct => (courseAct.dueDate && courseAct.dueTime))
     
     console.log(courseActivities)
     
@@ -135,7 +136,7 @@ async function response(msg, ...sender_psid) {
           "type": "template",
           "payload": {
             "template_type": "button",
-            "text": "Please select a course:",
+            "text": "Please select an activity",
             "buttons": 
               await courseActivities.map(courseAct => {
                 return {
@@ -147,7 +148,6 @@ async function response(msg, ...sender_psid) {
           }
         }
       }
-
 
     return response;
   }
@@ -200,7 +200,18 @@ async function response(msg, ...sender_psid) {
 
     response = {
       text: "From which course?",
-      quick_replies: await courses.map((course) => {
+      quick_replies: await courses.filter(async course => {
+        let courseActivities = await classroom.courses.courseWork.list({
+            courseId: course.id,
+            orderBy: 'updateTime desc',
+            pageToken: null,
+        });
+        courseActivities = (courseActivities.data.courseWork)?courseActivities.data.courseWork:[];
+        courseActivities = courseActivities.filter(courseAct => (courseAct.dueDate && courseAct.dueTime))
+        
+        return (await courseActivities && await courseActivities.length <= 0)
+        
+      }).map((course) => {
         return {
           content_type: "text",
           title: course.name,
