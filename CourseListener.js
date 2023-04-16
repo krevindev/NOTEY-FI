@@ -310,15 +310,80 @@ class CourseListener {
                         //fields: 'courseWork(id,title),courseId'
                     });
             
-            lastCourseActivity = await lastCourseActivity.data.courseWork.map(work => work)[0];
+            lastCourseActivity = (await lastCourseActivity.data.courseWork)? await lastCourseActivity.data.courseWork.map(work => work)[0]:{id: 'void'};
             
             
             if(!Object.keys(storedlastActivities).map(key => key).includes(course.name)){
               storedlastActivities[course.name] = lastCourseActivity;
             }else{
-              if(storedlastActivities[course.name] !== lastCourseActivity){
-                console.log("NEWWWWWW");
-                await callSendAPI(sender_psid, {text: "NEWW: "+lastCourseActivity.title})
+              if(storedlastActivities[course.name].id !== lastCourseActivity.id){
+                
+                let activity = lastCourseActivity;
+                
+                let activityLink;
+                                let activityType = '';
+
+                                if (activity.workType === 'ASSIGNMENT') {
+                                    activityType = 'work';
+                                } else if (activity.workType === 'TOPIC') {
+                                    activityType = 'topic';
+                                } else {
+                                    console.log(`Unknown work type for activity "${activity.title}"`);
+                                    continue;
+                                }
+                                activityLink = `https://classroom.google.com/c/${courseID}/${activityType}/${activity.id}`;
+
+                                // Get the due date and time from the coursework activity
+                                let deadlineDate = ''
+
+                                if (activity.dueDate) {
+                                  let deadlineDate = new Date(activity.dueDate.year, activity.dueDate.month, activity.dueDate.day).toLocaleDateString('en-US');
+                                  console.log(deadlineDate)
+                                } else {
+                                    deadlineDate = 'Unset'
+                                }
+
+                                // Send the notification to the user
+                                const response = {
+                                    attachment: {
+                                        type: "template",
+                                        payload: {
+                                            template_type: "button",
+                                            text: `NEW ACTIVITY ADDED!
+                                            \nCourse:\n${course.name}
+                                            \nActivity:\n${activity.title}
+                                            \n\nDESCRIPTION:\n ${activity.description}
+                                            \nDEADLINE:\n${String(deadlineDate)}`,
+                                            buttons: [
+                                                {
+                                                    type: "web_url",
+                                                    url: activity.alternateLink,
+                                                    title: `Go to New Activity`,
+                                                    webview_height_ratio: "full",
+                                                }, {
+                                                    type: "postback",
+                                                    title: `Set Reminder`,
+                                                    webview_height_ratio: "full",
+                                                    payload: "set_reminder"
+                                                },
+                                                {
+                                                    type: "postback",
+                                                    title: `Return to Menu`,
+                                                    webview_height_ratio: "full",
+                                                    payload: "menu"
+                                                },
+                                            ],
+                                        },
+                                    },
+                                };
+
+
+                                console.log(`New activity in course "${course.name}": ${activity.title}`);
+                                console.log(`Activity link: https://classroom.google.com/c/${course.id}/a/${activity.id}`);
+                                console.log('LNK: ' + activityLink)
+                                await callSendAPI(await sender_psid, await response)
+                
+                
                 storedlastActivities[course.name] = lastCourseActivity;
               }
               /*
