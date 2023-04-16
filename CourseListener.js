@@ -315,14 +315,18 @@ class CourseListener {
             
             
             if(!Object.keys(storedlastActivities).map(key => key).includes(lastCourseActivity.id)){
-              storedlastActivities[lastCourseActivity.id] = lastCourseActivity.title;
+              storedlastActivities[course.name] = lastCourseActivity;
+            }else{
+              if(storedlastActivities[course.name].id == lastCourseActivity.id){
+                if(storedlastActivities[course.name].id !== lastCourseActivity.id){
+                  await callSendAPI(this.sender_psid, {text: "NEWW"})
+                  console.log("NEWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW")
+                }
+              }
             }
-            
-            console.log("COURSE: "+course.name)
-            console.log("LAST ACTIVITY:")
-            console.log(storedlastActivities)
           }
         }
+        console.log(storedlastActivities)
 
 
         setInterval(() => checkForActivityChanges(this.sender_psid), 2000); // Check for activity changes every 30 seconds
