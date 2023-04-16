@@ -126,11 +126,30 @@ async function response(msg, ...sender_psid) {
       pageToken: null,
     });
     
-    courseActivities = courseActivities.data.courseWork;
+    courseActivities = (courseActivities.data.courseWork)?courseActivities.data.courseWork:[];
+    
+    console.log(courseActivities)
+    
+    response = {
+        "attachment": {
+          "type": "template",
+          "payload": {
+            "template_type": "button",
+            "text": "Please select a course:",
+            "buttons": 
+              await courseActivities.map(courseAct => {
+                return {
+                  type: "postback",
+                  title: courseAct.title,
+                  payload: `reminder_selected_act:${courseAct.id}`
+                }
+              })
+          }
+        }
+      }
 
-    return {
-      text: "You said " + (courseActivities && courseActivities != undefined ) ? courseActivities.length:'This course does not have activities',
-    };
+
+    return response;
   }
   
   
@@ -189,6 +208,7 @@ async function response(msg, ...sender_psid) {
         };
       }),
     };
+  
 
     return response;
   } else if (msg === "unsubscribe") {
