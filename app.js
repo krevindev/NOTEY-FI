@@ -104,7 +104,7 @@ async function handleMessage(sender_psid, received_message) {
       // if it's just plain text
     } else {
       if (msg === "test") {
-        await callSendAPI(sender_psid, await botResponses.response("send_reminder_options", sender_psid).then(res => res))
+        await callSendAPI(sender_psid, await botResponses.response("send_reminder_options[course]", sender_psid).then(res => res))
       }
       else if (msg === "get started") {
         response = await botResponses.response(msg);
@@ -188,7 +188,7 @@ async function handleQuickReplies(sender_psid, received_payload) {
     
   }
   else if (received_payload === "set_reminder"){
-    await callSendAPI(sender_psid, await botResponses.response("send_reminder_options", sender_psid))
+    await callSendAPI(sender_psid, await botResponses.response("send_reminder_options[course]", sender_psid))
   }
   else if (received_payload === "view_google_courses") {
         const m = await botResponses.retrieveCourses1(sender_psid)

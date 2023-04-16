@@ -76,7 +76,7 @@ async function response(msg, ...sender_psid) {
         },
       ],
     };
-  } else if (msg === "send_reminder_options") {
+  } else if (msg === "send_reminder_options[course]") {
     const user = async () => {
       return new Promise(async (resolve, reject) => {
         await db
@@ -125,15 +125,18 @@ async function response(msg, ...sender_psid) {
     
     console.log(buttons)
     
-    const courseButtons = courses.data.courses.map(course => {
-        return {
+    const courseButtons = []
+    await courses.data.courses.forEach(course => {
+      if(course.name.length <= 5){
+        courseButtons.push( {
           type: 'postback',
           title: course.name,
           payload: `reminder_course_selected:${course.id}`
-        };
-      });
+        })
+      }
+    });
     
-    courseButtons.push({
+    await courseButtons.push({
       type: 'postback',
       title: 'Cancel',
       payload: 'menu'
