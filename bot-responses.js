@@ -129,9 +129,15 @@ async function response(msg, ...sender_psid) {
         return {
           type: 'postback',
           title: course.name,
-          payload: `SELECT_COURSE_${course.id}`
+          payload: `reminder_course_selected:${course.id}`
         };
       });
+    
+    courseButtons.push({
+      type: 'postback',
+      title: 'Cancel',
+      payload: 'menu'
+    })
 
     response = {
       attachment: {
@@ -145,7 +151,7 @@ async function response(msg, ...sender_psid) {
     };
     
     console.log("RESPONSE:")
-    console.log(response.attachment.payload)
+    console.log(response)
   } else if (msg === "unsubscribe") {
     response = {
       text: "Unsubscribe:",
