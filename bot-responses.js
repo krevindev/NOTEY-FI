@@ -15,7 +15,6 @@ const SCOPES = process.env.SCOPE_STRING;
 const mongoose = require("./useDB.js");
 const db = mongoose.connection;
 
-
 // ChatGPT Q&A
 async function askGPT(question) {
   const apiEndpoint =
@@ -77,53 +76,47 @@ async function response(msg, ...sender_psid) {
         },
       ],
     };
-  } else if(msg === "send_reminder_options"){
-    
+  } else if (msg === "send_reminder_options") {
     const user = async () => {
       return new Promise(async (resolve, reject) => {
-        await db.collection("noteyfi_users").findOne({psid: String(sender_psid)}, (err, result) => {
-          if(err){
-            reject('Rejected')
-          }else{
-            resolve(result)
-          }
-      })
-      })
-    }
-    const token = await user().then(res => res.vle_accounts[0]).catch(err => console.log(err));
-    
-    const auth = new google.auth.OAuth2(
-            CLIENT_ID,
-            CLIENT_SECRET,
-            REDIRECT_URI
-        );
+        await db
+          .collection("noteyfi_users")
+          .findOne({ psid: String(sender_psid) }, (err, result) => {
+            if (err) {
+              reject("Rejected");
+            } else {
+              resolve(result);
+            }
+          });
+      });
+    };
+    const token = await user()
+      .then((res) => res.vle_accounts[0])
+      .catch((err) => console.log(err));
 
-        auth.setCredentials({
-            // Replace the following with your own values
-            access_token: await token.access_token,
-            refresh_token: await token.refresh_token
-        });
+    const auth = new google.auth.OAuth2(CLIENT_ID, CLIENT_SECRET, REDIRECT_URI);
 
-        const classroom = google.classroom({
-            version: 'v1',
-            auth: auth
-        });
+    auth.setCredentials({
+      // Replace the following with your own values
+      access_token: await token.access_token,
+      refresh_token: await token.refresh_token,
+    });
+
+    const classroom = google.classroom({
+      version: "v1",
+      auth: auth,
+    });
 
     const courses = await classroom.courses.list({
-                courseStates: ['ACTIVE']
-            });
-          
-          
-    const attachment_url = `https://play-lh.googleusercontent.com/w0s3au7cWptVf648ChCUP7sW6uzdwGFTSTenE178Tz87K_w1P1sFwI6h1CLZUlC2Ug`
-    
+      courseStates: ["ACTIVE"],
+    });
 
-    console.log(courses.data.courses.map( course => course))
+    const attachment_url = `https://play-lh.googleusercontent.com/w0s3au7cWptVf648ChCUP7sW6uzdwGFTSTenE178Tz87K_w1P1sFwI6h1CLZUlC2Ug`;
 
-    await courses.data.courses.forEach( course => {
-      console.log(course.name)
-    })
-   
-    
+    console.log("COURSES:");
+    console.log(courses.data.courses.map((course) => course));
+
+
     response = {
       attachment: {
         type: "template",
@@ -134,20 +127,19 @@ async function response(msg, ...sender_psid) {
               title: "Google Classroom Courses",
               subtitle: "Select a course from your Google Classroom account",
               image_url: attachment_url,
-              buttons: await courses.data.courses.map( course => {
+              buttons: await courses.data.courses.map((course) => {
                 return {
                   type: "postback",
                   title: "Yes!",
                   payload: "yes",
-                }
-              })
+                };
+              }),
             },
           ],
         },
       },
     };
-  }
-  else if (msg === "unsubscribe") {
+  } else if (msg === "unsubscribe") {
     response = {
       text: "Unsubscribe:",
       quick_replies: [
@@ -192,12 +184,12 @@ async function response(msg, ...sender_psid) {
           content_type: "text",
           title: "Set Reminder",
           payload: "set_reminder",
-          image_url: "https://cdn1.iconfinder.com/data/icons/cloud-hosting/32/stopwatch-icon-512.png",
+          image_url:
+            "https://cdn1.iconfinder.com/data/icons/cloud-hosting/32/stopwatch-icon-512.png",
         },
       ],
     };
   } else if (msg === "google classroom") {
-    
     const oauth2Client = new OAuth2Client(
       CLIENT_ID,
       CLIENT_SECRET,
@@ -326,60 +318,59 @@ async function retrieveCourses(sender_psid) {
     .then((res) => res);
 
   const vleTokens = await userData.vle_accounts;
-  
-  let coursesReturn = [];
-  
-  const mapMe = await Promise.all(
-    
-    vleTokens.map(async token => {
-    const oauth2Client = new OAuth2Client(
-      CLIENT_ID,
-      CLIENT_SECRET,
-      REDIRECT_URI
-    );
-    
-    await oauth2Client.setCredentials({
-      access_token: token.access_token,
-      token_type: token.token_type,
-      expiry_date: token.expiry_date,
-      refresh_token: token.refresh_token,
-    });
-    
-    const classroom = await google.classroom({
-      version: "v1",
-      auth: oauth2Client,
-    });
 
-    // Call the refreshAccessToken method to refresh the access token
-    await oauth2Client.refreshAccessToken((err, tokens) => {
-      if (err) {
-        console.error("Error refreshing access tokenzz:", err);
-      } else {
-        console.log("Access token refreshed:", tokens.access_token);
-        // Store the new access token in your database or other storage mechanism
-      }
-    });
-      
+  let coursesReturn = [];
+
+  const mapMe = await Promise.all(
+    vleTokens.map(async (token) => {
+      const oauth2Client = new OAuth2Client(
+        CLIENT_ID,
+        CLIENT_SECRET,
+        REDIRECT_URI
+      );
+
+      await oauth2Client.setCredentials({
+        access_token: token.access_token,
+        token_type: token.token_type,
+        expiry_date: token.expiry_date,
+        refresh_token: token.refresh_token,
+      });
+
+      const classroom = await google.classroom({
+        version: "v1",
+        auth: oauth2Client,
+      });
+
+      // Call the refreshAccessToken method to refresh the access token
+      await oauth2Client.refreshAccessToken((err, tokens) => {
+        if (err) {
+          console.error("Error refreshing access tokenzz:", err);
+        } else {
+          console.log("Access token refreshed:", tokens.access_token);
+          // Store the new access token in your database or other storage mechanism
+        }
+      });
+
       const getCourses = async () => {
-      return new Promise(async (resolve, reject) => {
-        await classroom.courses.list({}, (err, res) => {
-          if (err) {
-            reject(err);
-          } else {
-            resolve(res.data.courses);
-          }
+        return new Promise(async (resolve, reject) => {
+          await classroom.courses.list({}, (err, res) => {
+            if (err) {
+              reject(err);
+            } else {
+              resolve(res.data.courses);
+            }
+          });
         });
-      })}
-        
-  
-   return await getCourses().then(res => {
-     res.map(course => `Name: ${course.name} ID: ${course.id}`)
-   })
-  }));
-  
-  console.log(await mapMe)
-  
-  
+      };
+
+      return await getCourses().then((res) => {
+        res.map((course) => `Name: ${course.name} ID: ${course.id}`);
+      });
+    })
+  );
+
+  console.log(await mapMe);
+
   //console.log(oof)
 
   // for each vle_token
@@ -423,72 +414,69 @@ async function retrieveCourses(sender_psid) {
       });
     };
     //console.log(await dFunc().then((res) => res));
-  })*/;
+  })*/
 }
 
-
-async function retrieveCourses1(sender_psid){
-  
+async function retrieveCourses1(sender_psid) {
   // retrieve user vle tokens
   const userData = await db
     .collection("noteyfi_users")
     .findOne({ psid: sender_psid })
     .then((res) => res);
-  
-  
+
   const vleTokens = await userData.vle_accounts;
   const token = vleTokens[0];
-  
+
   const oauth2Client = await new OAuth2Client(
-            CLIENT_ID,
-            CLIENT_SECRET,
-            REDIRECT_URI
-        )
-  
+    CLIENT_ID,
+    CLIENT_SECRET,
+    REDIRECT_URI
+  );
+
   await oauth2Client.setCredentials({
-      access_token: token.access_token,
-      token_type: token.token_type,
-      expiry_date: token.expiry_date,
-      refresh_token: token.refresh_token,
-    });
-    
-    const classroom = await google.classroom({
-      version: "v1",
-      auth: oauth2Client,
-    });
+    access_token: token.access_token,
+    token_type: token.token_type,
+    expiry_date: token.expiry_date,
+    refresh_token: token.refresh_token,
+  });
 
-    // Call the refreshAccessToken method to refresh the access token
-    await oauth2Client.refreshAccessToken((err, tokens) => {
-      if (err) {
-        console.error("Error refreshing access tokenzz:", err);
-      } else {
-        console.log("Access token refreshed:", tokens.access_token);
-        // Store the new access token in your database or other storage mechanism
-      }
-    });
+  const classroom = await google.classroom({
+    version: "v1",
+    auth: oauth2Client,
+  });
 
-  
+  // Call the refreshAccessToken method to refresh the access token
+  await oauth2Client.refreshAccessToken((err, tokens) => {
+    if (err) {
+      console.error("Error refreshing access tokenzz:", err);
+    } else {
+      console.log("Access token refreshed:", tokens.access_token);
+      // Store the new access token in your database or other storage mechanism
+    }
+  });
+
   //token1
   let previousCourseWorkList = [];
 
-setInterval(async () => {
-  const { data } = await classroom.courses.courseWork.list({
-    courseId: 'COURSE_ID_HERE',
-  });
+  setInterval(async () => {
+    const { data } = await classroom.courses.courseWork.list({
+      courseId: "COURSE_ID_HERE",
+    });
 
-  const currentCourseWorkList = data.courseWork || [];
+    const currentCourseWorkList = data.courseWork || [];
 
-  if (JSON.stringify(previousCourseWorkList) !== JSON.stringify(currentCourseWorkList)) {
-    // Course work list has changed, emit event
-    console.log('Course work list has changed!');
+    if (
+      JSON.stringify(previousCourseWorkList) !==
+      JSON.stringify(currentCourseWorkList)
+    ) {
+      // Course work list has changed, emit event
+      console.log("Course work list has changed!");
 
-    // Code to send notification to webhook URL
-  }
+      // Code to send notification to webhook URL
+    }
 
-  previousCourseWorkList = currentCourseWorkList;
-}, 5 * 60 * 1000); // Check every 5 minutes
-
-  
+    previousCourseWorkList = currentCourseWorkList;
+  }, 5 * 60 * 1000); // Check every 5 minutes
 }
 
 module.exports = {
@@ -500,4 +488,3 @@ module.exports = {
 };
 
 // CODE TRASH BIN
-
