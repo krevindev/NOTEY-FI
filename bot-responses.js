@@ -124,14 +124,14 @@ async function response(msg, ...sender_psid) {
           template_type: "generic",
           elements: [
             {
-              title: "From which Course?",
+              title: "Is this the right picture?",
               subtitle: "Tap a button to answer.",
               //image_url: attachment_url,
               buttons: await courses.data.courses.map(course => {
-                return  {
+                return {
                   type: "postback",
-                  title: `${course.name}`,
-                  //payload: `reminder_course:${course.id}`,
+                  title: course.name,
+                  payload: "yes",
                 }
               })
             },
@@ -139,9 +139,6 @@ async function response(msg, ...sender_psid) {
         },
       },
     };
-   
-    
-    
   }
   else if (msg === "unsubscribe") {
     response = {
