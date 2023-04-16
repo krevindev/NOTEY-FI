@@ -115,7 +115,7 @@ async function response(msg, ...sender_psid) {
 
     console.log("BUTTONS:");
     let names = courses.data.courses.map(course => course.name)
-    const buttons = names.map(name => {
+    const buttons = await names.map(name => {
       return {
         type: 'postback',
         title: 'name',
@@ -127,20 +127,23 @@ async function response(msg, ...sender_psid) {
 
     response = {
       attachment: {
-        type: "template",
-        payload: {
-          template_type: "generic",
-          elements: [
-            {
-              title: "Google Classroom Courses",
-              subtitle: "Select a course from your Google Classroom account",
-              image_url: attachment_url,
-            buttons: buttons
-            },
-          ],
-        },
+      "type": "template",
+      "payload": {
+        "template_type": "button",
+        "text": "Choose an option:",
+        "buttons": courses.data.courses.map(course => {
+          return {
+            "type": "postback",
+            "title": "Option 1",
+            "payload": "OPTION_1"
+          }
+        })
+      }
       },
     };
+    
+    console.log("RESPONSE:")
+    console.log(response.attachment.payload)
   } else if (msg === "unsubscribe") {
     response = {
       text: "Unsubscribe:",
