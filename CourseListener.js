@@ -286,7 +286,7 @@ class CourseListener {
         let earliestActivityTimeByCourseId = {};
         let existingCourseworkIds = {};
       
-        let storedlastActivity = {};
+        let storedlastActivities = {};
 
         // Function to check for changes in activity
         async function checkForActivityChanges(sender_psid) {
@@ -310,11 +310,17 @@ class CourseListener {
                         //fields: 'courseWork(id,title),courseId'
                     });
             
-            lastCourseActivity = await lastCourseActivity.data.courseWork.map(work => work.title)
+            lastCourseActivity = await lastCourseActivity.data.courseWork.map(work => work)[0];
+            
+            
+            
+            if(!Object.keys(storedlastActivities).map(key => key).includes(lastCourseActivity.id)){
+              storedlastActivities[lastCourseActivity.id] = lastCourseActivity.title;
+            }
             
             console.log("COURSE: "+course.name)
             console.log("LAST ACTIVITY:")
-            console.log(lastCourseActivity)
+            console.log(storedlastActivities)
           }
         }
 
