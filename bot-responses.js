@@ -209,7 +209,7 @@ async function response(msg, ...sender_psid) {
 
           console.log(courseActivities.map(ca => ca.title))
           // return only the courseActivities with one or more length
-          return (await courseActivities.length) >= 1;
+          return (await courseActivities.length >= 1);
         })
         .map((course) => {
           return {
@@ -218,6 +218,9 @@ async function response(msg, ...sender_psid) {
             payload: `reminder_selected_course:${course.id}`,
           };
         })
+    
+    console.log("FILTERED BUTTONS:")
+    console.log(filteredCoursesBtns.map(btn => btn))
 
     
     response = {
