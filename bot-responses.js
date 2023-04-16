@@ -109,32 +109,38 @@ async function response(msg, ...sender_psid) {
             auth: auth
         });
 
-    const courses = new Promise(async (resolve, reject) => {
-      return await classroom.courses.list({
+    const courses = await classroom.courses.list({
                 courseStates: ['ACTIVE']
-            }, async (err, res) => {
-                if (err) {
-                  reject(err)
-                }else{
-                  resolve(res.data.courses)
-                }
-            })
-            }).then(res => res).catch(err => err)
+            });
           
           
     console.log(typeof await courses)
+  
     
     response = {
-      text: "From which course?",
-      quick_replies: await courses.map(course => {
-        return {
-          content_type: "text",
-          title: course.name,
-          payload: "5_s",
-          image_url: img_url,
-        }
-      })
+      attachment: {
+        type: "template",
+        payload: {
+          template_type: "generic",
+          elements: [
+            {
+              title: "From which Course?",
+              subtitle: "Tap a button to answer.",
+              //image_url: attachment_url,
+              buttons: await courses.data.courses.map(course => {
+                return  {
+                  type: "postback",
+                  title: course.name,
+                  payload: `reminder_course:${course.id}`,
+                }
+              })
+            },
+          ],
+        },
+      },
     };
+    
+    
   }
   else if (msg === "unsubscribe") {
     response = {
