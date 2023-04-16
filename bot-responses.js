@@ -76,7 +76,12 @@ async function response(msg, ...sender_psid) {
         },
       ],
     };
-  } else if (msg === "send_reminder_options[course]") {
+  } else if (msg.split(':')[0] === 'reminder_selected_course'){
+    return {
+      text: 'You said '+msg.split(':')[1]
+    }
+  }
+  else if (msg === "send_reminder_options[course]") {
     const user = async () => {
       return new Promise(async (resolve, reject) => {
         await db
