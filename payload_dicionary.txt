@@ -1,0 +1,3 @@
+* Set Reminder
+// payload of course selected
+reminder_selected_course:123213 = rem_sc:123213
