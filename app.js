@@ -165,7 +165,7 @@ async function handleQuickReplies(sender_psid, received_payload) {
   let response;
 
   if (received_payload.split(':')[0] === 'reminder_selected_course'){
-    await callSendAPI(sender_psid, await botResponses.response(received_payload))
+    await callSendAPI(sender_psid, await botResponses.response(received_payload, sender_psid))
   }
   else if (["5_s", "10_s", "20_s"].includes(received_payload)){
     console.log("EXECUTED")

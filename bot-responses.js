@@ -76,11 +76,66 @@ async function response(msg, ...sender_psid) {
         },
       ],
     };
-  } else if (msg.split(':')[0] === 'reminder_selected_course'){
+  } 
+  
+  
+  else if (msg.split(":")[0] === "reminder_selected_course") {
+    const courseID = msg.split(":")[1];
+
+    const user = async () => {
+      return new Promise(async (resolve, reject) => {
+        await db
+          .collection("noteyfi_users")
+          .findOne({ psid: String(sender_psid) }, (err, result) => {
+            if (err) {
+              reject("Rejected");
+            } else {
+              resolve(result);
+            }
+          });
+      });
+    };
+    const token = await user()
+      .then((res) => res.vle_accounts[0])
+      .catch((err) => console.log(err));
+
+    const auth = await new google.auth.OAuth2(
+      CLIENT_ID,
+      CLIENT_SECRET,
+      REDIRECT_URI
+    );
+
+    await auth.setCredentials({
+      // Replace the following with your own values
+      access_token: await token.access_token,
+      refresh_token: await token.refresh_token,
+    });
+
+    const classroom = await google.classroom({
+      version: "v1",
+      auth: auth,
+    });
+
+    let courses = await classroom.courses.list({
+      courseStates: ["ACTIVE"],
+    });
+
+    let courseActivities = await classroom.courses.courseWork.list({
+      courseId: courseID,
+      orderBy: 'updateTime desc',
+      pageToken: null,
+    });
+    
+    courseActivities = courseActivities.data.courseWork;
+
     return {
-      text: 'You said '+msg.split(':')[1]
-    }
+      text: "You said " + (courseActivities && courseActivities != undefined ) ? courseActivities.length:'This course does not have activities',
+    };
   }
+  
+  
+  
+  
   else if (msg === "send_reminder_options[course]") {
     const user = async () => {
       return new Promise(async (resolve, reject) => {
@@ -99,7 +154,11 @@ async function response(msg, ...sender_psid) {
       .then((res) => res.vle_accounts[0])
       .catch((err) => console.log(err));
 
-    const auth = await new google.auth.OAuth2(CLIENT_ID, CLIENT_SECRET, REDIRECT_URI);
+    const auth = await new google.auth.OAuth2(
+      CLIENT_ID,
+      CLIENT_SECRET,
+      REDIRECT_URI
+    );
 
     await auth.setCredentials({
       // Replace the following with your own values
@@ -115,23 +174,23 @@ async function response(msg, ...sender_psid) {
     let courses = await classroom.courses.list({
       courseStates: ["ACTIVE"],
     });
-    
+
     courses = courses.data.courses;
-    
+
     const attachment_url = `https://play-lh.googleusercontent.com/w0s3au7cWptVf648ChCUP7sW6uzdwGFTSTenE178Tz87K_w1P1sFwI6h1CLZUlC2Ug`;
 
     response = {
-        text: 'From which course?',
-        quick_replies: await courses.map(course => {
-          return {
-            content_type: 'text',
-            title: course.name,
-            payload: `reminder_selected_course:${course.id}`
-          }
-        })
-      }
-    
-    return response
+      text: "From which course?",
+      quick_replies: await courses.map((course) => {
+        return {
+          content_type: "text",
+          title: course.name,
+          payload: `reminder_selected_course:${course.id}`,
+        };
+      }),
+    };
+
+    return response;
   } else if (msg === "unsubscribe") {
     response = {
       text: "Unsubscribe:",
