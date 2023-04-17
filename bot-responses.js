@@ -281,7 +281,7 @@ async function response(msg, ...sender_psid) {
         return {
             content_type: "text",
             title: course.name.substring(0, 20),
-            payload: `reminder_selected_course:${course.id}`,
+            payload: `rem_sc:${course.id}`,
         }
       })//filteredCoursesBtns
     };
