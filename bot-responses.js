@@ -80,6 +80,15 @@ async function response (msg, ...sender_psid) {
     }
   }
 
+  else if (msg.split(':')[0] == 'rem_sa'){
+
+    const courseWorkID = msg.split(':')[1];
+
+    return {
+      text: `You have selected the coursework with the ID: ${courseWorkID}`
+    }
+  }
+
   //  2
   // if the message is a selected course then send the courseWorks from that course
   else if (msg.split(':')[0] == 'rem_sc') {
@@ -140,7 +149,7 @@ async function response (msg, ...sender_psid) {
       return {
         type: 'postback',
         title: courseAct.title,
-        payload: `rem_sc:${courseAct.id}`
+        payload: `rem_sa:${courseAct.id}`
       }
     })
 
@@ -191,7 +200,6 @@ async function response (msg, ...sender_psid) {
     )
 
     await auth.setCredentials({
-      // Replace the following with your own values
       access_token: await token.access_token,
       refresh_token: await token.refresh_token
     })
@@ -297,7 +305,10 @@ async function response (msg, ...sender_psid) {
     }
 
     return response
-  } else if (msg === 'unsubscribe') {
+  }
+
+  // if the message is unsubscribe then remove the user from the database
+  else if (msg === 'unsubscribe') {
     response = {
       text: 'Unsubscribe:',
       quick_replies: [
@@ -347,7 +358,10 @@ async function response (msg, ...sender_psid) {
         }
       ]
     }
-  } else if (msg === 'google classroom') {
+  }
+
+  // if the message is google classroom then send a sign in link to the user
+  else if (msg === 'google classroom') {
     const oauth2Client = new OAuth2Client(
       CLIENT_ID,
       CLIENT_SECRET,
@@ -390,7 +404,10 @@ async function response (msg, ...sender_psid) {
         }
       }
     }
-  } else if (msg === 'prompt vle accounts') {
+  }
+
+  // if message is prompt vle accounts then prompt which vle platform the user should select
+  else if (msg === 'prompt vle accounts') {
     console.log('VLE Triggered')
 
     response = {

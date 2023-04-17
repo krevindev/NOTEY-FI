@@ -265,7 +265,9 @@ async function handlePostback(sender_psid, received_postback) {
     response = await botResponses.response("menu")
   }
   else if (payload.split(':')[0] === 'rem_sc'){
-    console.log('RECEIVEDDDDDDDDDDDDDDDDDDD')    
+    await callSendAPI(sender_psid, await botResponses.response(payload, sender_psid))
+  }
+  else if (payload.split(':')[0] === 'rem_sa'){
     await callSendAPI(sender_psid, await botResponses.response(payload, sender_psid))
   }
   else if (payload === "subscribe") {
