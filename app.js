@@ -155,18 +155,20 @@ app.post('/set_reminder', async (req, res) => {
       }
     }
   }).then(async res => {
+
     console.log("WHEN CRON SHOULD START")
     const job = new cron(
       `*/${await time} * * * * *`,
       async function () {
+        console.log("WHEN IT SHOULD SEND REMINDER")
         await callSendAPI(await sender_psid, await response)
-        job.stop()
+        await job.stop()
       },
       []
     )
 
-    job.start()
-  })
+    await job.start()
+  }).catch(err => console.log(err))
 
   //await callSendAPI(sender_psid, { text:  `Course Title: ${course.name}\n CourseWork: ${courseWork.title}` })
 })
