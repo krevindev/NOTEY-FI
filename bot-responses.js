@@ -78,8 +78,12 @@ async function response (msg, ...sender_psid) {
         }
       ]
     }
-  } else if (msg.split(':')[0] == 'rem_sa') {
-    const courseWorkID = msg.split(':')[1]
+  }
+
+  // if the message is rem_sa, it means the user has selected an activity then prompt a reminder options for that activity
+  else if (msg.split(':')[0] == 'rem_sa') {
+    const courseWorkID = msg.split(':')[2]
+    const courseID = msg.split(':')[1]
 
     const user = async () => {
       return new Promise(async (resolve, reject) => {
@@ -93,7 +97,7 @@ async function response (msg, ...sender_psid) {
             }
           })
       })
-    };
+    }
     const token = await user()
       .then(res => res.vle_accounts[0])
       .catch(err => console.log(err))
@@ -102,28 +106,28 @@ async function response (msg, ...sender_psid) {
       CLIENT_ID,
       CLIENT_SECRET,
       REDIRECT_URI
-    );
+    )
 
     await auth.setCredentials({
       // Replace the following with your own values
       access_token: await token.access_token,
       refresh_token: await token.refresh_token
-    });
+    })
 
     const classroom = await google.classroom({
       version: 'v1',
       auth: auth
-    });
+    })
 
-    let select1edActivity = await classroom.courses.courseWork.list({
-      courseId: courseID,
-      orderBy: 'updateTime desc',
-      pageToken: null,
-      pageSize: 1
-    });
+    const selectedActivity = await classroom.courses.courseWork
+      .get({
+        courseId: courseID,
+        id: courseWorkID
+      })
+      .then(res => res.data)
 
     return {
-      text: `You have selected the coursework with the ID: ${courseWorkID}`
+      text: `You have selected the coursework with the name : ${selectedActivity.title}`
     }
   }
 
@@ -187,7 +191,7 @@ async function response (msg, ...sender_psid) {
       return {
         type: 'postback',
         title: courseAct.title,
-        payload: `rem_sa:${courseAct.id}`
+        payload: `rem_sa:${courseID}:${courseAct.id}`
       }
     })
 
@@ -333,7 +337,7 @@ async function response (msg, ...sender_psid) {
 
     response = {
       text: 'From which course?',
-      quick_replies: filteredCourses.map(course => {
+      quick_replies: filteredCourses.filter(fCourse => fCourse !== undefined).map(course => {
         return {
           content_type: 'text',
           title: course.name.substring(0, 20),
