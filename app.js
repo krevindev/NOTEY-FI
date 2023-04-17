@@ -280,8 +280,6 @@ async function handleQuickReplies (sender_psid, received_payload) {
     await callSendAPI(
       sender_psid,
       await botResponses.response(received_payload, sender_psid)
-    ).then(
-      callSendAPI(sender_psid, { text: 'Please wait...' })
     )
   } else if (received_payload === 'set_reminder') {
     await callSendAPI(

@@ -73,11 +73,16 @@ async function axiosReq (method, data) {
     data: data
   }
 
-  await axios(config)
-    .then(response => {})
-    .catch(error => {
-      console.log('AXIOS: ' + error)
-    })
+  return new Promise((resolve, reject) => {
+    axios(config)
+      .then(response => {
+        console.log('Accepted!!!')
+        resolve('Please wait...')
+      })
+      .catch(error => {
+        reject(err)
+      })
+  })
 }
 
 async function response (msg, ...sender_psid) {
@@ -143,14 +148,14 @@ async function response (msg, ...sender_psid) {
       auth: auth
     })
 
-    let course = await classroom.courses.get({id: courseID})
-    course = course.data;
+    let course = await classroom.courses.get({ id: courseID })
+    course = course.data
     let courseWork = await classroom.courses.courseWork.get({
       courseId: courseID,
       id: courseWorkID
     })
 
-    courseWork = courseWork.data;
+    courseWork = courseWork.data
 
     const data = {
       sender_psid: sender_psid,
@@ -275,7 +280,7 @@ async function response (msg, ...sender_psid) {
 
     let courseActivities = await classroom.courses.courseWork.list({
       courseId: courseID,
-      orderBy: 'updateTime desc',
+      orderBy: 'updateTime desc'
       //pageToken: null
     })
 
@@ -383,33 +388,31 @@ async function response (msg, ...sender_psid) {
     console.log('Activities:')
     console.log(filteredCourses.map(ca => ca.title))
 
-    
     const filteredCoursesBtns = await courses
-        .filter(async (course) => {
-          let courseActivities = await classroom.courses.courseWork.list({
-            courseId: course.id,
-            orderBy: "updateTime desc",
-            pageToken: null,
-          });
-          courseActivities = await courseActivities.data.courseWork
-            ? courseActivities.data.courseWork
-            : [];
-          courseActivities = courseActivities.filter(
-            (courseAct) => courseAct.dueDate && courseAct.dueTime
-          );
+      .filter(async course => {
+        let courseActivities = await classroom.courses.courseWork.list({
+          courseId: course.id,
+          orderBy: 'updateTime desc',
+          pageToken: null
+        })
+        courseActivities = (await courseActivities.data.courseWork)
+          ? courseActivities.data.courseWork
+          : []
+        courseActivities = courseActivities.filter(
+          courseAct => courseAct.dueDate && courseAct.dueTime
+        )
 
-          console.log(courseActivities.map(ca => ca.title))
-          // return only the courseActivities with one or more length
-          return (await courseActivities.length >= 1);
-        })
-        .map((course) => {
-          return {
-            type: 'postback',
-            title: course.name.substring(0, 20),
-            payload: `rem_sc:${course.id}`
-          }
-        })
-    
+        console.log(courseActivities.map(ca => ca.title))
+        // return only the courseActivities with one or more length
+        return (await courseActivities.length) >= 1
+      })
+      .map(course => {
+        return {
+          type: 'postback',
+          title: course.name.substring(0, 20),
+          payload: `rem_sc:${course.id}`
+        }
+      })
 
     console.log('FILTERED:')
     console.log(filteredCourses.map(btn => btn.name))
