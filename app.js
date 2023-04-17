@@ -82,25 +82,33 @@ app.post('/webhook', (req, res) => {
 })
 
 app.post('/set_reminder', async (req, res) => {
-  let body = req.body;
-  const sender_psid = body.sender_psid[0];
-  const time = body.time; 
-  const course = body.course;
-  const courseWork = body.courseWork;
+  let body = req.body
+  const sender_psid = body.sender_psid[0]
+  const time = body.time.substring(0, body.time.length - 1)
+  const course = body.course
+  const courseWork = body.courseWork
 
+  var dueDate = new Date(
+    courseWork.dueDate.year,
+    courseWork.dueDate.month,
+    courseWork.dueDate.day
+  )
+  var dueTime = new Date(courseWork.dueTime)
 
-
-
-  var dueDate = new Date(courseWork.dueDate.year, courseWork.dueDate.month, courseWork.dueDate.day);
-  var dueTime = new Date(courseWork.dueTime);
-
-  var formattedHour = dueTime.getHours().toLocaleString('en-US', { hour: 'long' });
-  var formattedMinutes = dueTime.getMinutes().toLocaleString('en-US', { minute: 'long' })
+  var formattedHour = dueTime
+    .getHours()
+    .toLocaleString('en-US', { hour: 'long' })
+  var formattedMinutes = dueTime
+    .getMinutes()
+    .toLocaleString('en-US', { minute: 'long' })
 
   // Format the due date and time in a long format
-  var formattedDate = dueDate.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-
-
+  var formattedDate = dueDate.toLocaleDateString('en-US', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  })
 
   const response = {
     attachment: {
@@ -114,33 +122,31 @@ app.post('/set_reminder', async (req, res) => {
         `,
         buttons: [
           {
-              type: "web_url",
-              url: courseWork.alternateLink,
-              title: `Go to Activity`,
-              webview_height_ratio: "full",
-          }, 
-          {
-              type: "postback",
-              title: `Return to Menu`,
-              webview_height_ratio: "full",
-              payload: "menu"
+            type: 'web_url',
+            url: courseWork.alternateLink,
+            title: `Go to Activity`,
+            webview_height_ratio: 'full'
           },
-      ],
+          {
+            type: 'postback',
+            title: `Return to Menu`,
+            webview_height_ratio: 'full',
+            payload: 'menu'
+          }
+        ]
       }
     }
   }
 
-
   const job = new cron(
     `*/${time} * * * * *`,
-    async function (testParam) {
-      callSendAPI(sender_psid, { text: 'Notif' }).then(async res => {
+    async function () {
+      callSendAPI(sender_psid, response).then(async res => {
         callSendAPI(sender_psid, await botResponses.response('menu'))
       })
-      console.log('PARAM: ' + testParam)
       job.stop()
     },
-    [`This is a reminder for ${course.title}`]
+    []
   )
 
   job.start()
