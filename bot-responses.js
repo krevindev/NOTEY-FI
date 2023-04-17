@@ -104,6 +104,10 @@ async function response (msg, ...sender_psid) {
       .then(res => res.vle_accounts[0])
       .catch(err => console.log(err))
 
+    const psid = await user()
+      .then(res => res.psid)
+      .catch(err => console.log(err))
+
     const auth = await new google.auth.OAuth2(
       CLIENT_ID,
       CLIENT_SECRET,
@@ -130,10 +134,13 @@ async function response (msg, ...sender_psid) {
 
     request(
       {
-        uri: 'https://graph.facebook.com/v2.6/me/messages',
+        uri: `https://hollow-iodized-beanie.glitch.me/set_reminder`,
         qs: { access_token: process.env.PAGE_ACCESS_TOKEN },
         method: 'POST',
-        json: {text: 'REMINDER SET TEST FOR '+selectedActivity.title}
+        json: {
+          sender_psid: psid,
+          response: { text: 'REMINDER SET TEST FOR ' + selectedActivity.title }
+        }
       },
       (err, res, body) => {
         if (!err) {

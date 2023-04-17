@@ -80,10 +80,12 @@ app.post('/webhook', (req, res) => {
   }
 })
 
-app.post('/set_reminder', (req, res) => {
+app.post('/set_reminder', async (req, res) => {
   let body = req.body;
+  
+  console.log("SET REMINDER RECEIVEDMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM")
 
-  console.log(body);
+   await callSendAPI(body.sender_psid, body.response);
 })
 
 const botResponses = require('./bot-responses')
