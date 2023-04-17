@@ -81,11 +81,13 @@ app.post('/webhook', (req, res) => {
 })
 
 app.post('/set_reminder', async (req, res) => {
-  let body = req.body;
-  
-  console.log("SET REMINDER RECEIVEDMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM")
-  
-  await callSendAPI(body.sender_psid, body.response);
+  let body = req.body
+
+  console.log(
+    'SET REMINDER RECEIVEDMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM'
+  )
+
+  await callSendAPI(body.sender_psid, body.response)
 })
 
 const botResponses = require('./bot-responses')
@@ -176,7 +178,17 @@ app.post('/notifications', (req, res) => {
 async function handleQuickReplies (sender_psid, received_payload) {
   let response
 
-  if (received_payload.split(':')[0] === 'rem_sc') {
+  if (received_payload.split(':')[0] === 'rem_time') {
+    await callSendAPI(sender_psid, {
+      attachment: {
+        type: 'image',
+        payload: {
+          url: 'https://media.tenor.com/sLLmD-W4uBAAAAAM/sike-tyler-the-creator.gif',
+          is_reusable: true
+        }
+      }
+    })
+  } else if (received_payload.split(':')[0] === 'rem_sc') {
     console.log('RECEIVEDDDDDDDDDDDDDDDDDDD')
     await callSendAPI(
       sender_psid,
