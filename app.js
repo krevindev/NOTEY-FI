@@ -94,7 +94,7 @@ async function handleMessage(sender_psid, received_message) {
 
     console.log("RECEIVED MESSAGE: ");
     console.log(received_message.text);
-
+  
     // if the message is a quick reply
     if (received_message.quick_reply) {
       let payload = received_message.quick_reply.payload;
