@@ -133,11 +133,36 @@ async function response (msg, ...sender_psid) {
         sender_psid: psid,
         response: 'Hello, World!'
       }
-    };
+    }
+
+    const axios = require('axios')
+    const data = {
+      sender_psid: psid,
+      response: {
+        text: 'Set Reminder Received!'
+      }
+    }
+
+    const config = {
+      method: 'post',
+      url: `https://hollow-iodized-beanie.glitch.me/set_reminder`,
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      data: data
+    }
+
+    axios(config)
+      .then(response => {
+        // handle success here
+      })
+      .catch(error => {
+        // handle error here
+      })
 
     request(options, (error, response, body) => {
       console.log(response.statusMessage)
-    });
+    })
 
     const selectedActivity = await classroom.courses.courseWork
       .get({
@@ -145,7 +170,6 @@ async function response (msg, ...sender_psid) {
         id: courseWorkID
       })
       .then(res => res.data)
-
 
     return {
       text: `You have selected the coursework with the name : ${selectedActivity.title}`
