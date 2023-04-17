@@ -276,7 +276,7 @@ async function response (msg, ...sender_psid) {
     let courseActivities = await classroom.courses.courseWork.list({
       courseId: courseID,
       orderBy: 'updateTime desc',
-      pageToken: null
+      //pageToken: null
     })
 
     courseActivities = courseActivities.data.courseWork
@@ -394,9 +394,9 @@ async function response (msg, ...sender_psid) {
           courseActivities = await courseActivities.data.courseWork
             ? courseActivities.data.courseWork
             : [];
-          // courseActivities = courseActivities.filter(
-          //   (courseAct) => courseAct.dueDate && courseAct.dueTime
-          // );
+          courseActivities = courseActivities.filter(
+            (courseAct) => courseAct.dueDate && courseAct.dueTime
+          );
 
           console.log(courseActivities.map(ca => ca.title))
           // return only the courseActivities with one or more length
@@ -405,8 +405,8 @@ async function response (msg, ...sender_psid) {
         .map((course) => {
           return {
             type: 'postback',
-            title: course.name.substring(0, 10),
-            payload: `rem_sc:${course.id}`.substring(0,10)
+            title: course.name.substring(0, 20),
+            payload: `rem_sc:${course.id}`
           }
         })
     
@@ -439,7 +439,7 @@ async function response (msg, ...sender_psid) {
         }) //filteredCoursesBtns
     }
 
-    return message
+    return response
   }
 
   // if the message is unsubscribe then remove the user from the database

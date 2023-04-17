@@ -110,6 +110,24 @@ app.post('/set_reminder', async (req, res) => {
     day: 'numeric'
   })
 
+  await callSendAPI(sender_psid, {
+    attachment: {
+      type: 'template',
+      payload: {
+        template_type: 'button',
+        text: `You have successfully set a reminder!`,
+        buttons: [
+          {
+            type: 'postback',
+            title: `Return to Menu`,
+            webview_height_ratio: 'full',
+            payload: 'menu'
+          }
+        ]
+      }
+    }
+  })
+
   const response = {
     attachment: {
       type: 'template',
@@ -262,6 +280,8 @@ async function handleQuickReplies (sender_psid, received_payload) {
     await callSendAPI(
       sender_psid,
       await botResponses.response(received_payload, sender_psid)
+    ).then(
+      callSendAPI(sender_psid, { text: 'Please wait...' })
     )
   } else if (received_payload === 'set_reminder') {
     await callSendAPI(
