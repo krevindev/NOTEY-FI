@@ -159,9 +159,6 @@ async function response (msg, ...sender_psid) {
       courseWork: courseWork
     }
 
-    console.log("SELECTED COURSE:")
-    console.log(course)
-
     await axiosReq('post', data)
   }
 

@@ -90,24 +90,62 @@ app.post('/set_reminder', async (req, res) => {
 
 
 
-  // const job = new cron(
-  //   `*/${time} * * * * *`,
-  //   async function (testParam) {
-  //     callSendAPI(sender_psid, { text: 'Notif' }).then(async res => {
-  //       callSendAPI(sender_psid, await botResponses.response('menu'))
-  //     })
-  //     console.log('PARAM: ' + testParam)
-  //     job.stop()
-  //   },
-  //   [`This is a reminder for ${course.title}`]
-  // )
 
-  // job.start()
+  var dueDate = new Date(courseWork.dueDate.year, courseWork.dueDate.month, courseWork.dueDate.day);
+  var dueTime = new Date(courseWork.dueTime);
 
-  console.log('HELLO THEREeeeeeeeeee')
-  console.log(body)
+  var formattedHour = dueTime.getHours().toLocaleString('en-US', { hour: 'long' });
+  var formattedMinutes = dueTime.getMinutes().toLocaleString('en-US', { minute: 'long' })
 
-  await callSendAPI(sender_psid, { text:  `Course Title: ${course.name}\n CourseWork: ${courseWork.title}` })
+  // Format the due date and time in a long format
+  var formattedDate = dueDate.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+
+
+
+  const response = {
+    attachment: {
+      type: 'template',
+      payload: {
+        template_type: 'button',
+        text: `REMINDER!\n
+        \nCourse: \n${course.name}
+        \nActivity: ${courseWork.title}
+        \nDeadlline will be on ${formattedDate} at ${formattedHour}
+        `,
+        buttons: [
+          {
+              type: "web_url",
+              url: courseWork.alternateLink,
+              title: `Go to Activity`,
+              webview_height_ratio: "full",
+          }, 
+          {
+              type: "postback",
+              title: `Return to Menu`,
+              webview_height_ratio: "full",
+              payload: "menu"
+          },
+      ],
+      }
+    }
+  }
+
+
+  const job = new cron(
+    `*/${time} * * * * *`,
+    async function (testParam) {
+      callSendAPI(sender_psid, { text: 'Notif' }).then(async res => {
+        callSendAPI(sender_psid, await botResponses.response('menu'))
+      })
+      console.log('PARAM: ' + testParam)
+      job.stop()
+    },
+    [`This is a reminder for ${course.title}`]
+  )
+
+  job.start()
+
+  //await callSendAPI(sender_psid, { text:  `Course Title: ${course.name}\n CourseWork: ${courseWork.title}` })
 })
 
 const botResponses = require('./bot-responses')
