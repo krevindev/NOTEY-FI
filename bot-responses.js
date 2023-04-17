@@ -103,17 +103,18 @@ async function response (msg, ...sender_psid) {
 
   // rem_t
   else if (msg.split(':')[0] == 'rem_t') {
-    const time = msg.split(':')[1];
-    const courseID = msg.split(':')[2];
-    const courseWorkID = msg.split(':')[3];
+    const time = msg.split(':')[1]
+    const courseID = msg.split(':')[2]
+    const courseWorkID = msg.split(':')[3]
 
-    return {
-      text: `
-        Time: ${time},
-        CourseID: ${courseID},
-        CourseWOrkID: ${courseWorkID}
-      `
+    const data = {
+      sender_psid: sender_psid,
+      time: time,
+      courseID: courseID,
+      courseWorkID: courseWorkID
     }
+
+    axiosReq('post', data)
   }
 
   // if the message is rem_sa, it means the user has selected an activity then prompt a reminder options for that activity

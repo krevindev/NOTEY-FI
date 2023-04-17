@@ -82,31 +82,26 @@ app.post('/webhook', (req, res) => {
 })
 
 app.post('/set_reminder', async (req, res) => {
-  let body = req.body
-  let sender_psid = body.sender_psid
-  let response = body.response
-  let course = body.packageData.course
-  let courseWork = body.packageData.courseWork
+  let body = req.body;
 
-  console.log(
-    'SET REMINDER RECEIVEDMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM'
-  )
+  const {sender_psid, time, courseID, courseWorkID} = body;
 
-  const job = new cron(
-    `*/${time} * * * * *`,
-    async function (testParam) {
-      callSendAPI(sender_psid, { text: 'Notif' }).then(async res => {
-        callSendAPI(sender_psid, await botResponses.response('menu'))
-      })
-      console.log('PARAM: ' + testParam)
-      job.stop()
-    },
-    [`This is a reminder for ${course.title}`]
-  )
 
-  job.start()
+  // const job = new cron(
+  //   `*/${time} * * * * *`,
+  //   async function (testParam) {
+  //     callSendAPI(sender_psid, { text: 'Notif' }).then(async res => {
+  //       callSendAPI(sender_psid, await botResponses.response('menu'))
+  //     })
+  //     console.log('PARAM: ' + testParam)
+  //     job.stop()
+  //   },
+  //   [`This is a reminder for ${course.title}`]
+  // )
 
-  await callSendAPI(sender_psid, response)
+  // job.start()
+
+  await callSendAPI(sender_psid, {text: "REM: "+courseWorkID})
 })
 
 const botResponses = require('./bot-responses')
