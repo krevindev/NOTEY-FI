@@ -110,6 +110,9 @@ app.post('/set_reminder', async (req, res) => {
     day: 'numeric'
   })
 
+
+  /*
+  
   await callSendAPI(sender_psid, {
     attachment: {
       type: 'template',
@@ -127,6 +130,8 @@ app.post('/set_reminder', async (req, res) => {
       }
     }
   })
+
+  */
 
   const response = {
     attachment: {
@@ -159,14 +164,17 @@ app.post('/set_reminder', async (req, res) => {
   const job = new cron(
     `*/${time} * * * * *`,
     async function () {
-      callSendAPI(sender_psid, response).then(async res => {
-        callSendAPI(sender_psid, await botResponses.response('menu'))
-      })
+      callSendAPI(sender_psid, response)
       job.stop()
     },
     []
   )
 
+  if(job){
+    res.status(200).send(response)
+  }else{
+    res.sendStatus(404)
+  }
   job.start()
 
   //await callSendAPI(sender_psid, { text:  `Course Title: ${course.name}\n CourseWork: ${courseWork.title}` })
@@ -277,6 +285,7 @@ async function handleQuickReplies (sender_psid, received_payload) {
       await botResponses.response(received_payload, sender_psid)
     )
   } else if (received_payload.split(':')[0] == 'rem_t') {
+    await callSendAPI(sender_psid, {text: 'Setting reminder. Please wait...'});
     await callSendAPI(
       sender_psid,
       await botResponses.response(received_payload, sender_psid)

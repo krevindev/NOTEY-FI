@@ -73,14 +73,32 @@ async function axiosReq (method, data) {
     data: data
   }
 
+  const successResponse = {
+    attachment: {
+      type: 'template',
+      payload: {
+        template_type: 'button',
+        text: `You have successfully set a reminder!`,
+        buttons: [
+          {
+            type: 'postback',
+            title: `Return to Menu`,
+            webview_height_ratio: 'full',
+            payload: 'menu'
+          }
+        ]
+      }
+    }
+  }
+
   return new Promise((resolve, reject) => {
     axios(config)
       .then(response => {
         console.log('Accepted!!!')
-        resolve('Please wait...')
+        resolve(response)
       })
       .catch(error => {
-        reject(err)
+        reject({text: 'Error setting reminder'})
       })
   })
 }
@@ -164,7 +182,7 @@ async function response (msg, ...sender_psid) {
       courseWork: courseWork
     }
 
-    await axiosReq('post', data)
+    return await axiosReq('post', data)
   }
 
   // if the message is rem_sa, it means the user has selected an activity then prompt a reminder options for that activity
