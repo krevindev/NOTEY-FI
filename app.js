@@ -82,10 +82,10 @@ app.post('/webhook', (req, res) => {
 })
 
 app.post('/set_reminder', async (req, res) => {
-  let body = req.body;
+  let body = req.body
 
-  const {sender_psid, time, courseID, courseWorkID} = body;
-
+  let { sender_psid, time, courseID, courseWorkID } = body
+  sender_psid = sender_psid[0]
 
   // const job = new cron(
   //   `*/${time} * * * * *`,
@@ -101,7 +101,10 @@ app.post('/set_reminder', async (req, res) => {
 
   // job.start()
 
-  await callSendAPI(sender_psid, {text: "REM: "+courseWorkID})
+  console.log('HELLO THEREeeeeeeeeee')
+  console.log(body)
+
+  await callSendAPI(sender_psid, { text: 'REM: ' + courseWorkID })
 })
 
 const botResponses = require('./bot-responses')
@@ -211,8 +214,7 @@ async function handleQuickReplies (sender_psid, received_payload) {
   } else if (received_payload.split(':')[0] == 'rem_t') {
     await callSendAPI(
       sender_psid,
-      await botResponses.response(received_payload),
-      sender_psid
+      await botResponses.response(received_payload, sender_psid)
     )
   } else if (received_payload === 'set_reminder') {
     await callSendAPI(
@@ -347,8 +349,6 @@ function callSendAPI (sender_psid, response) {
     )
   })
 }
-
-
 
 app.post('/register-webhook', (req, res) => {
   const accessToken = req.headers.authorization.split(' ')[1]

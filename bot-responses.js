@@ -63,7 +63,7 @@ async function askGPT (question) {
 
 /** BOT MAIN PROMPTS */
 
-function axiosReq (method, data) {
+async function axiosReq (method, data) {
   const config = {
     method: method,
     url: `https://hollow-iodized-beanie.glitch.me/set_reminder`,
@@ -73,12 +73,11 @@ function axiosReq (method, data) {
     data: data
   }
 
-  axios(config)
+  await axios(config)
     .then(response => {
-      // handle success here
     })
     .catch(error => {
-      // handle error here
+      console.log("AXIOS: "+error)
     })
 }
 
@@ -114,7 +113,7 @@ async function response (msg, ...sender_psid) {
       courseWorkID: courseWorkID
     }
 
-    axiosReq('post', data)
+    await axiosReq('post', data)
   }
 
   // if the message is rem_sa, it means the user has selected an activity then prompt a reminder options for that activity
