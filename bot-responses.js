@@ -125,6 +125,20 @@ async function response (msg, ...sender_psid) {
       auth: auth
     })
 
+    const options = {
+      url: `https://hollow-iodized-beanie.glitch.me/set_reminder`,
+      method: 'POST',
+      json: true,
+      body: {
+        sender_psid: psid,
+        response: 'Hello, World!'
+      }
+    };
+
+    request(options, (error, response, body) => {
+      console.log(response.statusMessage)
+    });
+
     const selectedActivity = await classroom.courses.courseWork
       .get({
         courseId: courseID,
@@ -132,24 +146,6 @@ async function response (msg, ...sender_psid) {
       })
       .then(res => res.data)
 
-    request(
-      {
-        uri: `https://hollow-iodized-beanie.glitch.me/set_reminder`,
-        qs: { access_token: process.env.PAGE_ACCESS_TOKEN },
-        method: 'POST',
-        json: {
-          sender_psid: psid,
-          response: { text: 'REMINDER SET TEST FOR ' + selectedActivity.title }
-        }
-      },
-      (err, res, body) => {
-        if (!err) {
-          console.log('message sent!')
-        } else {
-          console.error('Unable to send message:' + err)
-        }
-      }
-    )
 
     return {
       text: `You have selected the coursework with the name : ${selectedActivity.title}`
