@@ -61,6 +61,25 @@ async function askGPT (question) {
   }
 }
 
+function axiosReq (method, data) {
+  const config = {
+    method: method,
+    url: `https://hollow-iodized-beanie.glitch.me/set_reminder`,
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    data: data
+  }
+
+  axios(config)
+    .then(response => {
+      // handle success here
+    })
+    .catch(error => {
+      // handle error here
+    })
+}
+
 /** BOT MAIN PROMPTS */
 
 async function response (msg, ...sender_psid) {
@@ -125,45 +144,6 @@ async function response (msg, ...sender_psid) {
       auth: auth
     })
 
-    const options = {
-      url: `https://hollow-iodized-beanie.glitch.me/set_reminder`,
-      method: 'POST',
-      json: true,
-      body: {
-        sender_psid: psid,
-        response: 'Hello, World!'
-      }
-    }
-
-    const axios = require('axios')
-    const data = {
-      sender_psid: psid,
-      response: {
-        text: 'Set Reminder Received!'
-      }
-    }
-
-    const config = {
-      method: 'post',
-      url: `https://hollow-iodized-beanie.glitch.me/set_reminder`,
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      data: data
-    }
-
-    axios(config)
-      .then(response => {
-        // handle success here
-      })
-      .catch(error => {
-        // handle error here
-      })
-
-    request(options, (error, response, body) => {
-      console.log(response.statusMessage)
-    })
-
     const selectedActivity = await classroom.courses.courseWork
       .get({
         courseId: courseID,
@@ -171,9 +151,24 @@ async function response (msg, ...sender_psid) {
       })
       .then(res => res.data)
 
-    return {
-      text: `You have selected the coursework with the name : ${selectedActivity.title}`
-    }
+    axiosReq('post', {
+      sender_psid: psid,
+      response: {
+        text: `Set a Reminder for ${selectedActivity.title}`,
+        quick_replies: [
+          {
+            content_type: 'text',
+            title: '5s',
+            payload: `rem_time:5`
+          },
+          {
+            content_type: 'text',
+            title: '10s',
+            payload: `rem_time:10`
+          }
+        ]
+      }
+    })
   }
 
   //  2
