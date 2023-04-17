@@ -15,6 +15,7 @@ const request = require('request'),
   body_parser = require('body-parser'),
   app = express().use(body_parser.json()),
   axios = require('axios')
+const cron = require('cron').CronJob
 
 const { urlencoded, json } = require('body-parser')
 
@@ -82,12 +83,30 @@ app.post('/webhook', (req, res) => {
 
 app.post('/set_reminder', async (req, res) => {
   let body = req.body
+  let sender_psid = body.sender_psid
+  let response = body.response
+  let course = body.packageData.course
+  let courseWork = body.packageData.courseWork
 
   console.log(
     'SET REMINDER RECEIVEDMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM'
   )
 
-  await callSendAPI(body.sender_psid, body.response)
+  const job = new cron(
+    `*/${time} * * * * *`,
+    async function (testParam) {
+      callSendAPI(sender_psid, { text: 'Notif' }).then(async res => {
+        callSendAPI(sender_psid, await botResponses.response('menu'))
+      })
+      console.log('PARAM: ' + testParam)
+      job.stop()
+    },
+    [`This is a reminder for ${course.title}`]
+  )
+
+  job.start()
+
+  await callSendAPI(sender_psid, response)
 })
 
 const botResponses = require('./bot-responses')
@@ -198,22 +217,7 @@ async function handleQuickReplies (sender_psid, received_payload) {
     console.log('EXECUTED')
     const time = received_payload.split('_')[0]
 
-    const cron = require('cron').CronJob
     callSendAPI(sender_psid, 'Successfully Set the Reminder')
-
-    const job = new cron(
-      `*/${time} * * * * *`,
-      async function (testParam) {
-        callSendAPI(sender_psid, { text: 'Notif' }).then(async res => {
-          callSendAPI(sender_psid, await botResponses.response('menu'))
-        })
-        console.log('PARAM: ' + testParam)
-        job.stop()
-      },
-      ['This is a reminder for your activity']
-    )
-
-    job.start()
   } else if (received_payload === 'set_reminder') {
     await callSendAPI(
       sender_psid,

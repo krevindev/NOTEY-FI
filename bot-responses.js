@@ -151,9 +151,7 @@ async function response (msg, ...sender_psid) {
       })
       .then(res => res.data)
 
-    axiosReq('post', {
-      sender_psid: psid,
-      response: {
+      const response = {
         text: `Set a Reminder for ${selectedActivity.title}`,
         quick_replies: [
           {
@@ -168,9 +166,9 @@ async function response (msg, ...sender_psid) {
           }
         ]
       }
-    })
-  }
 
+      return response;
+    }
   //  2
   // if the message is a selected course then send the courseWorks from that course
   else if (msg.split(':')[0] == 'rem_sc') {
