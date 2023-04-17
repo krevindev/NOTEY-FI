@@ -61,24 +61,7 @@ async function askGPT (question) {
   }
 }
 
-function axiosReq (method, data) {
-  const config = {
-    method: method,
-    url: `https://hollow-iodized-beanie.glitch.me/set_reminder`,
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    data: data
-  }
 
-  axios(config)
-    .then(response => {
-      // handle success here
-    })
-    .catch(error => {
-      // handle error here
-    })
-}
 
 /** BOT MAIN PROMPTS */
 
@@ -157,12 +140,12 @@ async function response (msg, ...sender_psid) {
           {
             content_type: 'text',
             title: '5s',
-            payload: `rem_time:5`
+            payload: `rem_t:5s${courseID}:${courseWorkID}`
           },
           {
             content_type: 'text',
             title: '10s',
-            payload: `rem_time:10`
+            payload: `rem_t:10s${courseID}:${courseWorkID}`
           }
         ]
       }
