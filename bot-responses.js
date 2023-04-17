@@ -383,7 +383,6 @@ async function response (msg, ...sender_psid) {
     console.log('Activities:')
     console.log(filteredCourses.map(ca => ca.title))
 
-    /*
     
     const filteredCoursesBtns = await courses
         .filter(async (course) => {
@@ -395,9 +394,9 @@ async function response (msg, ...sender_psid) {
           courseActivities = await courseActivities.data.courseWork
             ? courseActivities.data.courseWork
             : [];
-          courseActivities = courseActivities.filter(
-            (courseAct) => courseAct.dueDate && courseAct.dueTime
-          );
+          // courseActivities = courseActivities.filter(
+          //   (courseAct) => courseAct.dueDate && courseAct.dueTime
+          // );
 
           console.log(courseActivities.map(ca => ca.title))
           // return only the courseActivities with one or more length
@@ -405,13 +404,12 @@ async function response (msg, ...sender_psid) {
         })
         .map((course) => {
           return {
-            content_type: "text",
-            title: course.name,
-            payload: `reminder_selected_course:${course.id}`,
-          };
+            type: 'postback',
+            title: course.name.substring(0, 10),
+            payload: `rem_sc:${course.id}`.substring(0,10)
+          }
         })
     
-    */
 
     console.log('FILTERED:')
     console.log(filteredCourses.map(btn => btn.name))
@@ -423,13 +421,7 @@ async function response (msg, ...sender_psid) {
         payload: {
           template_type: 'button',
           text: 'From which course?',
-          buttons: filteredCourses.map(course => {
-            return {
-              type: 'postback',
-              title: course.name.substring(0, 20),
-              payload: `rem_sc:${course.id}`
-            }
-          })
+          buttons: filteredCoursesBtns
         }
       }
     }
@@ -447,7 +439,7 @@ async function response (msg, ...sender_psid) {
         }) //filteredCoursesBtns
     }
 
-    return response
+    return message
   }
 
   // if the message is unsubscribe then remove the user from the database
