@@ -82,11 +82,11 @@ app.post('/webhook', (req, res) => {
 })
 
 app.post('/set_reminder', async (req, res) => {
-  let body = req.body
-  const sender_psid = body.sender_psid[0]
-  const time = body.time.substring(0, body.time.length - 1)
-  const course = body.course
-  const courseWork = body.courseWork
+  let body = await req.body
+  const sender_psid = await body.sender_psid[0]
+  const time = await body.time.substring(0, body.time.length - 1)
+  const course = await body.course
+  const courseWork = await body.courseWork
 
   var dueDate = new Date(
     courseWork.dueDate.year,
@@ -110,38 +110,15 @@ app.post('/set_reminder', async (req, res) => {
     day: 'numeric'
   })
 
-
-  /*
-  
-  await callSendAPI(sender_psid, {
-    attachment: {
-      type: 'template',
-      payload: {
-        template_type: 'button',
-        text: `You have successfully set a reminder!`,
-        buttons: [
-          {
-            type: 'postback',
-            title: `Return to Menu`,
-            webview_height_ratio: 'full',
-            payload: 'menu'
-          }
-        ]
-      }
-    }
-  })
-
-  */
-
   const response = {
     attachment: {
       type: 'template',
       payload: {
         template_type: 'button',
         text: `REMINDER!\n
-        \nCourse: \n${course.name}
-        \nActivity: ${courseWork.title}
-        \nDeadlline will be on ${formattedDate} at ${formattedHour}
+        \nCourse: \n${await course.name}
+        \nActivity: ${await courseWork.title}
+        \nDeadlline will be on ${await formattedDate} at ${await formattedHour}
         `,
         buttons: [
           {
@@ -161,21 +138,35 @@ app.post('/set_reminder', async (req, res) => {
     }
   }
 
-  const job = new cron(
-    `*/${time} * * * * *`,
-    async function () {
-      callSendAPI(sender_psid, response)
-      job.stop()
-    },
-    []
-  )
+  await callSendAPI(await sender_psid, {
+    attachment: {
+      type: 'template',
+      payload: {
+        template_type: 'button',
+        text: `You have successfully set a reminder!`,
+        buttons: [
+          {
+            type: 'postback',
+            title: `Return to Menu`,
+            webview_height_ratio: 'full',
+            payload: 'menu'
+          }
+        ]
+      }
+    }
+  }).then(async res => {
+    console.log("WHEN CRON SHOULD START")
+    const job = new cron(
+      `*/${await time} * * * * *`,
+      async function () {
+        await callSendAPI(await sender_psid, await response)
+        job.stop()
+      },
+      []
+    )
 
-  if(job){
-    res.status(200).send(response)
-  }else{
-    res.sendStatus(404)
-  }
-  job.start()
+    job.start()
+  })
 
   //await callSendAPI(sender_psid, { text:  `Course Title: ${course.name}\n CourseWork: ${courseWork.title}` })
 })
@@ -285,7 +276,7 @@ async function handleQuickReplies (sender_psid, received_payload) {
       await botResponses.response(received_payload, sender_psid)
     )
   } else if (received_payload.split(':')[0] == 'rem_t') {
-    await callSendAPI(sender_psid, {text: 'Setting reminder. Please wait...'});
+    await callSendAPI(sender_psid, { text: 'Setting reminder. Please wait...' })
     await callSendAPI(
       sender_psid,
       await botResponses.response(received_payload, sender_psid)
