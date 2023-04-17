@@ -85,7 +85,8 @@ app.post('/set_reminder', async (req, res) => {
   
   console.log("SET REMINDER RECEIVEDMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM")
 
-   await callSendAPI(body.sender_psid, body.response);
+  console.log(body)
+   //await callSendAPI(body.sender_psid, body.response);
 })
 
 const botResponses = require('./bot-responses')
