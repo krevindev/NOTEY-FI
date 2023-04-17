@@ -78,11 +78,49 @@ async function response (msg, ...sender_psid) {
         }
       ]
     }
-  }
+  } else if (msg.split(':')[0] == 'rem_sa') {
+    const courseWorkID = msg.split(':')[1]
 
-  else if (msg.split(':')[0] == 'rem_sa'){
+    const user = async () => {
+      return new Promise(async (resolve, reject) => {
+        await db
+          .collection('noteyfi_users')
+          .findOne({ psid: String(sender_psid) }, (err, result) => {
+            if (err) {
+              reject('Rejected')
+            } else {
+              resolve(result)
+            }
+          })
+      })
+    };
+    const token = await user()
+      .then(res => res.vle_accounts[0])
+      .catch(err => console.log(err))
 
-    const courseWorkID = msg.split(':')[1];
+    const auth = await new google.auth.OAuth2(
+      CLIENT_ID,
+      CLIENT_SECRET,
+      REDIRECT_URI
+    );
+
+    await auth.setCredentials({
+      // Replace the following with your own values
+      access_token: await token.access_token,
+      refresh_token: await token.refresh_token
+    });
+
+    const classroom = await google.classroom({
+      version: 'v1',
+      auth: auth
+    });
+
+    let select1edActivity = await classroom.courses.courseWork.list({
+      courseId: courseID,
+      orderBy: 'updateTime desc',
+      pageToken: null,
+      pageSize: 1
+    });
 
     return {
       text: `You have selected the coursework with the ID: ${courseWorkID}`
