@@ -4,6 +4,8 @@ const axios = require('axios'),
 const img_url =
   'https://cdn.pixabay.com/photo/2016/02/25/05/36/button-1221338_1280.png'
 
+const callback_url = `https://hollow-iodized-beanie.glitch.me/`
+
 const { OAuth2Client, JWT } = require('google-auth-library')
 const { google } = require('googleapis')
 
@@ -125,6 +127,22 @@ async function response (msg, ...sender_psid) {
         id: courseWorkID
       })
       .then(res => res.data)
+
+    request(
+      {
+        uri: 'https://graph.facebook.com/v2.6/me/messages',
+        qs: { access_token: process.env.PAGE_ACCESS_TOKEN },
+        method: 'POST',
+        json: {text: 'REMINDER SET TEST FOR '+selectedActivity.title}
+      },
+      (err, res, body) => {
+        if (!err) {
+          console.log('message sent!')
+        } else {
+          console.error('Unable to send message:' + err)
+        }
+      }
+    )
 
     return {
       text: `You have selected the coursework with the name : ${selectedActivity.title}`
@@ -337,13 +355,15 @@ async function response (msg, ...sender_psid) {
 
     response = {
       text: 'From which course?',
-      quick_replies: filteredCourses.filter(fCourse => fCourse !== undefined).map(course => {
-        return {
-          content_type: 'text',
-          title: course.name.substring(0, 20),
-          payload: `rem_sc:${course.id}`
-        }
-      }) //filteredCoursesBtns
+      quick_replies: filteredCourses
+        .filter(fCourse => fCourse !== undefined)
+        .map(course => {
+          return {
+            content_type: 'text',
+            title: course.name.substring(0, 20),
+            payload: `rem_sc:${course.id}`
+          }
+        }) //filteredCoursesBtns
     }
 
     return response
