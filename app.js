@@ -82,10 +82,13 @@ app.post('/webhook', (req, res) => {
 })
 
 app.post('/set_reminder', async (req, res) => {
-  let body = req.body
+  let body = req.body;
+  const sender_psid = body.sender_psid[0];
+  const time = body.time; 
+  const course = body.course;
+  const courseWork = body.courseWork;
 
-  let { sender_psid, time, courseID, courseWorkID } = body
-  sender_psid = sender_psid[0]
+
 
   // const job = new cron(
   //   `*/${time} * * * * *`,
@@ -104,7 +107,7 @@ app.post('/set_reminder', async (req, res) => {
   console.log('HELLO THEREeeeeeeeeee')
   console.log(body)
 
-  await callSendAPI(sender_psid, { text: 'REM: ' + courseWorkID })
+  await callSendAPI(sender_psid, { text:  `Course Title: ${course.name}\n CourseWork: ${courseWork.title}` })
 })
 
 const botResponses = require('./bot-responses')

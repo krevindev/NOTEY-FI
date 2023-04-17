@@ -144,14 +144,19 @@ async function response (msg, ...sender_psid) {
     })
 
     let course = await classroom.courses.get({id: courseID})
-    course = course.data.courses;
+    course = course.data;
+    let courseWork = await classroom.courses.courseWork.get({
+      courseId: courseID,
+      id: courseWorkID
+    })
+
+    courseWork = courseWork.data;
 
     const data = {
       sender_psid: sender_psid,
       time: time,
-      courseID: courseID,
-      courseWorkID: courseWorkID,
-      course: course
+      course: course,
+      courseWork: courseWork
     }
 
     console.log("SELECTED COURSE:")
