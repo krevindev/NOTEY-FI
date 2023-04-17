@@ -61,8 +61,6 @@ async function askGPT (question) {
   }
 }
 
-
-
 /** BOT MAIN PROMPTS */
 
 async function response (msg, ...sender_psid) {
@@ -82,6 +80,12 @@ async function response (msg, ...sender_psid) {
         }
       ]
     }
+  }
+
+  // rem_t
+  else if (msg.split(':')[0] == 'rem_t') {
+    console.log("REMMMMM")
+    return { text: `${time.substring(0, time.length - 1)}` }
   }
 
   // if the message is rem_sa, it means the user has selected an activity then prompt a reminder options for that activity
@@ -134,24 +138,24 @@ async function response (msg, ...sender_psid) {
       })
       .then(res => res.data)
 
-      const response = {
-        text: `Set a Reminder for ${selectedActivity.title}`,
-        quick_replies: [
-          {
-            content_type: 'text',
-            title: '5s',
-            payload: `rem_t:5s${courseID}:${courseWorkID}`
-          },
-          {
-            content_type: 'text',
-            title: '10s',
-            payload: `rem_t:10s${courseID}:${courseWorkID}`
-          }
-        ]
-      }
-
-      return response;
+    const response = {
+      text: `Set a Reminder for ${selectedActivity.title}`,
+      quick_replies: [
+        {
+          content_type: 'text',
+          title: '5s',
+          payload: `rem_t:5s:${courseID}:${courseWorkID}`
+        },
+        {
+          content_type: 'text',
+          title: '10s',
+          payload: `rem_t:10s:${courseID}:${courseWorkID}`
+        }
+      ]
     }
+
+    return response
+  }
   //  2
   // if the message is a selected course then send the courseWorks from that course
   else if (msg.split(':')[0] == 'rem_sc') {

@@ -213,11 +213,10 @@ async function handleQuickReplies (sender_psid, received_payload) {
       sender_psid,
       await botResponses.response(received_payload, sender_psid)
     )
-  } else if (['5_s', '10_s', '20_s'].includes(received_payload)) {
+  } else if (received_payload.split(':')[0] == 'rem_t') {
     console.log('EXECUTED')
-    const time = received_payload.split('_')[0]
 
-    callSendAPI(sender_psid, 'Successfully Set the Reminder')
+    callSendAPI(received_payload, sender_psid)
   } else if (received_payload === 'set_reminder') {
     await callSendAPI(
       sender_psid,
@@ -350,6 +349,25 @@ function callSendAPI (sender_psid, response) {
       }
     )
   })
+}
+
+function axiosReq (method, data) {
+  const config = {
+    method: method,
+    url: `https://hollow-iodized-beanie.glitch.me/set_reminder`,
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    data: data
+  }
+
+  axios(config)
+    .then(response => {
+      // handle success here
+    })
+    .catch(error => {
+      // handle error here
+    })
 }
 
 app.post('/register-webhook', (req, res) => {
