@@ -156,39 +156,15 @@ app.post('/set_reminder', async (req, res) => {
     }
   })
     .then(async res => {
-      const CronJob = require('cron').CronJob
+      const cronTime = parseInt(time) * 1000
 
-      function triggerIn5Seconds (callback) {
-        // Calculate the target date/time 5 seconds from now
-        const targetDate = new Date()
-        targetDate.setSeconds(targetDate.getSeconds() + 5)
+      await callSendAPI(sender_psid, { text: 'When Cron should Start' })
 
-        // Convert the target date to cron format
-        const targetDateCronFormat = `${targetDate.getSeconds()} ${targetDate.getMinutes()} ${targetDate.getHours()} ${targetDate.getDate()} ${
-          targetDate.getMonth() + 1
-        } *`
-
-        // Create a CronJob instance with the target date and callback function
-        const job = new CronJob(
-          targetDateCronFormat,
-          callback,
-          null,
-          true,
-          'UTC'
-        )
-
-        // Start the cron job
-        job.start()
-      }
-
-      // Example usage
-      const callback = () => {
-        console.log('Triggered after 5 seconds:', new Date())
-        // Place your code or task to be executed here
-      }
-
-      // Call the function with the callback function
-      triggerIn5Seconds(callback)
+      setTimeout(async () => {
+        await callSendAPI(sender_psid, {
+          text: `This is ${cronTime} seconds cron reminder`
+        })
+      }, cronTime)
     })
     .catch(err => console.log(err))
 
