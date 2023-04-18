@@ -383,14 +383,13 @@ async function response (msg, ...sender_psid) {
 
     const attachment_url = `https://play-lh.googleusercontent.com/w0s3au7cWptVf648ChCUP7sW6uzdwGFTSTenE178Tz87K_w1P1sFwI6h1CLZUlC2Ug`
 
-    const filteredCourses = courses.filter(async course => {
-
+    const filteredCourses = courses.map(async course => {
       let activities = await classroom.courses.courseWork.list({
         courseId: course.id
       })
-      activities = activities.data.courseWork;
 
-      return activities.length > 0
+      
+      console.log(activities.data.courseWork.map(cw => cw.title))
     })
 
     // const filteredCoursesBtns = await courses
