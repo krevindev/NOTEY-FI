@@ -446,7 +446,7 @@ async function response (msg, ...sender_psid) {
     // }
 
     response = {
-      text: 'From which course?',
+      text: 'SELECT A COURSE',
       quick_replies: filteredCourses
         .filter(course => course !== undefined)
         .map(course => {
@@ -455,7 +455,7 @@ async function response (msg, ...sender_psid) {
             title: course.name.substring(0, 20),
             payload: `rem_sc:${course.id}`
           }
-        }) //filteredCoursesBtns
+        }).slice(0,12)
     }
 
     return response
