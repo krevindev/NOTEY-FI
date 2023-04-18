@@ -150,9 +150,9 @@ app.post('/set_reminder', async (req, res) => {
   let intervalId
   let deadTime
 
-  function isReminderReached (assignment) {
+  function isReminderReached (courseWork) {
     const currentDate = new Date() // Get current date and time
-    deadTime = new Date(`${assignment.dueDate}T${assignment.dueTime}:00`) // Convert dueDate and dueTime to a JavaScript Date object
+    deadTime = new Date(`${courseWork.dueDate}T${courseWork.dueTime}:00`) // Convert dueDate and dueTime to a JavaScript Date object
 
     return currentDate >= dueTime // Compare current date and time with deadline
   }
@@ -179,7 +179,7 @@ app.post('/set_reminder', async (req, res) => {
       const cronTime = parseInt(await time) * 1000
 
       function deadlineChecker () {
-        if (isReminderReached(assignment)) {
+        if (isReminderReached(courseWork)) {
           console.log('Deadline has been reached!')
           clearInterval(intervalId) // Clear the interval once deadline has been reached
         } else {
