@@ -98,7 +98,7 @@ async function axiosReq (method, data) {
         resolve(response)
       })
       .catch(error => {
-        reject({text: 'Error setting reminder'})
+        reject({ text: 'Error setting reminder' })
       })
   })
 }
@@ -182,7 +182,9 @@ async function response (msg, ...sender_psid) {
       courseWork: courseWork
     }
 
-    return await axiosReq('post', data).then(res => res).catch(err => console.log(err))
+    return await axiosReq('post', data)
+      .then(res => res)
+      .catch(err => console.log(err))
   }
 
   // if the message is rem_sa, it means the user has selected an activity then prompt a reminder options for that activity
@@ -399,58 +401,55 @@ async function response (msg, ...sender_psid) {
         courseAct => courseAct.dueDate && courseAct.dueTime
       )
 
-      // return only the courseActivities with one or more length
-      return await courseActivities.length
+      // return only the courseActivities with one or more 
+      console.log(courseActivities.length)
+      return await courseActivities.length > 0
     })
 
-    console.log('Activities:')
-    console.log(filteredCourses.map(ca => ca.title))
+    // const filteredCoursesBtns = await courses
+    //   .filter(async course => {
+    //     let courseActivities = await classroom.courses.courseWork.list({
+    //       courseId: course.id,
+    //       orderBy: 'updateTime desc',
+    //       pageToken: null
+    //     })
+    //     courseActivities = (await courseActivities.data.courseWork)
+    //       ? courseActivities.data.courseWork
+    //       : []
+    //     courseActivities = courseActivities.filter(
+    //       courseAct => courseAct.dueDate && courseAct.dueTime
+    //     )
 
-    const filteredCoursesBtns = await courses
-      .filter(async course => {
-        let courseActivities = await classroom.courses.courseWork.list({
-          courseId: course.id,
-          orderBy: 'updateTime desc',
-          pageToken: null
-        })
-        courseActivities = (await courseActivities.data.courseWork)
-          ? courseActivities.data.courseWork
-          : []
-        courseActivities = courseActivities.filter(
-          courseAct => courseAct.dueDate && courseAct.dueTime
-        )
-
-        console.log(courseActivities.map(ca => ca.title))
-        // return only the courseActivities with one or more length
-        return (await courseActivities.length) >= 1
-      })
-      .map(course => {
-        return {
-          type: 'postback',
-          title: course.name.substring(0, 20),
-          payload: `rem_sc:${course.id}`
-        }
-      })
-
-    console.log('FILTERED:')
-    console.log(filteredCourses.map(btn => btn.name))
+    //     console.log(courseActivities.map(ca => ca.title))
+    //     // return only the courseActivities with one or more length
+    //     return (await courseActivities.length) >= 1
+    //   })
+    //   .map(course => {
+    //     return {
+    //       type: 'postback',
+    //       title: course.name.substring(0, 20),
+    //       payload: `rem_sc:${course.id}`
+    //     }
+    //   })
 
     /* Buttons*/
-    const message = {
-      attachment: {
-        type: 'template',
-        payload: {
-          template_type: 'button',
-          text: 'From which course?',
-          buttons: filteredCoursesBtns
-        }
-      }
-    }
+    // const message = {
+    //   attachment: {
+    //     type: 'template',
+    //     payload: {
+    //       template_type: 'button',
+    //       text: 'From which course?',
+    //       buttons: filteredCoursesBtns
+    //     }
+    //   }
+    // }
+
+    console.log(filteredCourses.map(fc => fc.name))
 
     response = {
       text: 'From which course?',
       quick_replies: filteredCourses
-        .filter(fCourse => fCourse !== undefined)
+        .filter(fCourse => fCourse)
         .map(course => {
           return {
             content_type: 'text',
