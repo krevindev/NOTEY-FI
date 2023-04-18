@@ -184,7 +184,7 @@ async function response (msg, ...sender_psid) {
 
     return await axiosReq('post', data)
       .then(res => res)
-      .catch(err => console.log(err))
+      .catch(err => err)
   }
 
   // if the message is rem_sa, it means the user has selected an activity then prompt a reminder options for that activity
@@ -331,7 +331,7 @@ async function response (msg, ...sender_psid) {
         payload: {
           template_type: 'button',
           text: 'Please select an activity',
-          buttons: courseActivitiesBtn.slice(0,1)
+          buttons: courseActivitiesBtn.slice(0, 1)
         }
       }
     }
@@ -455,7 +455,8 @@ async function response (msg, ...sender_psid) {
             title: course.name.substring(0, 20),
             payload: `rem_sc:${course.id}`
           }
-        }).slice(0,12)
+        })
+        .slice(0, 12)
     }
 
     return response
