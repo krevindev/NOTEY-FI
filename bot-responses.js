@@ -394,23 +394,19 @@ async function response (msg, ...sender_psid) {
       // if the courseActivities is null, assign an empty array to it instead
       courseActivities = (await courseActivities.data.courseWork)
         ? courseActivities.data.courseWork
-        : []
+        : undefined
 
       // filter the courseActivities with dueDate and dueTime
-      courseActivities = courseActivities.filter(
-        courseAct => courseAct.dueDate && courseAct.dueTime
-      )
-
-      // return only the courseActivities with one or more
-      console.log('iterate:')
-      console.log(Object.keys(courseActivities))
-
-      if (courseActivities.length > 0) {
-        console.log('Isnt Zero')
-        return courseActivities
-      }else{
-        return 'Fuck'
+      if (courseActivities) {
+        courseActivities = courseActivities.filter(
+          courseAct => courseAct.dueDate && courseAct.dueTime
+        )
       }
+
+      console.log('ITERATED COURSE:')
+      console.log(courseActivities)
+
+      return courseActivities !== undefined
     })
 
     // const filteredCoursesBtns = await courses
