@@ -401,9 +401,16 @@ async function response (msg, ...sender_psid) {
         courseAct => courseAct.dueDate && courseAct.dueTime
       )
 
-      // return only the courseActivities with one or more 
-      console.log(courseActivities.length)
-      return await courseActivities.length > 0
+      // return only the courseActivities with one or more
+      console.log('iterate:')
+      console.log(Object.keys(courseActivities))
+
+      if (courseActivities.length > 0) {
+        console.log('Isnt Zero')
+        return courseActivities
+      }else{
+        return 'Fuck'
+      }
     })
 
     // const filteredCoursesBtns = await courses
@@ -444,6 +451,7 @@ async function response (msg, ...sender_psid) {
     //   }
     // }
 
+    console.log('FILTERED COURSES:')
     console.log(filteredCourses.map(fc => fc.name))
 
     response = {
