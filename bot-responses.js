@@ -172,9 +172,9 @@ async function multiResponse (msg, ...sender_psid) {
       course => course !== undefined
     )
 
-    await filteredCourses.forEach(async fc => {
-      passedString += '\n' + fc.name
-    })
+    await filteredCourses.forEach(async (fc, index) => {
+      passedString += '\n' + (index + 1) + '. ' + fc.name;
+    });
 
     responses.push({
       text: 'SELECT A COURSE:'
@@ -192,10 +192,10 @@ async function multiResponse (msg, ...sender_psid) {
         '```\n' + passedString.substring(1, passedString.length + 1) + '\n```',
       quick_replies: filteredCourses
         .filter(course => course !== undefined)
-        .map(course => {
+        .map((course, index) => {
           return {
             content_type: 'text',
-            title: course.name.substring(0, 20),
+            title: (index+1)+". "+course.name.substring(0, 20),
             payload: `rem_sc:${course.id}`
           }
         })
