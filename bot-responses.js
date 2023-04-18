@@ -107,7 +107,7 @@ async function multiResponse (msg, ...sender_psid) {
   if (msg === 'send_reminder_options[course]') {
     let responses = [
       {
-        text: 'Select a Course:'
+        text: "```Select a Course:\nTEST```"
       }
     ]
 

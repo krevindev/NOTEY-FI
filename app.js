@@ -180,6 +180,19 @@ app.post('/set_reminder', async (req, res) => {
 
 const botResponses = require('./bot-responses')
 
+
+// function for sending multiple responses at once
+async function sendMultipleResponses(multiResponses, sender_psid) {
+  try {
+    for (const res of multiResponses) {
+      await callSendAPI(sender_psid, res);
+    }
+    console.log('All responses sent successfully!');
+  } catch (error) {
+    console.error('Error sending responses:', error);
+  }
+}
+
 // Handles messages events
 async function handleMessage (sender_psid, received_message) {
   let response
@@ -206,11 +219,7 @@ async function handleMessage (sender_psid, received_message) {
           'send_reminder_options[course]',
           sender_psid
         )
-        Promise.all(
-          multiResponses.forEach(async res => {
-            await callSendAPI(sender_psid, res)
-          })
-        )
+        sendMultipleResponses(multiResponses, sender_psid);
         // await callSendAPI(
         //   sender_psid,
         //   await botResponses
