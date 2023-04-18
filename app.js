@@ -96,28 +96,17 @@ app.post('/set_reminder', async (req, res) => {
   const course = await body.course
   const courseWork = await body.courseWork
 
-  /** Date format */
-  var dueDate = new Date(
+  const dueDate = new Date(
     courseWork.dueDate.year,
-    courseWork.dueDate.month,
-    courseWork.dueDate.day
+    courseWork.dueDate.month - 1,
+    courseWork.dueDate.day,
+    courseWork.dueTime.hours,
+    courseWork.dueTime.minutes,
+    courseWork.dueTime.seconds
   )
-  var dueTime = new Date(courseWork.dueTime)
 
-  var formattedHour = dueTime
-    .getHours()
-    .toLocaleString('en-US', { hour: 'long' })
-  var formattedMinutes = dueTime
-    .getMinutes()
-    .toLocaleString('en-US', { minute: 'long' })
-
-  // Format the due date and time in a long format
-  var formattedDate = dueDate.toLocaleDateString('en-US', {
-    weekday: 'long',
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric'
-  })
+  console.log("DUE DATE:")
+  console.log(new Intl.DateTimeFormat("en-US").format(dueDate))
 
   /** Date format end */
 
@@ -129,7 +118,6 @@ app.post('/set_reminder', async (req, res) => {
         text: `REMINDER!\n
         \nCourse: \n${await course.name}
         \nActivity: ${await courseWork.title}
-        \nDeadlline will be on ${await formattedDate} at ${await formattedHour}
         `,
         buttons: [
           {
@@ -152,7 +140,7 @@ app.post('/set_reminder', async (req, res) => {
   let intervalId
   let deadTime
 
-  function isDeadlineReached (assignment) {
+  function isReminderReached (assignment) {
     const currentDate = new Date() // Get current date and time
     deadTime = new Date(`${assignment.dueDate}T${assignment.dueTime}:00`) // Convert dueDate and dueTime to a JavaScript Date object
 
@@ -181,7 +169,7 @@ app.post('/set_reminder', async (req, res) => {
       const cronTime = parseInt(await time) * 1000
 
       function deadlineChecker () {
-        if (isDeadlineReached(assignment)) {
+        if (isReminderReached(assignment)) {
           console.log('Deadline has been reached!')
           clearInterval(intervalId) // Clear the interval once deadline has been reached
         } else {
