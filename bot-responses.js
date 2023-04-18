@@ -173,8 +173,8 @@ async function multiResponse (msg, ...sender_psid) {
     )
 
     await filteredCourses.forEach(async (fc, index) => {
-      passedString += '\n\n' + (index + 1) + '.\n' + fc.name;
-    });
+      passedString += '\n\n' + (index + 1) + '.\n' + fc.name
+    })
 
     responses.push({
       text: '```*SELECT A COURSE:```'
@@ -195,7 +195,7 @@ async function multiResponse (msg, ...sender_psid) {
         .map((course, index) => {
           return {
             content_type: 'text',
-            title: String((index+1))+". "+course.name.substring(0, 20),
+            title: String(index + 1) + '. ' + course.name.substring(0, 20),
             payload: `rem_sc:${course.id}`
           }
         })
@@ -365,6 +365,8 @@ async function response (msg, ...sender_psid) {
   else if (msg.split(':')[0] == 'rem_sc') {
     const courseID = msg.split(':')[1]
 
+    
+
     const user = async () => {
       return new Promise(async (resolve, reject) => {
         await db
@@ -403,6 +405,11 @@ async function response (msg, ...sender_psid) {
       courseStates: ['ACTIVE']
     })
 
+    let course = await classroom.courses.get({
+      id: courseID
+    })
+    course = course.data
+
     let courseActivities = await classroom.courses.courseWork.list({
       courseId: courseID,
       orderBy: 'updateTime desc'
@@ -435,7 +442,7 @@ async function response (msg, ...sender_psid) {
         type: 'template',
         payload: {
           template_type: 'button',
-          text: 'Please select an activity',
+          text: `Please select an activity from \n ${course.name}`,
           buttons: courseActivitiesBtn.slice(0, 1)
         }
       }
