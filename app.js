@@ -89,6 +89,12 @@ app.post('/set_reminder', async (req, res) => {
   const course = await body.course
   const courseWork = await body.courseWork
 
+
+
+
+
+
+  /** Date format */
   var dueDate = new Date(
     courseWork.dueDate.year,
     courseWork.dueDate.month,
@@ -110,6 +116,8 @@ app.post('/set_reminder', async (req, res) => {
     month: 'long',
     day: 'numeric'
   })
+
+  /** Date format end */
 
   const response = {
     attachment: {
@@ -139,6 +147,20 @@ app.post('/set_reminder', async (req, res) => {
     }
   }
 
+
+
+
+  
+  let intervalId;
+  let deadTime;
+
+  function isDeadlineReached(assignment) {
+    const currentDate = new Date(); // Get current date and time
+    deadTime = new Date(`${assignment.dueDate}T${assignment.dueTime}:00`); // Convert dueDate and dueTime to a JavaScript Date object
+  
+    return currentDate >= dueTime; // Compare current date and time with deadline
+  }
+
   await callSendAPI(await sender_psid, {
     attachment: {
       type: 'template',
@@ -160,15 +182,29 @@ app.post('/set_reminder', async (req, res) => {
     .then(async res => {
       const cronTime = parseInt(await time) * 1000
 
-      await callSendAPI(sender_psid, { text: 'When Cron should Start' })
 
-      let usedTime = parseInt(await time)
-      const cronInterval = setInterval(async () => {
-        await usedTime--
-        await callSendAPI(sender_psid, { text: await usedTime }).then(
-          res => res
-        )
-      }, 1000)
+      function deadlineChecker() {
+        if (isDeadlineReached(assignment)) {
+          console.log("Deadline has been reached!");
+          clearInterval(intervalId); // Clear the interval once deadline has been reached
+        } else {
+          console.log("Deadline has not been reached yet.");
+        }
+      }
+
+      // call the deadlineChecker initially
+
+      intervalId = setInterval(deadlineChecker, 1000)
+
+      // const cronInterval = setInterval(async () => {
+      //   let deadline;
+      //   if(timeUnit == 'days'){
+      //     deadline = new Date()
+      //   }
+      //   await callSendAPI(sender_psid, { text: await usedTime }).then(
+      //     res => res
+      //   )
+      // }, 1000)
 
       setTimeout(async () => {
         clearInterval(cronInterval)
