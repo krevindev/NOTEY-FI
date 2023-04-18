@@ -85,7 +85,7 @@ app.post('/set_reminder', async (req, res) => {
   let body = await req.body
   const sender_psid = await body.sender_psid[0]
   const time = await body.time.substring(0, body.time.length - 1)
-  const timeUnit = (await body.time[await body.time.length - 1]) === 'd' ? 'days' : (await body.time[await body.time.length - 1]) === 's' ? 'seconds' : undefined;
+  const timeUnit = (await body.time[await body.time.length - 1]) === 'd' ? 'days' : (await body.time[await body.time.length - 1]) === 's' ? 'seconds': (await body.time[await body.time.length - 1]) === 'h' ? 'hours' : undefined;
   const course = await body.course
   const courseWork = await body.courseWork
 

@@ -177,7 +177,7 @@ async function multiResponse (msg, ...sender_psid) {
     })
 
     responses.push({
-      text: '```*SELECT A COURSE:```'
+      text: 'SELECT A COURSE:'
     })
 
     // responses.push({
@@ -195,7 +195,7 @@ async function multiResponse (msg, ...sender_psid) {
         .map((course, index) => {
           return {
             content_type: 'text',
-            title: String(index + 1) + '. ' + course.name.substring(0, 20),
+            title: `${String(index + 1)}. ${course.name.substring(0, 20)}`,
             payload: `rem_sc:${course.id}`
           }
         })
@@ -364,8 +364,6 @@ async function response (msg, ...sender_psid) {
   // if the message is a selected course then send the courseWorks from that course
   else if (msg.split(':')[0] == 'rem_sc') {
     const courseID = msg.split(':')[1]
-
-    
 
     const user = async () => {
       return new Promise(async (resolve, reject) => {
