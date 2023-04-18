@@ -177,7 +177,7 @@ async function multiResponse (msg, ...sender_psid) {
     });
 
     responses.push({
-      text: 'SELECT A COURSE:'
+      text: '```*SELECT A COURSE:```'
     })
 
     // responses.push({
