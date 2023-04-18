@@ -182,7 +182,7 @@ async function response (msg, ...sender_psid) {
       courseWork: courseWork
     }
 
-    return await axiosReq('post', data)
+    return await axiosReq('post', data).then(res => res).catch(err => console.log(err))
   }
 
   // if the message is rem_sa, it means the user has selected an activity then prompt a reminder options for that activity

@@ -156,14 +156,14 @@ app.post('/set_reminder', async (req, res) => {
     }
   })
     .then(async res => {
-      const cronTime = parseInt(time) * 1000
+      const cronTime = parseInt(await time) * 1000
 
       await callSendAPI(sender_psid, { text: 'When Cron should Start' })
 
-      let usedTime = parseInt(time);
+      let usedTime = parseInt(await time);
       const cronInterval = setInterval(async () => {
-        usedTime--;
-        await callSendAPI(sender_psid, { text: usedTime })
+        await usedTime--;
+        await callSendAPI(sender_psid, { text: await usedTime })
       }, 1000)
 
       setTimeout(async () => {
