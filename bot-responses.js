@@ -383,40 +383,15 @@ async function response (msg, ...sender_psid) {
 
     const attachment_url = `https://play-lh.googleusercontent.com/w0s3au7cWptVf648ChCUP7sW6uzdwGFTSTenE178Tz87K_w1P1sFwI6h1CLZUlC2Ug`
 
-    //
-    let filteredCourses = await courses.map(async course => {
-      // retrieve the activities inside that course
-      let courseActivities = await classroom.courses.courseWork.list({
-        courseId: course.id,
-        orderBy: 'updateTime desc',
-        pageToken: null
+    const filteredCourses = courses.filter(async course => {
+
+      let activities = await classroom.courses.courseWork.list({
+        courseId: course.id
       })
-      // if the courseActivities is null, assign an empty array to it instead
-      courseActivities = (await courseActivities.data.courseWork)
-        ? courseActivities.data.courseWork
-        : undefined
+      activities = activities.data.courseWork;
 
-      // filter the courseActivities with dueDate and dueTime
-      if (courseActivities) {
-        courseActivities = courseActivities.filter(
-          courseAct => courseAct.dueDate && courseAct.dueTime
-        )
-      }
-
-      console.log('ITERATED COURSE:')
-      if (courseActivities) console.log(courseActivities.map(ca => ca.name))
-
-      if (courseActivities !== undefined) {
-        return course
-      } else {
-        return undefined
-      }
+      return activities.length > 0
     })
-
-    filteredCourses = filteredCourses.filter(course => course)
-
-    console.log('FILTERED COURSES:')
-    console.log(await filteredCourses.map(fc => fc.name))
 
     // const filteredCoursesBtns = await courses
     //   .filter(async course => {
@@ -456,18 +431,15 @@ async function response (msg, ...sender_psid) {
     //   }
     // }
 
-    
-
     response = {
       text: 'From which course?',
-      quick_replies: filteredCourses
-        .map(course => {
-          return {
-            content_type: 'text',
-            title: course.name.substring(0, 20),
-            payload: `rem_sc:${course.id}`
-          }
-        }) //filteredCoursesBtns
+      quick_replies: filteredCourses.map(course => {
+        return {
+          content_type: 'text',
+          title: course.name.substring(0, 20),
+          payload: `rem_sc:${course.id}`
+        }
+      }) //filteredCoursesBtns
     }
 
     return response
