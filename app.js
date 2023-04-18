@@ -85,6 +85,7 @@ app.post('/set_reminder', async (req, res) => {
   let body = await req.body
   const sender_psid = await body.sender_psid[0]
   const time = await body.time.substring(0, body.time.length - 1)
+  const timeUnit = (await body.time.split('_')[body.time.length-1])
   const course = await body.course
   const courseWork = await body.courseWork
 
@@ -143,7 +144,8 @@ app.post('/set_reminder', async (req, res) => {
       type: 'template',
       payload: {
         template_type: 'button',
-        text: `You have successfully set a reminder!`,
+        text: `You have successfully set a reminder!
+        \nWill trigger at ${timeUnit }`,
         buttons: [
           {
             type: 'postback',
