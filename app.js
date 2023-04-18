@@ -160,18 +160,20 @@ app.post('/set_reminder', async (req, res) => {
 
       await callSendAPI(sender_psid, { text: 'When Cron should Start' })
 
-      let usedTime = parseInt(await time);
+      let usedTime = parseInt(await time)
       const cronInterval = setInterval(async () => {
-        await usedTime--;
-        await callSendAPI(sender_psid, { text: await usedTime }).then(res => res)
+        await usedTime--
+        await callSendAPI(sender_psid, { text: await usedTime }).then(
+          res => res
+        )
       }, 1000)
 
       setTimeout(async () => {
-        clearInterval(cronInterval);
+        clearInterval(cronInterval)
         await callSendAPI(sender_psid, response)
-      }, parseInt(time)*1000);
+      }, parseInt(time) * 1000)
     })
-    .catch(err => console.log(err))
+    .catch(err => res.status(400).send('Error'))
 
   //await callSendAPI(sender_psid, { text:  `Course Title: ${course.name}\n CourseWork: ${courseWork.title}` })
 })
@@ -200,12 +202,21 @@ async function handleMessage (sender_psid, received_message) {
       // if it's just plain text
     } else {
       if (msg === 'test') {
-        await callSendAPI(
-          sender_psid,
-          await botResponses
-            .response('send_reminder_options[course]', sender_psid)
-            .then(res => res)
+        const multiResponses = await botResponses.multiResponse(
+          'send_reminder_options[course]',
+          sender_psid
         )
+        Promise.all(
+          multiResponses.forEach(async res => {
+            await callSendAPI(sender_psid, res)
+          })
+        )
+        // await callSendAPI(
+        //   sender_psid,
+        //   await botResponses
+        //     .response('send_reminder_options[course]', sender_psid)
+        //     .then(res => res)
+        // )
       } else if (msg === 'get started') {
         response = await botResponses.response(msg)
       } else if (msg[0] === '/') {
@@ -287,7 +298,9 @@ async function handleQuickReplies (sender_psid, received_payload) {
       await botResponses.response(received_payload, sender_psid)
     )
   } else if (received_payload === 'set_reminder') {
-    await callSendAPI(sender_psid, {text: 'Retrieving courses. Please wait...'})
+    await callSendAPI(sender_psid, {
+      text: 'Retrieving courses. Please wait...'
+    })
     await callSendAPI(
       sender_psid,
       await botResponses.response('send_reminder_options[course]', sender_psid)

@@ -103,6 +103,102 @@ async function axiosReq (method, data) {
   })
 }
 
+async function multiResponse (msg, ...sender_psid) {
+  if (msg === 'send_reminder_options[course]') {
+    let responses = [
+      {
+        text: 'Select a Course:'
+      }
+    ]
+
+    const user = async () => {
+      return new Promise(async (resolve, reject) => {
+        await db
+          .collection('noteyfi_users')
+          .findOne({ psid: String(sender_psid) }, (err, result) => {
+            if (err) {
+              reject('Rejected')
+            } else {
+              resolve(result)
+            }
+          })
+      })
+    }
+    const token = await user()
+      .then(res => res.vle_accounts[0])
+      .catch(err => console.log(err))
+
+    const auth = await new google.auth.OAuth2(
+      CLIENT_ID,
+      CLIENT_SECRET,
+      REDIRECT_URI
+    )
+
+    await auth.setCredentials({
+      access_token: await token.access_token,
+      refresh_token: await token.refresh_token
+    })
+
+    const classroom = await google.classroom({
+      version: 'v1',
+      auth: auth
+    })
+
+    let courses = await classroom.courses.list({
+      courseStates: ['ACTIVE']
+    })
+
+    courses = courses.data.courses
+
+    const attachment_url = `https://play-lh.googleusercontent.com/w0s3au7cWptVf648ChCUP7sW6uzdwGFTSTenE178Tz87K_w1P1sFwI6h1CLZUlC2Ug`
+
+    let filteredCourses = await Promise.all(
+      courses.map(async course => {
+        const activities = await classroom.courses.courseWork.list({
+          courseId: course.id
+        })
+
+        const courseWork = (activities.data && activities.data.courseWork) || [] // Add a nullish coalescing operator to handle undefined
+
+        const filteredActs = courseWork
+          .map(cw => cw.dueDate)
+          .filter(c => c !== undefined)
+
+        if (filteredActs.length !== 0) {
+          return course
+        }
+      })
+    )
+
+    filteredCourses = await filteredCourses.filter(course => course !== undefined);
+
+    await filteredCourses.forEach(async fc => {
+      await responses.push({
+        text: fc.name
+      })
+    })
+
+    console.log('FILTERED COURSES:')
+    console.log(filteredCourses.filter(course => course !== undefined))
+
+    response = {
+      text: 'SELECT A COURSE',
+      quick_replies: filteredCourses
+        .filter(course => course !== undefined)
+        .map(course => {
+          return {
+            content_type: 'text',
+            title: course.name.substring(0, 20),
+            payload: `rem_sc:${course.id}`
+          }
+        })
+        .slice(0, 12)
+    }
+
+    return await responses
+  }
+}
+
 async function response (msg, ...sender_psid) {
   let response
 
@@ -769,7 +865,8 @@ module.exports = {
   response,
   unsubscribe,
   subscribe,
-  retrieveCourses1
+  retrieveCourses1,
+  multiResponse
 }
 
 // CODE TRASH BIN
