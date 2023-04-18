@@ -98,7 +98,7 @@ async function axiosReq (method, data) {
         resolve(response)
       })
       .catch(error => {
-        reject({ text: String(error) })
+        reject({ text: '' })
       })
   })
 }
