@@ -310,6 +310,11 @@ async function handleQuickReplies (sender_psid, received_payload) {
     await callSendAPI(sender_psid, {
       text: 'Retrieving courses. Please wait...'
     })
+    const multiResponses = await botResponses.multiResponse(
+      'send_reminder_options[course]',
+      sender_psid
+    )
+    sendMultipleResponses(multiResponses, sender_psid);
     await callSendAPI(
       sender_psid,
       await botResponses.response('send_reminder_options[course]', sender_psid)
