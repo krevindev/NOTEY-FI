@@ -384,7 +384,7 @@ async function response (msg, ...sender_psid) {
     const attachment_url = `https://play-lh.googleusercontent.com/w0s3au7cWptVf648ChCUP7sW6uzdwGFTSTenE178Tz87K_w1P1sFwI6h1CLZUlC2Ug`
 
     //
-    const filteredCourses = await courses.filter(async course => {
+    let filteredCourses = await courses.map(async course => {
       // retrieve the activities inside that course
       let courseActivities = await classroom.courses.courseWork.list({
         courseId: course.id,
@@ -404,10 +404,19 @@ async function response (msg, ...sender_psid) {
       }
 
       console.log('ITERATED COURSE:')
-      console.log(courseActivities)
+      if (courseActivities) console.log(courseActivities.map(ca => ca.name))
 
-      return courseActivities !== undefined
+      if (courseActivities !== undefined) {
+        return course
+      } else {
+        return undefined
+      }
     })
+
+    filteredCourses = filteredCourses.filter(course => course)
+
+    console.log('FILTERED COURSES:')
+    console.log(await filteredCourses.map(fc => fc.name))
 
     // const filteredCoursesBtns = await courses
     //   .filter(async course => {
@@ -447,13 +456,11 @@ async function response (msg, ...sender_psid) {
     //   }
     // }
 
-    console.log('FILTERED COURSES:')
-    console.log(filteredCourses.map(fc => fc.name))
+    
 
     response = {
       text: 'From which course?',
       quick_replies: filteredCourses
-        .filter(fCourse => fCourse)
         .map(course => {
           return {
             content_type: 'text',
