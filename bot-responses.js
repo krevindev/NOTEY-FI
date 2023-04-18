@@ -105,11 +105,9 @@ async function axiosReq (method, data) {
 
 async function multiResponse (msg, ...sender_psid) {
   if (msg === 'send_reminder_options[course]') {
-    let responses = [
-      {
-        text: "```Select a Course:\nTEST```"
-      }
-    ]
+    let passedString = ''
+
+    let responses = []
 
     const user = async () => {
       return new Promise(async (resolve, reject) => {
@@ -170,19 +168,28 @@ async function multiResponse (msg, ...sender_psid) {
       })
     )
 
-    filteredCourses = await filteredCourses.filter(course => course !== undefined);
+    filteredCourses = await filteredCourses.filter(
+      course => course !== undefined
+    )
 
     await filteredCourses.forEach(async fc => {
-      await responses.push({
-        text: fc.name
-      })
+      passedString += '\n' + fc.name
     })
+
+    responses.push({
+      text: 'SELECT A COURSE:'
+    })
+
+    // responses.push({
+    //   text: "```\n" + passedString + "\n```"
+    // })
 
     console.log('FILTERED COURSES:')
     console.log(filteredCourses.filter(course => course !== undefined))
 
     response = {
-      text: 'SELECT A COURSE',
+      text:
+        '```\n' + passedString.substring(1, passedString.length + 1) + '\n```',
       quick_replies: filteredCourses
         .filter(course => course !== undefined)
         .map(course => {
@@ -194,6 +201,8 @@ async function multiResponse (msg, ...sender_psid) {
         })
         .slice(0, 12)
     }
+
+    responses.push(response)
 
     return await responses
   }
