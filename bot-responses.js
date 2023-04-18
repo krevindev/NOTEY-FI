@@ -383,14 +383,29 @@ async function response (msg, ...sender_psid) {
 
     const attachment_url = `https://play-lh.googleusercontent.com/w0s3au7cWptVf648ChCUP7sW6uzdwGFTSTenE178Tz87K_w1P1sFwI6h1CLZUlC2Ug`
 
-    const filteredCourses = courses.map(async course => {
-      let activities = await classroom.courses.courseWork.list({
-        courseId: course.id
-      })
+    const filteredCourses = await Promise.all(
+      courses.map(async course => {
+        const activities = await classroom.courses.courseWork.list({
+          courseId: course.id
+        })
 
-      
-      console.log(activities.data.courseWork.map(cw => cw.title))
-    })
+        const courseWork = (activities.data && activities.data.courseWork) || [] // Add a nullish coalescing operator to handle undefined
+
+        const filteredActs = courseWork
+          .map(cw => cw.dueDate)
+          .filter(c => c !== undefined)
+
+        console.log('ITERATED')
+        console.log(filteredActs.length)
+
+        if (filteredActs.length !== 0) {
+          return course
+        }
+      })
+    )
+
+    console.log('FILTERED COURSES:')
+    console.log(filteredCourses.filter(course => course !== undefined))
 
     // const filteredCoursesBtns = await courses
     //   .filter(async course => {
@@ -432,13 +447,15 @@ async function response (msg, ...sender_psid) {
 
     response = {
       text: 'From which course?',
-      quick_replies: filteredCourses.map(course => {
-        return {
-          content_type: 'text',
-          title: course.name.substring(0, 20),
-          payload: `rem_sc:${course.id}`
-        }
-      }) //filteredCoursesBtns
+      quick_replies: filteredCourses
+        .filter(course => course !== undefined)
+        .map(course => {
+          return {
+            content_type: 'text',
+            title: course.name.substring(0, 20),
+            payload: `rem_sc:${course.id}`
+          }
+        }) //filteredCoursesBtns
     }
 
     return response
