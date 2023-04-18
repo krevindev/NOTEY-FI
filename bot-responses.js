@@ -331,7 +331,7 @@ async function response (msg, ...sender_psid) {
         payload: {
           template_type: 'button',
           text: 'Please select an activity',
-          buttons: courseActivitiesBtn
+          buttons: courseActivitiesBtn.slice(0,1)
         }
       }
     }
