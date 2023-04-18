@@ -15,7 +15,7 @@ const request = require('request'),
   body_parser = require('body-parser'),
   app = express().use(body_parser.json()),
   axios = require('axios')
-const cron = require('cron').CronJob
+//const cron = require('cron').CronJob
 
 const { urlencoded, json } = require('body-parser')
 
@@ -154,21 +154,43 @@ app.post('/set_reminder', async (req, res) => {
         ]
       }
     }
-  }).then(async res => {
+  })
+    .then(async res => {
+      const CronJob = require('cron').CronJob
 
-    console.log("WHEN CRON SHOULD START")
-    const job = new cron(
-      `*/${await time} * * * * *`,
-      async function () {
-        console.log("WHEN IT SHOULD SEND REMINDER")
-        await callSendAPI(await sender_psid, await response)
-        await job.stop()
-      },
-      []
-    )
+      function triggerIn5Seconds (callback) {
+        // Calculate the target date/time 5 seconds from now
+        const targetDate = new Date()
+        targetDate.setSeconds(targetDate.getSeconds() + 5)
 
-    await job.start()
-  }).catch(err => console.log(err))
+        // Convert the target date to cron format
+        const targetDateCronFormat = `${targetDate.getSeconds()} ${targetDate.getMinutes()} ${targetDate.getHours()} ${targetDate.getDate()} ${
+          targetDate.getMonth() + 1
+        } *`
+
+        // Create a CronJob instance with the target date and callback function
+        const job = new CronJob(
+          targetDateCronFormat,
+          callback,
+          null,
+          true,
+          'UTC'
+        )
+
+        // Start the cron job
+        job.start()
+      }
+
+      // Example usage
+      const callback = () => {
+        console.log('Triggered after 5 seconds:', new Date())
+        // Place your code or task to be executed here
+      }
+
+      // Call the function with the callback function
+      triggerIn5Seconds(callback)
+    })
+    .catch(err => console.log(err))
 
   //await callSendAPI(sender_psid, { text:  `Course Title: ${course.name}\n CourseWork: ${courseWork.title}` })
 })
