@@ -85,14 +85,16 @@ app.post('/set_reminder', async (req, res) => {
   let body = await req.body
   const sender_psid = await body.sender_psid[0]
   const time = await body.time.substring(0, body.time.length - 1)
-  const timeUnit = (await body.time[await body.time.length - 1]) === 'd' ? 'days' : (await body.time[await body.time.length - 1]) === 's' ? 'seconds': (await body.time[await body.time.length - 1]) === 'h' ? 'hours' : undefined;
+  const timeUnit =
+    (await body.time[(await body.time.length) - 1]) === 'd'
+      ? 'days'
+      : (await body.time[(await body.time.length) - 1]) === 's'
+      ? 'seconds'
+      : (await body.time[(await body.time.length) - 1]) === 'h'
+      ? 'hours'
+      : undefined
   const course = await body.course
   const courseWork = await body.courseWork
-
-
-
-
-
 
   /** Date format */
   var dueDate = new Date(
@@ -147,18 +149,14 @@ app.post('/set_reminder', async (req, res) => {
     }
   }
 
+  let intervalId
+  let deadTime
 
+  function isDeadlineReached (assignment) {
+    const currentDate = new Date() // Get current date and time
+    deadTime = new Date(`${assignment.dueDate}T${assignment.dueTime}:00`) // Convert dueDate and dueTime to a JavaScript Date object
 
-
-  
-  let intervalId;
-  let deadTime;
-
-  function isDeadlineReached(assignment) {
-    const currentDate = new Date(); // Get current date and time
-    deadTime = new Date(`${assignment.dueDate}T${assignment.dueTime}:00`); // Convert dueDate and dueTime to a JavaScript Date object
-  
-    return currentDate >= dueTime; // Compare current date and time with deadline
+    return currentDate >= dueTime // Compare current date and time with deadline
   }
 
   await callSendAPI(await sender_psid, {
@@ -182,13 +180,12 @@ app.post('/set_reminder', async (req, res) => {
     .then(async res => {
       const cronTime = parseInt(await time) * 1000
 
-
-      function deadlineChecker() {
+      function deadlineChecker () {
         if (isDeadlineReached(assignment)) {
-          console.log("Deadline has been reached!");
-          clearInterval(intervalId); // Clear the interval once deadline has been reached
+          console.log('Deadline has been reached!')
+          clearInterval(intervalId) // Clear the interval once deadline has been reached
         } else {
-          console.log("Deadline has not been reached yet.");
+          console.log('Deadline has not been reached yet.')
         }
       }
 
@@ -218,16 +215,15 @@ app.post('/set_reminder', async (req, res) => {
 
 const botResponses = require('./bot-responses')
 
-
 // function for sending multiple responses at once
-async function sendMultipleResponses(multiResponses, sender_psid) {
+async function sendMultipleResponses (multiResponses, sender_psid) {
   try {
     for (const res of multiResponses) {
-      await callSendAPI(sender_psid, res);
+      await callSendAPI(sender_psid, res)
     }
-    console.log('All responses sent successfully!');
+    console.log('All responses sent successfully!')
   } catch (error) {
-    console.error('Error sending responses:', error);
+    console.error('Error sending responses:', error)
   }
 }
 
@@ -257,7 +253,7 @@ async function handleMessage (sender_psid, received_message) {
           'send_reminder_options[course]',
           sender_psid
         )
-        sendMultipleResponses(multiResponses, sender_psid);
+        sendMultipleResponses(multiResponses, sender_psid)
         // await callSendAPI(
         //   sender_psid,
         //   await botResponses
@@ -352,7 +348,7 @@ async function handleQuickReplies (sender_psid, received_payload) {
       'send_reminder_options[course]',
       sender_psid
     )
-    sendMultipleResponses(multiResponses, sender_psid);
+    sendMultipleResponses(multiResponses, sender_psid)
     await callSendAPI(
       sender_psid,
       await botResponses.response('send_reminder_options[course]', sender_psid)
