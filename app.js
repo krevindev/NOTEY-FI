@@ -103,10 +103,20 @@ app.post('/set_reminder', async (req, res) => {
     courseWork.dueTime.hours,
     courseWork.dueTime.minutes,
     courseWork.dueTime.seconds
-  )
+  );
 
-  console.log("DUE DATE:")
-  console.log(new Intl.DateTimeFormat("en-US").format(dueDate))
+  const options = {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false
+  };
+  console.log('DUE DATE:')
+  const formattedDueDate = dueDate.toLocaleString('en-US', options); // Format dueDate with options
+  console.log(formattedDueDate); // Output the formatted dueDate with options
 
   /** Date format end */
 
