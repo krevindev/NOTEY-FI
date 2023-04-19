@@ -328,11 +328,6 @@ class CourseListener {
 
             if(storedActivityList.length <= 0) storedActivityList = courseActivities
 
-            console.log('MOTHERFUCKER:')
-            console.log("STORED:")
-            console.log(storedActivityList.length)
-            console.log("RETRIEVED:")
-            console.log(courseActivities.length)
 
             let activity = lastCourseActivity
 
