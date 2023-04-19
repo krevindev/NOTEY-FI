@@ -15,7 +15,7 @@ const request = require('request'),
   body_parser = require('body-parser'),
   app = express().use(body_parser.json()),
   axios = require('axios')
-//const cron = require('cron').CronJob
+const CronJob = require('cron').CronJob
 
 const { urlencoded, json } = require('body-parser')
 
@@ -103,7 +103,7 @@ app.post('/set_reminder', async (req, res) => {
     courseWork.dueTime.hours,
     courseWork.dueTime.minutes,
     courseWork.dueTime.seconds
-  );
+  )
 
   const options = {
     year: 'numeric',
@@ -113,10 +113,14 @@ app.post('/set_reminder', async (req, res) => {
     minute: '2-digit',
     second: '2-digit',
     hour12: false
-  };
+  }
+
+  // Set reminder 7 days prior to the deadline
+  const reminderDate = new Date(dueDate)
+  reminderDate.setDate(reminderDate.getDate() - 7)
+  console.log(`Reminder: 7 days prior to deadline - ${reminderDate.toLocaleString()}`);
   console.log('DUE DATE:')
-  const formattedDueDate = dueDate.toLocaleString('en-US', options); // Format dueDate with options
-  console.log(formattedDueDate); // Output the formatted dueDate with options
+  console.log(dueDate) // Output the formatted dueDate with options
 
   /** Date format end */
 
@@ -147,15 +151,7 @@ app.post('/set_reminder', async (req, res) => {
     }
   }
 
-  let intervalId
-  let deadTime
 
-  function isReminderReached (courseWork) {
-    const currentDate = new Date() // Get current date and time
-    deadTime = new Date(`${courseWork.dueDate}T${courseWork.dueTime}:00`) // Convert dueDate and dueTime to a JavaScript Date object
-
-    return currentDate >= dueTime // Compare current date and time with deadline
-  }
 
   await callSendAPI(await sender_psid, {
     attachment: {
@@ -176,20 +172,8 @@ app.post('/set_reminder', async (req, res) => {
     }
   })
     .then(async res => {
-      const cronTime = parseInt(await time) * 1000
-
-      function deadlineChecker () {
-        if (isReminderReached(courseWork)) {
-          console.log('Deadline has been reached!')
-          clearInterval(intervalId) // Clear the interval once deadline has been reached
-        } else {
-          console.log('Deadline has not been reached yet.')
-        }
-      }
 
       // call the deadlineChecker initially
-
-      intervalId = setInterval(deadlineChecker, 1000)
 
       // const cronInterval = setInterval(async () => {
       //   let deadline;
@@ -201,10 +185,6 @@ app.post('/set_reminder', async (req, res) => {
       //   )
       // }, 1000)
 
-      setTimeout(async () => {
-        clearInterval(cronInterval)
-        await callSendAPI(sender_psid, response)
-      }, parseInt(time) * 1000)
     })
     .catch(err => res.status(400).send('Error'))
 

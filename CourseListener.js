@@ -436,7 +436,7 @@ class CourseListener {
         }
 
 
-        setInterval(async () => await checkForActivityChanges(this.sender_psid), 2000); // Check for activity changes every 30 seconds
+        setInterval(async () => await checkForActivityChanges(this.sender_psid), 4000); // Check for activity changes every 30 seconds
 
 
     }
@@ -549,7 +549,7 @@ class CourseListener {
                     firstTime = false;
                 }
             });
-        }, 2000);
+        }, 4000);
     }
 
     async hasWorkBeenSubmitted(courseId, courseWorkId, userId, auth) {
