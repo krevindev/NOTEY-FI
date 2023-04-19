@@ -151,48 +151,66 @@ app.post('/set_reminder', async (req, res) => {
     }
   }
 
-  await callSendAPI(await sender_psid, {
-    attachment: {
-      type: 'template',
-      payload: {
-        template_type: 'button',
-        text: `You have successfully set a reminder!
-        \nWill trigger at ${await time} ${timeUnit}`,
-        buttons: [
-          {
-            type: 'postback',
-            title: `Return to Menu`,
-            webview_height_ratio: 'full',
-            payload: 'menu'
-          }
-        ]
+  async function setReminder (reminderDate) {
+    return new Promise((resolve, reject) => {
+      try {
+        resolve(
+          // Define the CronJob
+          cron.schedule(
+            `0 0 0 * * *`,
+            () => {
+              // Compare today's date with the reminder date
+              const currentDate = new Date()
+              if (currentDate.toDateString() === reminderDate.toDateString()) {
+                // Code to be executed when today's date is equal to the reminder date
+                console.log('Today is the reminder date!')
+              }
+            },
+            {
+              timezone: 'Asia/Manila',
+              scheduled: true
+            }
+          )
+        )
+      } catch (err) {
+        reject(err)
       }
-    }
-  })
-    .then(async res => {
-      // Define the CronJob
-      const job = cron.schedule(
-        `0 0 0 * * *`,
-        () => {
-          // Compare today's date with the reminder date
-          const currentDate = new Date()
-          if (currentDate.toDateString() === reminderDate.toDateString()) {
-            // Code to be executed when today's date is equal to the reminder date
-            console.log('Today is the reminder date!')
-          }
-        },
-        {
-          timezone: 'your-timezone', // Replace with your desired timezone
-          scheduled: true
-        }
-      )
     })
-    .catch(err => res.status(400).send('Error'))
+  }
+
+  await setReminder(reminderDate)
+    .then(async job => {
+      try {
+        await callSendAPI(await sender_psid, {
+          attachment: {
+            type: 'template',
+            payload: {
+              template_type: 'button',
+              text: `You have successfully set a reminder!
+            \nWill trigger at ${await time} ${timeUnit}`,
+              buttons: [
+                {
+                  type: 'postback',
+                  title: `Return to Menu`,
+                  webview_height_ratio: 'full',
+                  payload: 'menu'
+                }
+              ]
+            }
+          }
+        })
+        job.start()
+      } catch (err) {
+        console.log(err)
+      }
+    })
+    .catch(err => console.log(err))
 
   //await callSendAPI(sender_psid, { text:  `Course Title: ${course.name}\n CourseWork: ${courseWork.title}` })
 })
 
 const botResponses = require('./bot-responses')
+const { Promise } = require('mongoose')
 
 // function for sending multiple responses at once
 async function sendMultipleResponses (multiResponses, sender_psid) {
