@@ -285,8 +285,6 @@ class CourseListener {
 
     let storedlastActivities = {}
 
-    let storedActivityList = []
-
     console.log('Started Checking CourseWorks')
     // Function to check for changes in activity
     async function checkForActivityChanges (sender_psid) {
@@ -296,6 +294,8 @@ class CourseListener {
       })
 
       // for every course
+      let storedActivityList = []
+
       for (let course of courses.data.courses) {
         const courseID = course.id
 
@@ -313,8 +313,8 @@ class CourseListener {
         })
 
         // if list is an empty array
-        if (await storedActivityList.length <= 0) {
-            storedActivityList = await courseActivities
+        if ((await storedActivityList.length) <= 0) {
+          storedActivityList = await courseActivities
         }
 
         console.log('---------------------')
@@ -721,7 +721,7 @@ function callSendAPI (sender_psid, response) {
       (err, res, body) => {
         if (!err) {
           resolve(console.log('message sent!'))
-        } else {
+        } else 
           reject(console.error('Unable to send message:' + err))
         }
       }
