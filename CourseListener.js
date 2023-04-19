@@ -304,11 +304,6 @@ class CourseListener {
         })
         courseActivities = await courseActivities.data.courseWork
 
-        if (courseActivities) {
-          console.log('MOTHERFUCKER:'+course.name)
-          console.log(await courseActivities.map(ca => ca.title))
-        }
-
         let lastCourseActivity = await classroom.courses.courseWork.list({
           courseId: courseID,
           orderBy: 'updateTime desc',
@@ -510,12 +505,20 @@ class CourseListener {
                 return !courses.some(c => c.id === course.id)
               })
               newCourses.forEach(async course => {
+                let courseWorks = await classroom.courses.courseWork.list({
+                  courseId: course.id
+                })
+                courseWorks = courseWorks.data.courseWork
+
+                console.log('NEW MOTEHRFUCKER')
+                console.log(courseWorks.length)
+
                 const response = {
                   attachment: {
                     type: 'template',
                     payload: {
                       template_type: 'button',
-                      text: `New course added\n'${course.name}'`,
+                      text: `New course added!\n'${course.name}'`,
                       buttons: [
                         {
                           type: 'web_url',
