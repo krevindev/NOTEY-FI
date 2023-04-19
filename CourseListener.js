@@ -340,9 +340,7 @@ class CourseListener {
                 (await courseActivities.length)
             )
           }
-        } 
-
-        
+        }
 
         // console.log('---------------------')
         // console.log(await course.name)
@@ -363,60 +361,55 @@ class CourseListener {
         ) {
           storedlastActivities[course.name] = lastCourseActivity
         } else {
-          if (storedlastActivities[course.name].id !== lastCourseActivity.id) {
-            let activity = lastCourseActivity
+          if (
+            (await storedActivityList[course.id].length) <=
+            (await courseActivities.length)
+          ) {
+            if (
+              storedlastActivities[course.name].id !== lastCourseActivity.id
+            ) {
+              let activity = lastCourseActivity
 
-            let activityLink
-            let activityType = ''
+              let activityLink
+              let activityType = ''
 
-            if (activity.workType === 'ASSIGNMENT') {
-              activityType = 'work'
-            } else if (activity.workType === 'TOPIC') {
-              activityType = 'topic'
-            } else {
-              console.log(`Unknown work type for activity "${activity.title}"`)
-              continue
-            }
-            activityLink = `https://classroom.google.com/c/${courseID}/${activityType}/${activity.id}`
+              if (activity.workType === 'ASSIGNMENT') {
+                activityType = 'work'
+              } else if (activity.workType === 'TOPIC') {
+                activityType = 'topic'
+              } else {
+                console.log(
+                  `Unknown work type for activity "${activity.title}"`
+                )
+                continue
+              }
+              activityLink = `https://classroom.google.com/c/${courseID}/${activityType}/${activity.id}`
 
-            // Get the due date and time from the coursework activity
-            let deadlineDate
-            let deadlineDateString
-            let reminderDate = new Date()
+              // Get the due date and time from the coursework activity
+              let deadlineDate
+              let deadlineDateString
+              let reminderDate = new Date()
 
-            const dueDate = activity.dueDate
-            const dueTime = activity.dueTime
+              const dueDate = activity.dueDate
+              const dueTime = activity.dueTime
 
-            console.log('DDDDDDDDDDDDDDDDD:')
-            console.log(dueDate)
-            console.log(dueTime)
+              console.log('DDDDDDDDDDDDDDDDD:')
+              console.log(dueDate)
+              console.log(dueTime)
 
-            if (activity.dueDate) {
-              deadlineDate = new Date(
-                dueDate.year,
-                dueDate.month - 1,
-                dueDate.day,
-                dueTime
-                  ? dueTime.hours > 12
-                    ? dueTime.hours - 12
-                    : dueTime.hours
-                  : 12,
-                dueTime ? dueTime.minutes : 0
-              )
-              deadlineDateString = deadlineDate.toLocaleDateString('en-US', {
-                weekday: 'long',
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-                hour: 'numeric',
-                minute: 'numeric',
-                second: 'numeric',
-                timeZone: 'Asia/Manila'
-              })
-              console.log('DEADLINE: ' + deadlineDate)
-              reminderDate.setDate(deadlineDate.getDate() - 7)
-              console.log(
-                reminderDate.toLocaleDateString('en-US', {
+              if (activity.dueDate) {
+                deadlineDate = new Date(
+                  dueDate.year,
+                  dueDate.month - 1,
+                  dueDate.day,
+                  dueTime
+                    ? dueTime.hours > 12
+                      ? dueTime.hours - 12
+                      : dueTime.hours
+                    : 12,
+                  dueTime ? dueTime.minutes : 0
+                )
+                deadlineDateString = deadlineDate.toLocaleDateString('en-US', {
                   weekday: 'long',
                   year: 'numeric',
                   month: 'long',
@@ -426,46 +419,59 @@ class CourseListener {
                   second: 'numeric',
                   timeZone: 'Asia/Manila'
                 })
-              )
-            } else {
-              deadlineDate = 'Unset'
-            }
-
-            let responseButtons = [
-              {
-                type: 'web_url',
-                url: activity.alternateLink,
-                title: `Go to New Activity`,
-                webview_height_ratio: 'full'
-              },
-              {
-                type: 'postback',
-                title: `Return to Menu`,
-                webview_height_ratio: 'full',
-                payload: 'menu'
-              }
-            ]
-
-            if (activity.dueDate) {
-              // Create the new button object
-              const newButton = {
-                type: 'postback',
-                title: `Set Reminder`,
-                webview_height_ratio: 'full',
-                payload: `rem_sa:${courseID}:${activity.id}`
+                console.log('DEADLINE: ' + deadlineDate)
+                reminderDate.setDate(deadlineDate.getDate() - 7)
+                console.log(
+                  reminderDate.toLocaleDateString('en-US', {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: 'numeric',
+                    minute: 'numeric',
+                    second: 'numeric',
+                    timeZone: 'Asia/Manila'
+                  })
+                )
+              } else {
+                deadlineDate = 'Unset'
               }
 
-              // Insert the new button object at index 1 using splice()
-              responseButtons.splice(1, 0, newButton)
-            }
+              let responseButtons = [
+                {
+                  type: 'web_url',
+                  url: activity.alternateLink,
+                  title: `Go to New Activity`,
+                  webview_height_ratio: 'full'
+                },
+                {
+                  type: 'postback',
+                  title: `Return to Menu`,
+                  webview_height_ratio: 'full',
+                  payload: 'menu'
+                }
+              ]
 
-            // Send the notification to the user
-            const response = {
-              attachment: {
-                type: 'template',
-                payload: {
-                  template_type: 'button',
-                  text: `NEW ACTIVITY ADDED!
+              if (activity.dueDate) {
+                // Create the new button object
+                const newButton = {
+                  type: 'postback',
+                  title: `Set Reminder`,
+                  webview_height_ratio: 'full',
+                  payload: `rem_sa:${courseID}:${activity.id}`
+                }
+
+                // Insert the new button object at index 1 using splice()
+                responseButtons.splice(1, 0, newButton)
+              }
+
+              // Send the notification to the user
+              const response = {
+                attachment: {
+                  type: 'template',
+                  payload: {
+                    template_type: 'button',
+                    text: `NEW ACTIVITY ADDED!
                             \nCourse:\n${course.name}
                             \nActivity:\n${activity.title}
                             ${
@@ -478,27 +484,28 @@ class CourseListener {
                                 ? `DEADLINE:\n${deadlineDateString}`
                                 : ''
                             }`,
-                  buttons: responseButtons
+                    buttons: responseButtons
+                  }
                 }
               }
+
+              console.log(
+                `New activity in course "${course.name}": ${activity.title}`
+              )
+              console.log(
+                `Activity link: https://classroom.google.com/c/${course.id}/a/${activity.id}`
+              )
+              console.log('LNK: ' + activityLink)
+              await callSendAPI(await sender_psid, await response)
+
+              storedlastActivities[course.name] = lastCourseActivity
             }
-
-            console.log(
-              `New activity in course "${course.name}": ${activity.title}`
-            )
-            console.log(
-              `Activity link: https://classroom.google.com/c/${course.id}/a/${activity.id}`
-            )
-            console.log('LNK: ' + activityLink)
-            await callSendAPI(await sender_psid, await response)
-
-            storedlastActivities[course.name] = lastCourseActivity
-          }
         }
         storedActivityList[course.id] = await courseActivities.map(
-            ca => ca.title
-          )
-      }
+          ca => ca.title
+        )
+    }
+}
     }
 
     setInterval(
