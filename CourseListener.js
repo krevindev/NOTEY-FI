@@ -403,17 +403,24 @@ class CourseListener {
               },
               {
                 type: 'postback',
-                title: `Set Reminder`,
-                webview_height_ratio: 'full',
-                payload: `rem_sa:${courseID}:${activity.id}`
-              },
-              {
-                type: 'postback',
                 title: `Return to Menu`,
                 webview_height_ratio: 'full',
                 payload: 'menu'
               }
             ]
+
+            if (activity.dueDate) {
+              // Create the new button object
+              const newButton = {
+                type: 'postback',
+                title: `Set Reminder`,
+                webview_height_ratio: 'full',
+                payload: `rem_sa:${courseID}:${activity.id}`
+              }
+
+              // Insert the new button object at index 1 using splice()
+              responseButtons.splice(1, 0, newButton)
+            }
 
             // Send the notification to the user
             const response = {
@@ -429,8 +436,7 @@ class CourseListener {
                                 ? `\n\nDESCRIPTION:\n ${activity.description}`
                                 : ''
                             }
-                            \nDEADLINE:\n${deadlineDateString}
-                            \nREMINDER WEEK BEFORE: ${reminderDate}`,
+                            \n${activity.dueDate ? `DEADLINE:\n${deadlineDateString}`:''}`,
                   buttons: responseButtons
                 }
               }

@@ -98,7 +98,7 @@ async function axiosReq (method, data) {
         resolve(response)
       })
       .catch(error => {
-        reject({ text: `${error}` })
+        reject(error)
       })
   })
 }
@@ -379,7 +379,7 @@ async function response (msg, ...sender_psid) {
 
     return await axiosReq('post', data)
       .then(res => res)
-      .catch(err => err)
+      .catch(err => console.log(err))
   }
 
   // if the message is rem_sa, it means the user has selected an activity then prompt a reminder options for that activity
