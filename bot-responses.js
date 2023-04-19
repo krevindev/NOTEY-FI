@@ -270,13 +270,13 @@ async function multiResponse (msg, ...sender_psid) {
     )
 
     courseActivities.forEach((ca, index) => {
-      passedString += `\n${String(index + 1)}. ${ca.title}`
+      passedString += `\n${String(index + 1)}. ${ca.title}\n`
     })
 
-    responses.push({ text: '```\n' + passedString + '\n```' })
+    //responses.push({ text: '```\n' + passedString + '\n```' })
 
     qr_res = {
-      text: passedString,
+      text: '```\n' + passedString + '\n```' ,
       quick_replies: courseActivities
         .filter(ca => ca !== undefined)
         .map((ca, index) => {

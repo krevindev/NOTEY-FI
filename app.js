@@ -329,10 +329,10 @@ app.post('/notifications', (req, res) => {
 async function handleQuickReplies (sender_psid, received_payload) {
   let response
 
-  if (payload.split(':')[0] === 'rem_sa') {
+  if (received_payload.split(':')[0] === 'rem_sa') {
     await callSendAPI(
       sender_psid,
-      await botResponses.response(payload, sender_psid)
+      await botResponses.response(received_payload, sender_psid)
     )
   }
   else if (received_payload.split(':')[0] === 'rem_time') {
