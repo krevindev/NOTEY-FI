@@ -302,7 +302,9 @@ class CourseListener {
         let courseActivities = await classroom.courses.courseWork.list({
           courseId: courseID
         })
-        courseActivities = await courseActivities.data.courseWork
+        courseActivities = (await courseActivities.data.courseWork)
+          ? await courseActivities.data.courseWork
+          : []
 
         let lastCourseActivity = await classroom.courses.courseWork.list({
           courseId: courseID,
@@ -312,20 +314,19 @@ class CourseListener {
           //fields: 'courseWork(id,title),courseId'
         })
 
-        // if list is an empty array
-        if (Object.keys(await storedActivityList).length <= 0) {
-          storedActivityList = await courseActivities
-        }
+        // if object is empty assign initial value
+        storedActivityList[course.id] = await courseActivities.map(
+          ca => ca.title
+        )
 
         console.log('---------------------')
-        console.log(course.name)
+        console.log(await course.name)
         console.log('STORED:')
-        console.log(await storedActivityList.length)
+        console.log(await storedActivityList[course.id])
         console.log('RETRIEVED:')
         console.log(await courseActivities.length)
         console.log('LAST COURSE ACTIVITY:')
-        if (lastCourseActivity) console.log(lastCourseActivity.data.courseWork)
-        storedActivityList = await courseActivities
+        console.log(storedActivityList)
 
         // the latest courseWork in the course
         lastCourseActivity = (await lastCourseActivity.data.courseWork)
