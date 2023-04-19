@@ -488,7 +488,6 @@ class CourseListener {
     setInterval(async () => {
       await classroom.courses.list(
         {
-          courseStates: ['ACTIVE']
         },
         (err, res) => {
           if (err) {
@@ -510,11 +509,12 @@ class CourseListener {
                 })
                 courseWorks = await courseWorks.data.courseWork
 
-                let courseWorksString = `Course Activities:`
+                let courseWorksString = "```"+"Course Activities:\n"
                 if (courseWorks) {
                   courseWorks.forEach(cw => {
                     courseWorksString += `\n-${cw.title}`
                   })
+                  courseWorksString += "\n```"
                 }
 
                 const response = {
