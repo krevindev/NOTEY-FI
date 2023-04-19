@@ -168,8 +168,9 @@ app.post('/set_reminder', async (req, res) => {
         const checkerIntervalID = setInterval(() => {
           currentDate = moment(new Date()).add(8, 'hours')
           console.log('CHECKING')
-          console.log(currentDate.toDateString())
-          console.log(reminderDate.toDateString())
+          console.log(currentDate)
+          console.log(reminderDate)
+          console.log((reminderDate.isSame(currentDate) || currentDate.isAfter(reminderDate)))
         }, 2000)
 
         if (checkerIntervalID == '1') resolve()
