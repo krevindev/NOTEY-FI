@@ -333,11 +333,6 @@ class CourseListener {
             console.clear()
             console.log('TRIGGERED!')
             await callSendAPI(sender_psid, { text: 'Changed!' })
-          } else {
-            console.log(
-              (await storedActivityList[course.id].length) !==
-                (await courseActivities.length)
-            )
           }
         }
 
@@ -361,7 +356,7 @@ class CourseListener {
           storedlastActivities[course.name] = lastCourseActivity
         } else {
           if (
-            (await storedActivityList[course.id].length) >=
+            (await storedActivityList[course.id].length) <=
             (await courseActivities.length)
           ) {
             if (
@@ -499,12 +494,14 @@ class CourseListener {
 
               storedlastActivities[course.name] = lastCourseActivity
             }
+          }
+          
         }
-    }
-          storedActivityList[course.id] = await courseActivities.map(
-            ca => ca.title
-          )
+        
       }
+      storedActivityList[course.id] = await courseActivities.map(
+        ca => ca.title
+      )
     }
 
     setInterval(
