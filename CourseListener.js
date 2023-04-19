@@ -394,6 +394,27 @@ class CourseListener {
               deadlineDate = 'Unset'
             }
 
+            let responseButtons = [
+              {
+                type: 'web_url',
+                url: activity.alternateLink,
+                title: `Go to New Activity`,
+                webview_height_ratio: 'full'
+              },
+              {
+                type: 'postback',
+                title: `Set Reminder`,
+                webview_height_ratio: 'full',
+                payload: `rem_sa:${courseID}:${activity.id}`
+              },
+              {
+                type: 'postback',
+                title: `Return to Menu`,
+                webview_height_ratio: 'full',
+                payload: 'menu'
+              }
+            ]
+
             // Send the notification to the user
             const response = {
               attachment: {
@@ -410,26 +431,7 @@ class CourseListener {
                             }
                             \nDEADLINE:\n${deadlineDateString}
                             \nREMINDER WEEK BEFORE: ${reminderDate}`,
-                  buttons: [
-                    {
-                      type: 'web_url',
-                      url: activity.alternateLink,
-                      title: `Go to New Activity`,
-                      webview_height_ratio: 'full'
-                    },
-                    {
-                      type: 'postback',
-                      title: `Set Reminder`,
-                      webview_height_ratio: 'full',
-                      payload: `rem_sa:${courseID}:${activity.id}`
-                    },
-                    {
-                      type: 'postback',
-                      title: `Return to Menu`,
-                      webview_height_ratio: 'full',
-                      payload: 'menu'
-                    }
-                  ]
+                  buttons: responseButtons
                 }
               }
             }
@@ -486,103 +488,99 @@ class CourseListener {
     console.log('scanning...')
 
     setInterval(async () => {
-      await classroom.courses.list(
-        {
-        },
-        (err, res) => {
-          if (err) {
-            console.error(err)
-            return
-          }
+      await classroom.courses.list({}, (err, res) => {
+        if (err) {
+          console.error(err)
+          return
+        }
 
-          const currentCourses = res.data.courses
+        const currentCourses = res.data.courses
 
-          // Check for new added courses
-          if (currentCourses) {
-            if (!firstTime) {
-              const newCourses = currentCourses.filter(course => {
-                return !courses.some(c => c.id === course.id)
+        // Check for new added courses
+        if (currentCourses) {
+          if (!firstTime) {
+            const newCourses = currentCourses.filter(course => {
+              return !courses.some(c => c.id === course.id)
+            })
+            newCourses.forEach(async course => {
+              let courseWorks = await classroom.courses.courseWork.list({
+                courseId: course.id
               })
-              newCourses.forEach(async course => {
-                let courseWorks = await classroom.courses.courseWork.list({
-                  courseId: course.id
+              courseWorks = await courseWorks.data.courseWork
+
+              let courseWorksString = 'Course Activities:\n'
+              if (courseWorks) {
+                courseWorks.forEach(cw => {
+                  courseWorksString += `\n-${cw.title}`
                 })
-                courseWorks = await courseWorks.data.courseWork
+              }
 
-                let courseWorksString = 'Course Activities:\n'
-                if (courseWorks) {
-                  courseWorks.forEach(cw => {
-                    courseWorksString += `\n-${cw.title}`
-                  })
-                }
-
-                const response = {
-                  attachment: {
-                    type: 'template',
-                    payload: {
-                      template_type: 'button',
-                      text: `New course added!\n'${course.name}'\n
+              const response = {
+                attachment: {
+                  type: 'template',
+                  payload: {
+                    template_type: 'button',
+                    text: `New course added!\n'${course.name}'\n
                       \n${courseWorks ? courseWorksString : ''}`,
-                      buttons: [
-                        {
-                          type: 'web_url',
-                          url: course.alternateLink,
-                          title: `Go to New Course`,
-                          webview_height_ratio: 'full'
-                        },
-                        {
-                          type: 'postback',
-                          title: `Return to Menu`,
-                          webview_height_ratio: 'full',
-                          payload: 'menu'
-                        }
-                      ]
-                    }
+                    buttons: [
+                      {
+                        type: 'web_url',
+                        url: course.alternateLink,
+                        title: `Go to New Course`,
+                        webview_height_ratio: 'full'
+                      },
+                      {
+                        type: 'postback',
+                        title: `Return to Menu`,
+                        webview_height_ratio: 'full',
+                        payload: 'menu'
+                      }
+                    ]
                   }
                 }
-
-                console.log(`New course added: ${course.name}`)
-                await callSendAPI(this.sender_psid, response)
-              })
-            }
-          }
-
-          // Check for removed courses
-          const removedCourses = courses.filter(course => {
-            return !currentCourses.some(c => c.id === course.id)
-          })
-          removedCourses.forEach(async course => {
-            console.log(`Course removed: ${course.name}`)
-
-            const response = {
-              attachment: {
-                type: 'template',
-                payload: {
-                  template_type: 'button',
-                  text: `A course has been removed ''${course.name}'`,
-                  buttons: [
-                    {
-                      type: 'postback',
-                      title: `Return to Menu`,
-                      webview_height_ratio: 'full',
-                      payload: 'menu'
-                    }
-                  ]
-                }
               }
-            }
 
-            await callSendAPI(this.sender_psid, response)
-          })
-
-          // Update courses list
-          courses = currentCourses
-
-          if (firstTime) {
-            firstTime = false
+              console.log(`New course added: ${course.name}`)
+              await callSendAPI(this.sender_psid, response)
+            })
           }
         }
-      )
+
+        // Check for removed courses
+        const removedCourses = courses.filter(course => {
+          return !currentCourses.some(c => c.id === course.id)
+        })
+        removedCourses.forEach(async course => {
+          console.log(`Course removed: ${course.name}`)
+
+          const response = {
+            attachment: {
+              type: 'template',
+              payload: {
+                template_type: 'button',
+                text: `A course has been removed ''${course.name}'`,
+                buttons: [
+                  {
+                    type: 'postback',
+                    title: `Return to Menu`,
+                    webview_height_ratio: 'full',
+                    payload: 'menu'
+                  }
+                ]
+              }
+            }
+          }
+
+          await callSendAPI(this.sender_psid, response)
+        })
+
+        // Update courses list
+        courses = currentCourses
+
+        if (firstTime) {
+          firstTime = false
+        }
+      })
     }, 4000)
   }
 
