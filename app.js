@@ -105,8 +105,8 @@ app.post('/set_reminder', async (req, res) => {
     courseWork.dueDate.year,
     courseWork.dueDate.month - 1, // Subtract 1 from the month value
     courseWork.dueDate.day,
-    courseWork.dueTime.hours + 8,
-    courseWork.dueTime.minutes
+    (courseWork.dueTime !== undefined) ? (courseWork.dueTime.hours + 8) : 11,
+    (courseWork.dueTime !== undefined) ? courseWork.dueTime.minutes : 59
   )
 
   console.log('DATE:')
@@ -171,14 +171,14 @@ app.post('/set_reminder', async (req, res) => {
     }
 
     async start () {
-      this.sendConfirmation();
+      this.sendConfirmation()
       this.listenerInterval = setInterval(() => {
         currentDate = moment(new Date()).add(8, 'hours')
         console.log('CHECKING')
 
         if (
-          (reminderDate.isSame(currentDate) ||
-          currentDate.isAfter(reminderDate))
+          reminderDate.isSame(currentDate) ||
+          currentDate.isAfter(reminderDate)
         ) {
           this.sendReminder()
           this.stop()
@@ -187,12 +187,11 @@ app.post('/set_reminder', async (req, res) => {
           console.log(reminderDate)
         }
       }, 2000)
-
     }
     async stop () {
       clearInterval(this.listenerInterval)
     }
-    
+
     async sendConfirmation () {
       await callSendAPI(this.sender_psid, {
         attachment: {
