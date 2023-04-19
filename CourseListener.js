@@ -321,7 +321,6 @@ class CourseListener {
           )
         }
 
-        console.log(await storedActivityList[course.id])
         if (await storedActivityList[course.id]) {
           console.log('STORED LIST:')
           console.log(storedActivityList[course.id])
@@ -362,7 +361,7 @@ class CourseListener {
           storedlastActivities[course.name] = lastCourseActivity
         } else {
           if (
-            (await storedActivityList[course.id].length) <=
+            (await storedActivityList[course.id].length) >=
             (await courseActivities.length)
           ) {
             if (
@@ -501,11 +500,11 @@ class CourseListener {
               storedlastActivities[course.name] = lastCourseActivity
             }
         }
-        storedActivityList[course.id] = await courseActivities.map(
-          ca => ca.title
-        )
     }
-}
+          storedActivityList[course.id] = await courseActivities.map(
+            ca => ca.title
+          )
+      }
     }
 
     setInterval(
