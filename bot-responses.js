@@ -347,13 +347,28 @@ async function response (msg, ...sender_psid) {
       quick_replies: [
         {
           content_type: 'text',
-          title: '5s',
-          payload: `rem_t:5s:${courseID}:${courseWorkID}`
+          title: '1 minute test',
+          payload: `rem_t:1m:${courseID}:${courseWorkID}`
         },
         {
           content_type: 'text',
-          title: '10s',
-          payload: `rem_t:10s:${courseID}:${courseWorkID}`
+          title: '3 minutes test',
+          payload: `rem_t:3m:${courseID}:${courseWorkID}`
+        },
+        {
+          content_type: 'text',
+          title: '1 hour',
+          payload: `rem_t:1h:${courseID}:${courseWorkID}`
+        },
+        {
+          content_type: 'text',
+          title: '1 day',
+          payload: `rem_t:1d:${courseID}:${courseWorkID}`
+        },
+        {
+          content_type: 'text',
+          title: '7 days',
+          payload: `rem_t:7d:${courseID}:${courseWorkID}`
         }
       ]
     }
