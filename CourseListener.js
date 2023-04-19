@@ -285,6 +285,8 @@ class CourseListener {
 
     let storedlastActivities = {}
 
+    let storedActivityList = []
+
     console.log('Started Checking CourseWorks')
     // Function to check for changes in activity
     async function checkForActivityChanges (sender_psid) {
@@ -297,6 +299,14 @@ class CourseListener {
       for (let course of courses.data.courses) {
         const courseID = course.id
 
+        let courseActivities = await classroom.courses.courseWork.list({
+            courseId: courseID
+        })
+
+        console.log('MOTHERFUCKER:')
+        console.log(courseActivities)
+        
+
         let lastCourseActivity = await classroom.courses.courseWork.list({
           courseId: courseID,
           orderBy: 'updateTime desc',
@@ -305,6 +315,7 @@ class CourseListener {
           //fields: 'courseWork(id,title),courseId'
         })
 
+        // the latest courseWork in the course
         lastCourseActivity = (await lastCourseActivity.data.courseWork)
           ? await lastCourseActivity.data.courseWork.map(work => work)[0]
           : { id: 'void' }
@@ -316,8 +327,9 @@ class CourseListener {
         ) {
           storedlastActivities[course.name] = lastCourseActivity
         } else {
-        
           if (storedlastActivities[course.name].id !== lastCourseActivity.id) {
+            console.log('MOTHERFUCKER:')
+            console.log(storedlastActivities.length)
             let activity = lastCourseActivity
 
             let activityLink
