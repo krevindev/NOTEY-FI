@@ -312,6 +312,19 @@ class CourseListener {
           //fields: 'courseWork(id,title),courseId'
         })
 
+        // if list is an empty array
+        if (await storedActivityList.length <= 0) {
+            storedActivityList = await courseActivities
+        }
+
+        console.log('---------------------')
+        console.log(course.name)
+        console.log('STORED:')
+        console.log(await storedActivityList.length)
+        console.log('RETRIEVED:')
+        console.log(await courseActivities.length)
+        storedActivityList = await courseActivities
+
         // the latest courseWork in the course
         lastCourseActivity = (await lastCourseActivity.data.courseWork)
           ? await lastCourseActivity.data.courseWork.map(work => work)[0]
@@ -325,10 +338,6 @@ class CourseListener {
           storedlastActivities[course.name] = lastCourseActivity
         } else {
           if (storedlastActivities[course.name].id !== lastCourseActivity.id) {
-
-            if(storedActivityList.length <= 0) storedActivityList = courseActivities
-
-
             let activity = lastCourseActivity
 
             let activityLink
