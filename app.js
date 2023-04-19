@@ -162,27 +162,49 @@ app.post('/set_reminder', async (req, res) => {
     }
   }
 
+  async function myReminder (reminderDate) {
+    return new Promise((resolve, reject) => {
+      try {
+        const checkerIntervalID = setInterval(() => {
+          currentDate = moment(new Date()).add(8, 'hours')
+          console.log('CHECKING')
+          console.log(currentDate.toDateString())
+          console.log(reminderDate.toDateString())
+        }, 2000)
+
+        if (checkerIntervalID == '1') resolve()
+      } catch (err) {
+        reject(err)
+      }
+    })
+  }
+
   async function setReminder (reminderDate) {
     return new Promise((resolve, reject) => {
       try {
-        resolve(
-          // Define the CronJob
-          cron.schedule(
-            `0 0 0 * * *`,
-            () => {
-              currentDate = moment(new Date()).add(8, 'hours')
-              // Compare today's date with the reminder date
-              if (currentDate.toDateString() === reminderDate.toDateString()) {
-                // Code to be executed when today's date is equal to the reminder date
-                console.log('Today is the reminder date!')
-              }
-            },
-            {
-              timezone: 'Asia/Manila',
-              scheduled: true
+        // Define the CronJob
+        const job = cron.schedule(
+          `0 0 0 * * *`,
+          () => {
+            currentDate = moment(new Date()).add(8, 'hours')
+            // Compare today's date with the reminder date
+            if (currentDate.toDateString() === reminderDate.toDateString()) {
+              // Code to be executed when today's date is equal to the reminder date
+              console.log('Today is the reminder date!')
+              console.log(currentDate.toDateString())
+              console.reminderDate.toDateString()
+            } else {
+              console.log('NOT YET')
+              console.log(currentDate.toDateString())
+              console.reminderDate.toDateString()
             }
-          )
+          },
+          {
+            timezone: 'Asia/Manila',
+            scheduled: true
+          }
         )
+        job.start()
       } catch (err) {
         reject(err)
       }
@@ -190,7 +212,7 @@ app.post('/set_reminder', async (req, res) => {
   }
 
   // Set the Reminder
-  await setReminder(reminderDate)
+  await myReminder(reminderDate)
     .then(async job => {
       try {
         await callSendAPI(await sender_psid, {
@@ -213,7 +235,6 @@ app.post('/set_reminder', async (req, res) => {
             }
           }
         })
-        job.start()
       } catch (err) {
         console.log(err)
       }
