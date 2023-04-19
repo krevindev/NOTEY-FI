@@ -329,7 +329,13 @@ app.post('/notifications', (req, res) => {
 async function handleQuickReplies (sender_psid, received_payload) {
   let response
 
-  if (received_payload.split(':')[0] === 'rem_time') {
+  if (payload.split(':')[0] === 'rem_sa') {
+    await callSendAPI(
+      sender_psid,
+      await botResponses.response(payload, sender_psid)
+    )
+  }
+  else if (received_payload.split(':')[0] === 'rem_time') {
     await callSendAPI(sender_psid, {
       attachment: {
         type: 'image',

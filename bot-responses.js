@@ -206,7 +206,7 @@ async function multiResponse (msg, ...sender_psid) {
     return await responses
   }
 
-  // select activity MULTI RESPONSE
+  //   MULTI RESPONSE
   else if (msg.split(':')[0] == 'rem_sc') {
     let passedString = ''
 
@@ -275,26 +275,22 @@ async function multiResponse (msg, ...sender_psid) {
 
     responses.push({ text: '```\n' + passedString + '\n```' })
 
-    let courseActivitiesBtn = courseActivities.map(courseAct => {
-      return {
-        type: 'postback',
-        title: courseAct.title,
-        payload: `rem_sa:${courseID}:${courseAct.id}`
-      }
-    })
-
-    response = {
+    qr_res = {
       text: passedString,
       quick_replies: courseActivities
         .filter(ca => ca !== undefined)
         .map((ca, index) => {
+          console.log(ca)
           return {
             content_type: 'text',
-            title: `${String(index + 1)}. ${ca.name}`,
+            title: `${String(index + 1)}. ${ca.title}`,
             payload: `rem_sa:${courseID}:${ca.id}`
           }
         })
+        .slice(0, 12)
     }
+
+    responses.push(qr_res)
 
     return responses
   }
@@ -701,6 +697,19 @@ async function response (msg, ...sender_psid) {
       quick_replies: [
         {
           content_type: 'text',
+          title: 'Set Reminder',
+          payload: 'set_reminder',
+          image_url:
+            'https://cdn1.iconfinder.com/data/icons/cloud-hosting/32/stopwatch-icon-512.png'
+        },
+        {
+          content_type: 'text',
+          title: 'View Deadlines',
+          payload: 'view_deadlines',
+          image_url: img_url
+        },
+        {
+          content_type: 'text',
           title: 'Subscribe',
           payload: 'subscribe',
           image_url: img_url
@@ -716,19 +725,6 @@ async function response (msg, ...sender_psid) {
           title: 'Add VLE Account',
           payload: 'add_vle_account',
           image_url: img_url
-        },
-        {
-          content_type: 'text',
-          title: 'View Your Google Courses',
-          payload: 'view_google_courses',
-          image_url: img_url
-        },
-        {
-          content_type: 'text',
-          title: 'Set Reminder',
-          payload: 'set_reminder',
-          image_url:
-            'https://cdn1.iconfinder.com/data/icons/cloud-hosting/32/stopwatch-icon-512.png'
         }
       ]
     }
