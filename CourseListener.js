@@ -327,6 +327,7 @@ class CourseListener {
           if (storedlastActivities[course.name].id !== lastCourseActivity.id) {
             console.log('MOTHERFUCKER:')
             console.log(storedlastActivities.length)
+            
             let activity = lastCourseActivity
 
             let activityLink
@@ -453,17 +454,7 @@ class CourseListener {
 
             storedlastActivities[course.name] = lastCourseActivity
           }
-          /*
-              if(storedlastActivities[course.name].id == lastCourseActivity.id){
-                if(storedlastActivities[course.name].id !== lastCourseActivity.id){
-                  await callSendAPI(this.sender_psid, {text: "NEWW"})
-                  console.log("NEWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW")
-                }
-              }else{
-                console.log(storedlastActivities[course.name].id)
-                console.log(lastCourseActivity.id)
-              }
-              */
+      
         }
       }
     }
