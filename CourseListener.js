@@ -509,12 +509,11 @@ class CourseListener {
                 })
                 courseWorks = await courseWorks.data.courseWork
 
-                let courseWorksString = "```"+"Course Activities:\n"
+                let courseWorksString = 'Course Activities:\n'
                 if (courseWorks) {
                   courseWorks.forEach(cw => {
                     courseWorksString += `\n-${cw.title}`
                   })
-                  courseWorksString += "\n```"
                 }
 
                 const response = {
@@ -523,7 +522,7 @@ class CourseListener {
                     payload: {
                       template_type: 'button',
                       text: `New course added!\n'${course.name}'\n
-                      ${courseWorks ? courseWorksString : ''}`,
+                      \n${courseWorks ? courseWorksString : ''}`,
                       buttons: [
                         {
                           type: 'web_url',
