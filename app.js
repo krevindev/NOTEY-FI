@@ -175,6 +175,7 @@ app.post('/set_reminder', async (req, res) => {
       this.listenerInterval = setInterval(() => {
         currentDate = moment(new Date()).add(8, 'hours')
         console.log('CHECKING')
+        console.log(courseWork.title)
 
         if (
           reminderDate.isSame(currentDate) ||
