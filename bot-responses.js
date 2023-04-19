@@ -98,7 +98,7 @@ async function axiosReq (method, data) {
         resolve(response)
       })
       .catch(error => {
-        reject({ text: '' })
+        reject({ text: `${error}` })
       })
   })
 }
@@ -966,7 +966,7 @@ async function retrieveCourses1 (sender_psid) {
     const currentCourseWorkList = data.courseWork || []
 
     if (
-      JSON.stringify(previousCourseWorkList) !== 
+      JSON.stringify(previousCourseWorkList) !==
       JSON.stringify(currentCourseWorkList)
     ) {
       // Course work list has changed, emit event
