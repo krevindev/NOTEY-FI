@@ -294,7 +294,7 @@ class CourseListener {
       })
 
       // for every course
-      let storedActivityList = []
+      let storedActivityList = {}
 
       for (let course of courses.data.courses) {
         const courseID = course.id
@@ -313,7 +313,7 @@ class CourseListener {
         })
 
         // if list is an empty array
-        if ((await storedActivityList.length) <= 0) {
+        if (Object.keys(await storedActivityList).length <= 0) {
           storedActivityList = await courseActivities
         }
 
@@ -323,6 +323,8 @@ class CourseListener {
         console.log(await storedActivityList.length)
         console.log('RETRIEVED:')
         console.log(await courseActivities.length)
+        console.log('LAST COURSE ACTIVITY:')
+        if (lastCourseActivity) console.log(lastCourseActivity.data.courseWork)
         storedActivityList = await courseActivities
 
         // the latest courseWork in the course
@@ -721,7 +723,7 @@ function callSendAPI (sender_psid, response) {
       (err, res, body) => {
         if (!err) {
           resolve(console.log('message sent!'))
-        } else 
+        } else {
           reject(console.error('Unable to send message:' + err))
         }
       }
