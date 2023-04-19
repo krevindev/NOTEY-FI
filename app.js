@@ -17,6 +17,7 @@ const request = require('request'),
   axios = require('axios')
 const CronJob = require('cron').CronJob
 const moment = require('moment')
+const cron = require('node-cron')
 
 const { urlencoded, json } = require('body-parser')
 
@@ -110,7 +111,7 @@ app.post('/set_reminder', async (req, res) => {
   console.log('TIME:')
   console.log(courseWork.dueTime)
 
-  const reminderDate = moment(dueDate).subtract(7, 'days').toDate();
+  const reminderDate = moment(dueDate).subtract(7, 'days')
   const formattedReminderDate = reminderDate.format(
     'dddd, MMMM Do YYYY, h:mm:ss a'
   )
@@ -169,16 +170,22 @@ app.post('/set_reminder', async (req, res) => {
     }
   })
     .then(async res => {
-      // call the deadlineChecker initially
-      // const cronInterval = setInterval(async () => {
-      //   let deadline;
-      //   if(timeUnit == 'days'){
-      //     deadline = new Date()
-      //   }
-      //   await callSendAPI(sender_psid, { text: await usedTime }).then(
-      //     res => res
-      //   )
-      // }, 1000)
+      // Define the CronJob
+      const job = cron.schedule(
+        `0 0 0 * * *`,
+        () => {
+          // Compare today's date with the reminder date
+          const currentDate = new Date()
+          if (currentDate.toDateString() === reminderDate.toDateString()) {
+            // Code to be executed when today's date is equal to the reminder date
+            console.log('Today is the reminder date!')
+          }
+        },
+        {
+          timezone: 'your-timezone', // Replace with your desired timezone
+          scheduled: true
+        }
+      )
     })
     .catch(err => res.status(400).send('Error'))
 
