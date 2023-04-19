@@ -315,18 +315,21 @@ class CourseListener {
         })
 
         // if object is empty assign initial value
-        storedActivityList[course.id] = await courseActivities.map(
-          ca => ca.title
-        )
+        if (!storedActivityList[course.id]) {
+          storedActivityList[course.id] = await courseActivities.map(
+            ca => ca.title
+          )
+        }
 
         console.log('---------------------')
         console.log(await course.name)
         console.log('STORED:')
-        console.log(await storedActivityList[course.id])
+        console.log(await storedActivityList[course.id].length)
         console.log('RETRIEVED:')
         console.log(await courseActivities.length)
-        console.log('LAST COURSE ACTIVITY:')
-        console.log(storedActivityList)
+        storedActivityList[course.id] = await courseActivities.map(
+          ca => ca.title
+        )
 
         // the latest courseWork in the course
         lastCourseActivity = (await lastCourseActivity.data.courseWork)
