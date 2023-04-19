@@ -201,6 +201,8 @@ async function multiResponse (msg, ...sender_psid) {
 
     responses.push(response)
 
+    console.log(responses)
+
     return await responses
   }
 

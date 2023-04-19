@@ -200,7 +200,7 @@ app.post('/set_reminder', async (req, res) => {
           payload: {
             template_type: 'button',
             text: `You have successfully set a reminder!
-          \nYou will be Reminded in ${time} ${timeUnit} before ${formattedDueDate}
+          \nYou will be Reminded ${time} ${timeUnit} before ${formattedDueDate}
           \nReminder Date: ${formattedReminderDate}
           \nThe Current Date: ${formattedCurrentDate}`,
             buttons: [
@@ -340,11 +340,15 @@ async function handleQuickReplies (sender_psid, received_payload) {
       }
     })
   } else if (received_payload.split(':')[0] === 'rem_sc') {
-    console.log('RECEIVEDDDDDDDDDDDDDDDDDDD')
-    await callSendAPI(
-      sender_psid,
-      await botResponses.response(received_payload, sender_psid)
+    const multiResponses = await botResponses.multiResponse(
+      received_payload,
+      sender_psid
     )
+    sendMultipleResponses(multiResponses, sender_psid)
+    // await callSendAPI(
+    //   sender_psid,
+    //   await botResponses.response(received_payload, sender_psid)
+    // )
   } else if (received_payload.split(':')[0] == 'rem_t') {
     await callSendAPI(sender_psid, { text: 'Setting reminder. Please wait...' })
     await callSendAPI(
