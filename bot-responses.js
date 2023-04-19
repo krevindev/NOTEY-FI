@@ -104,6 +104,7 @@ async function axiosReq (method, data) {
 }
 
 async function multiResponse (msg, ...sender_psid) {
+  // select a course MULTI RESPONSE
   if (msg === 'send_reminder_options[course]') {
     let passedString = ''
 
@@ -180,10 +181,6 @@ async function multiResponse (msg, ...sender_psid) {
       text: 'SELECT A COURSE:'
     })
 
-    // responses.push({
-    //   text: "```\n" + passedString + "\n```"
-    // })
-
     console.log('FILTERED COURSES:')
     console.log(filteredCourses.filter(course => course !== undefined))
 
@@ -206,7 +203,102 @@ async function multiResponse (msg, ...sender_psid) {
 
     return await responses
   }
+
+  // select activity MULTI RESPONSE
+  else if (msg.split(':')[0] == 'rem_sc') {
+    let passedString = ''
+
+    let responses = [
+      {
+        text: 'Select Activity:\n'
+      }
+    ]
+
+    const courseID = msg.split(':')[1]
+
+    const user = async () => {
+      return new Promise(async (resolve, reject) => {
+        await db
+          .collection('noteyfi_users')
+          .findOne({ psid: String(sender_psid) }, (err, result) => {
+            if (err) {
+              reject('Rejected')
+            } else {
+              resolve(result)
+            }
+          })
+      })
+    }
+    const token = await user()
+      .then(res => res.vle_accounts[0])
+      .catch(err => console.log(err))
+
+    const auth = await new google.auth.OAuth2(
+      CLIENT_ID,
+      CLIENT_SECRET,
+      REDIRECT_URI
+    )
+
+    await auth.setCredentials({
+      // Replace the following with your own values
+      access_token: await token.access_token,
+      refresh_token: await token.refresh_token
+    })
+
+    const classroom = await google.classroom({
+      version: 'v1',
+      auth: auth
+    })
+
+    let course = await classroom.courses.get({
+      id: courseID
+    })
+    course = course.data
+
+    let courseActivities = await classroom.courses.courseWork.list({
+      courseId: courseID,
+      orderBy: 'updateTime desc'
+    })
+
+    courseActivities = courseActivities.data.courseWork
+      ? courseActivities.data.courseWork
+      : []
+    courseActivities = courseActivities.filter(
+      courseAct => courseAct.dueDate && courseAct.dueTime
+    )
+
+    courseActivities.forEach((ca, index) => {
+      passedString += `\n${String(index + 1)}. ${ca.title}`
+    })
+
+    responses.push({ text: '```\n' + passedString + '\n```' })
+
+    let courseActivitiesBtn = courseActivities.map(courseAct => {
+      return {
+        type: 'postback',
+        title: courseAct.title,
+        payload: `rem_sa:${courseID}:${courseAct.id}`
+      }
+    })
+
+    response = {
+      text: passedString,
+      quick_replies: courseActivities
+        .filter(ca => ca !== undefined)
+        .map((ca, index) => {
+          return {
+            content_type: 'text',
+            title: `${String(index + 1)}. ${ca.name}`,
+            payload: `rem_sa:${courseID}:${ca.id}`
+          }
+        })
+    }
+
+    return responses
+  }
 }
+
+//////////////////////////////////////////////////
 
 async function response (msg, ...sender_psid) {
   let response
