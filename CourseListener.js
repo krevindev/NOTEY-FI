@@ -314,7 +314,12 @@ class CourseListener {
           //fields: 'courseWork(id,title),courseId'
         })
 
-        if (await storedActivityList[course.id]) {
+        console.log(await storedActivityList[course.id])
+        if ((await storedActivityList[course.id])) {
+          console.log('STORED LIST:')
+          console.log(storedActivityList[course.id])
+          console.log('LENGTH: ' + courseActivities.length)
+          console.log('-------------------------')
           if (
             (await storedActivityList[course.id].length) !==
             (await courseActivities.length)
@@ -334,11 +339,6 @@ class CourseListener {
             ca => ca.title
           )
         }
-
-        console.log("STORED LIST:")
-        console.log(
-            storedActivityList
-        )
 
         // console.log('---------------------')
         // console.log(await course.name)
@@ -748,5 +748,5 @@ function callSendAPI (sender_psid, response) {
         }
       }
     )
-  }
+  })
 }
