@@ -162,85 +162,127 @@ app.post('/set_reminder', async (req, res) => {
     }
   }
 
-  async function myReminder (reminderDate) {
-    return new Promise((resolve, reject) => {
-      try {
-        const checkerIntervalID = setInterval(() => {
-          currentDate = moment(new Date()).add(8, 'hours')
-          console.log('CHECKING')
+  class SetReminder {
+    constructor (reminderDate, sender_psid, response) {
+      this.reminderDate = reminderDate
+      this.sender_psid = sender_psid
+      this.response = response
+      this.listenerInterval
+    }
+
+    async start () {
+      this.sendConfirmation();
+      this.listenerInterval = setInterval(() => {
+        currentDate = moment(new Date()).add(8, 'hours')
+        console.log('CHECKING')
+
+        if (
+          (reminderDate.isSame(currentDate) ||
+          currentDate.isAfter(reminderDate))
+        ) {
+          this.sendReminder()
+          this.stop()
+        } else {
           console.log(currentDate)
           console.log(reminderDate)
-          console.log((reminderDate.isSame(currentDate) || currentDate.isAfter(reminderDate)))
-        }, 2000)
+        }
+      }, 2000)
 
-        if (checkerIntervalID == '1') resolve()
-      } catch (err) {
-        reject(err)
-      }
-    })
-  }
-
-  async function setReminder (reminderDate) {
-    return new Promise((resolve, reject) => {
-      try {
-        // Define the CronJob
-        const job = cron.schedule(
-          `0 0 0 * * *`,
-          () => {
-            currentDate = moment(new Date()).add(8, 'hours')
-            // Compare today's date with the reminder date
-            if (currentDate.toDateString() === reminderDate.toDateString()) {
-              // Code to be executed when today's date is equal to the reminder date
-              console.log('Today is the reminder date!')
-              console.log(currentDate.toDateString())
-              console.reminderDate.toDateString()
-            } else {
-              console.log('NOT YET')
-              console.log(currentDate.toDateString())
-              console.reminderDate.toDateString()
-            }
-          },
-          {
-            timezone: 'Asia/Manila',
-            scheduled: true
+    }
+    async stop () {
+      clearInterval(this.listenerInterval)
+    }
+    
+    async sendConfirmation () {
+      await callSendAPI(this.sender_psid, {
+        attachment: {
+          type: 'template',
+          payload: {
+            template_type: 'button',
+            text: `You have successfully set a reminder!
+          \nYou will be Reminded in ${time} ${timeUnit} before ${formattedDueDate}
+          \nReminder Date: ${formattedReminderDate}
+          \nThe Current Date: ${formattedCurrentDate}`,
+            buttons: [
+              {
+                type: 'postback',
+                title: `Return to Menu`,
+                webview_height_ratio: 'full',
+                payload: 'menu'
+              }
+            ]
           }
-        )
-        job.start()
-      } catch (err) {
-        reject(err)
-      }
-    })
+        }
+      })
+    }
+    async sendReminder () {
+      await callSendAPI(this.sender_psid, this.response)
+    }
   }
+
+  // async function setReminder (reminderDate) {
+  //   return new Promise((resolve, reject) => {
+  //     try {
+  //       // Define the CronJob
+  //       const job = cron.schedule(
+  //         `0 0 0 * * *`,
+  //         () => {
+  //           currentDate = moment(new Date()).add(8, 'hours')
+  //           // Compare today's date with the reminder date
+  //           if (currentDate.toDateString() === reminderDate.toDateString()) {
+  //             // Code to be executed when today's date is equal to the reminder date
+  //             console.log('Today is the reminder date!')
+  //             console.log(currentDate.toDateString())
+  //             console.reminderDate.toDateString()
+  //           } else {
+  //             console.log('NOT YET')
+  //             console.log(currentDate.toDateString())
+  //             console.reminderDate.toDateString()
+  //           }
+  //         },
+  //         {
+  //           timezone: 'Asia/Manila',
+  //           scheduled: true
+  //         }
+  //       )
+  //       job.start()
+  //     } catch (err) {
+  //       reject(err)
+  //     }
+  //   })
+  // }
+
+  new SetReminder(await reminderDate, await sender_psid, await response).start()
 
   // Set the Reminder
-  await myReminder(reminderDate)
-    .then(async job => {
-      try {
-        await callSendAPI(await sender_psid, {
-          attachment: {
-            type: 'template',
-            payload: {
-              template_type: 'button',
-              text: `You have successfully set a reminder!
-            \nYou will be Reminded in ${time} ${timeUnit} before ${formattedDueDate}
-            \nReminder Date: ${formattedReminderDate}
-            \nThe Current Date: ${formattedCurrentDate}`,
-              buttons: [
-                {
-                  type: 'postback',
-                  title: `Return to Menu`,
-                  webview_height_ratio: 'full',
-                  payload: 'menu'
-                }
-              ]
-            }
-          }
-        })
-      } catch (err) {
-        console.log(err)
-      }
-    })
-    .catch(err => console.log(err))
+  // await myReminder(reminderDate)
+  //   .then(async job => {
+  //     try {
+  //       await callSendAPI(await sender_psid, {
+  //         attachment: {
+  //           type: 'template',
+  //           payload: {
+  //             template_type: 'button',
+  //             text: `You have successfully set a reminder!
+  //           \nYou will be Reminded in ${time} ${timeUnit} before ${formattedDueDate}
+  //           \nReminder Date: ${formattedReminderDate}
+  //           \nThe Current Date: ${formattedCurrentDate}`,
+  //             buttons: [
+  //               {
+  //                 type: 'postback',
+  //                 title: `Return to Menu`,
+  //                 webview_height_ratio: 'full',
+  //                 payload: 'menu'
+  //               }
+  //             ]
+  //           }
+  //         }
+  //       })
+  //     } catch (err) {
+  //       console.log(err)
+  //     }
+  //   })
+  //   .catch(err => console.log(err))
 })
 
 const botResponses = require('./bot-responses')
