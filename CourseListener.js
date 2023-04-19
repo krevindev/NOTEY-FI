@@ -508,17 +508,22 @@ class CourseListener {
                 let courseWorks = await classroom.courses.courseWork.list({
                   courseId: course.id
                 })
-                courseWorks = courseWorks.data.courseWork
+                courseWorks = await courseWorks.data.courseWork
 
-                console.log('NEW MOTEHRFUCKER')
-                console.log(courseWorks.length)
+                let courseWorksString = `Course Activities:`
+                if (courseWorks) {
+                  courseWorks.forEach(cw => {
+                    courseWorksString += `\n-${cw.title}`
+                  })
+                }
 
                 const response = {
                   attachment: {
                     type: 'template',
                     payload: {
                       template_type: 'button',
-                      text: `New course added!\n'${course.name}'`,
+                      text: `New course added!\n'${course.name}'\n
+                      ${courseWorks ? courseWorksString : ''}`,
                       buttons: [
                         {
                           type: 'web_url',
