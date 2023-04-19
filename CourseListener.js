@@ -298,7 +298,8 @@ class CourseListener {
         const courseID = course.id
 
         let courseActivities = await classroom.courses.courseWork.list({
-          courseId: courseID
+          courseId: courseID,
+          orderBy: 'updateTime desc'
         })
         courseActivities = (await courseActivities.data.courseWork)?await courseActivities.data.courseWork:[]
 
@@ -309,23 +310,17 @@ class CourseListener {
           pageToken: null
           //fields: 'courseWork(id,title),courseId'
         })
+        lastCourseActivity = await (courseActivities[0])?courseActivities[0]:{id: "void"}
 
         if(!STOREDLIST[course.id]){
             STOREDLIST[course.id] = await courseActivities.map(ca => ca.title)
+        }
+
+        if(await STOREDLIST[course.id].length >= await courseActivities.length){
             console.log("ADDED: "+await lastCourseActivity.title)
         }
 
-        if(await STOREDLIST[course.id].length !== await courseActivities.length){
-            console.log(lastCourseActivity)
-        }
-
         STOREDLIST[course.id] = await courseActivities.map(ca => ca.title)
-
-
-        // the latest courseWork in the course
-        lastCourseActivity = (await lastCourseActivity.data.courseWork)
-          ? await lastCourseActivity.data.courseWork.map(work => work)[0]
-          : { id: 'void' }
 
       }
     }
