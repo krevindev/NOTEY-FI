@@ -314,22 +314,32 @@ class CourseListener {
           //fields: 'courseWork(id,title),courseId'
         })
 
-        // if object is empty assign initial value
-        if (!storedActivityList[course.id]) {
+        if (await storedActivityList[course.id]) {
+          if (
+            (await storedActivityList[course.id].length) !==
+            (await courseActivities.length)
+          ) {
+            console.clear()
+            console.log('TRIGGERED!')
+            await callSendAPI(sender_psid, { text: 'Changed!' })
+          } else {
+            console.log(
+              (await storedActivityList[course.id].length) !==
+                (await courseActivities.length)
+            )
+          }
+        } else {
           storedActivityList[course.id] = await courseActivities.map(
             ca => ca.title
           )
         }
 
-        console.log('---------------------')
-        console.log(await course.name)
-        console.log('STORED:')
-        console.log(await storedActivityList[course.id].length)
-        console.log('RETRIEVED:')
-        console.log(await courseActivities.length)
-        storedActivityList[course.id] = await courseActivities.map(
-          ca => ca.title
-        )
+        // console.log('---------------------')
+        // console.log(await course.name)
+        // console.log('STORED:')
+        // console.log(await storedActivityList[course.id].length)
+        // console.log('RETRIEVED:')
+        // console.log(await courseActivities.length)
 
         // the latest courseWork in the course
         lastCourseActivity = (await lastCourseActivity.data.courseWork)
