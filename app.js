@@ -16,6 +16,7 @@ const request = require('request'),
   app = express().use(body_parser.json()),
   axios = require('axios')
 const CronJob = require('cron').CronJob
+const moment = require('moment')
 
 const { urlencoded, json } = require('body-parser')
 
@@ -98,29 +99,23 @@ app.post('/set_reminder', async (req, res) => {
 
   const dueDate = new Date(
     courseWork.dueDate.year,
-    courseWork.dueDate.month - 1,
+    courseWork.dueDate.month - 1, // Subtract 1 from the month value
     courseWork.dueDate.day,
     courseWork.dueTime.hours,
     courseWork.dueTime.minutes,
     courseWork.dueTime.seconds
-  )
+  );
 
-  const options = {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit',
-    hour12: false
-  }
-
-  // Set reminder 7 days prior to the deadline
-  const reminderDate = new Date(dueDate)
-  reminderDate.setDate(reminderDate.getDate() - 7)
-  console.log(`Reminder: 7 days prior to deadline - ${reminderDate.toLocaleString()}`);
-  console.log('DUE DATE:')
-  console.log(dueDate) // Output the formatted dueDate with options
+  console.log("DATE:")
+  console.log(courseWork.dueDate);
+  console.log("TIME:")
+  console.log(courseWork.dueTime)
+  
+  const reminderDate = moment(dueDate).subtract(7, 'days');
+  const formattedReminderDate = reminderDate.format('YYYY-MM-DD HH:mm:ss');
+  
+  console.log(`Reminder: 7 days prior to deadline - ${formattedReminderDate}`);
+  
 
   /** Date format end */
 
@@ -151,8 +146,6 @@ app.post('/set_reminder', async (req, res) => {
     }
   }
 
-
-
   await callSendAPI(await sender_psid, {
     attachment: {
       type: 'template',
@@ -172,9 +165,7 @@ app.post('/set_reminder', async (req, res) => {
     }
   })
     .then(async res => {
-
       // call the deadlineChecker initially
-
       // const cronInterval = setInterval(async () => {
       //   let deadline;
       //   if(timeUnit == 'days'){
@@ -184,7 +175,6 @@ app.post('/set_reminder', async (req, res) => {
       //     res => res
       //   )
       // }, 1000)
-
     })
     .catch(err => res.status(400).send('Error'))
 
