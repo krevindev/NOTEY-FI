@@ -321,28 +321,6 @@ class CourseListener {
           )
         }
 
-        if (await storedActivityList[course.id]) {
-          console.log('STORED LIST:')
-          console.log(storedActivityList[course.id])
-          console.log('LENGTH: ' + courseActivities.length)
-          console.log('-------------------------')
-          if (
-            (await storedActivityList[course.id].length) !==
-            (await courseActivities.length)
-          ) {
-            console.clear()
-            console.log('TRIGGERED!')
-            await callSendAPI(sender_psid, { text: 'Changed!' })
-          }
-        }
-
-        // console.log('---------------------')
-        // console.log(await course.name)
-        // console.log('STORED:')
-        // console.log(await storedActivityList[course.id].length)
-        // console.log('RETRIEVED:')
-        // console.log(await courseActivities.length)
-
         // the latest courseWork in the course
         lastCourseActivity = (await lastCourseActivity.data.courseWork)
           ? await lastCourseActivity.data.courseWork.map(work => work)[0]
@@ -356,11 +334,13 @@ class CourseListener {
           storedlastActivities[course.name] = lastCourseActivity
         } else {
           if (
-            (await storedActivityList[course.id].length) <=
+            (await storedActivityList[course.id].length) >
             (await courseActivities.length)
           ) {
+            await callSendAPI(sender_psid, { text: 'Changed!' })
             if (
               storedlastActivities[course.name].id !== lastCourseActivity.id
+            
             ) {
               let activity = lastCourseActivity
 
@@ -494,14 +474,14 @@ class CourseListener {
 
               storedlastActivities[course.name] = lastCourseActivity
             }
-          }
+          }storedActivityList[course.id] = await courseActivities.map(
+            ca => ca.title
+          )
           
         }
         
       }
-      storedActivityList[course.id] = await courseActivities.map(
-        ca => ca.title
-      )
+      
     }
 
     setInterval(
