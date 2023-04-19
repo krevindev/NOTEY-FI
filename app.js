@@ -115,12 +115,18 @@ app.post('/set_reminder', async (req, res) => {
   console.log(courseWork.dueTime)
 
   const reminderDate = moment(dueDate).subtract(time, timeUnit)
+  const currentDate = moment(new Date).add(8, 'hours');
+
   const formattedReminderDate = reminderDate.format(
     'dddd, MMMM Do YYYY, h:mm:ss a'
   )
   const formattedDueDate = moment(dueDate).format(
     'dddd, MMMM Do YYYY, h:mm:ss a'
   )
+  const formattedCurrentDate = moment(currentDate).format(
+    'dddd, MMMM Do YYYY, h:mm:ss a'
+  )
+
 
   console.log(`Deadline: ${formattedDueDate}`)
   console.log(`Reminder: 7 days prior to deadline - ${formattedReminderDate}`)
@@ -194,9 +200,7 @@ app.post('/set_reminder', async (req, res) => {
               text: `You have successfully set a reminder!
             \nYou will be Reminded in ${time} ${timeUnit} before ${formattedDueDate}
             \nReminder Date: ${formattedReminderDate}
-            \nThe Current Date: ${moment(new Date()).format(
-              'dddd, MMMM Do YYYY, h:mm:ss a'
-            )}`,
+            \nThe Current Date: ${formattedCurrentDate}`,
               buttons: [
                 {
                   type: 'postback',
