@@ -283,7 +283,7 @@ class CourseListener {
     let earliestActivityTimeByCourseId = {}
     let existingCourseworkIds = {}
 
-    let storedlastActivities = {}
+    let STOREDLIST = {}
 
     console.log('Started Checking CourseWorks')
     // Function to check for changes in activity
@@ -310,6 +310,15 @@ class CourseListener {
           //fields: 'courseWork(id,title),courseId'
         })
 
+
+
+        if(!STOREDLIST[course.id]){
+            STOREDLIST[course.id] = courseActivities.map(ca => ca.title)
+        }
+
+        console.log(STOREDLIST)
+
+
         // the latest courseWork in the course
         lastCourseActivity = (await lastCourseActivity.data.courseWork)
           ? await lastCourseActivity.data.courseWork.map(work => work)[0]
@@ -323,7 +332,6 @@ class CourseListener {
           storedlastActivities[course.name] = lastCourseActivity
         } else {
           if (storedlastActivities[course.name].id !== lastCourseActivity.id) {
-
             let activity = lastCourseActivity
 
             let activityLink
@@ -346,10 +354,6 @@ class CourseListener {
 
             const dueDate = activity.dueDate
             const dueTime = activity.dueTime
-
-            console.log('DDDDDDDDDDDDDDDDD:')
-            console.log(dueDate)
-            console.log(dueTime)
 
             if (activity.dueDate) {
               deadlineDate = new Date(
