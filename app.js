@@ -97,7 +97,7 @@ app.post('/set_reminder', async (req, res) => {
       : (await body.time[(await body.time.length) - 1]) === 'm'
       ? 'minutes'
       : undefined
-  if(time == 1) timeUnit = timeUnit.substring(0, (timeUnit.length - 1))
+  if (time == 1) timeUnit = timeUnit.substring(0, timeUnit.length - 1)
   const course = await body.course
   const courseWork = await body.courseWork
 
@@ -115,7 +115,7 @@ app.post('/set_reminder', async (req, res) => {
   console.log(courseWork.dueTime)
 
   const reminderDate = moment(dueDate).subtract(time, timeUnit)
-  const currentDate = moment(new Date).add(8, 'hours');
+  let currentDate = moment(new Date()).add(8, 'hours')
 
   const formattedReminderDate = reminderDate.format(
     'dddd, MMMM Do YYYY, h:mm:ss a'
@@ -126,7 +126,6 @@ app.post('/set_reminder', async (req, res) => {
   const formattedCurrentDate = moment(currentDate).format(
     'dddd, MMMM Do YYYY, h:mm:ss a'
   )
-
 
   console.log(`Deadline: ${formattedDueDate}`)
   console.log(`Reminder: 7 days prior to deadline - ${formattedReminderDate}`)
@@ -139,6 +138,9 @@ app.post('/set_reminder', async (req, res) => {
       payload: {
         template_type: 'button',
         text: `REMINDER!\n
+        You have an upcoming deadline for an activity!
+        \n
+        \n
         \nCourse: \n${await course.name}
         \nActivity: ${await courseWork.title}
         `,
@@ -168,8 +170,8 @@ app.post('/set_reminder', async (req, res) => {
           cron.schedule(
             `0 0 0 * * *`,
             () => {
+              currentDate = moment(new Date()).add(8, 'hours')
               // Compare today's date with the reminder date
-              const currentDate = new Date()
               if (currentDate.toDateString() === reminderDate.toDateString()) {
                 // Code to be executed when today's date is equal to the reminder date
                 console.log('Today is the reminder date!')
@@ -186,7 +188,6 @@ app.post('/set_reminder', async (req, res) => {
       }
     })
   }
-
 
   // Set the Reminder
   await setReminder(reminderDate)
@@ -218,8 +219,6 @@ app.post('/set_reminder', async (req, res) => {
       }
     })
     .catch(err => console.log(err))
-
-  //await callSendAPI(sender_psid, { text:  `Course Title: ${course.name}\n CourseWork: ${courseWork.title}` })
 })
 
 const botResponses = require('./bot-responses')
