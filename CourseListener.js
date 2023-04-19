@@ -325,9 +325,15 @@ class CourseListener {
           storedlastActivities[course.name] = lastCourseActivity
         } else {
           if (storedlastActivities[course.name].id !== lastCourseActivity.id) {
+
+            if(storedActivityList.length <= 0) storedActivityList = courseActivities
+
             console.log('MOTHERFUCKER:')
-            console.log(storedlastActivities.length)
-            
+            console.log("STORED:")
+            console.log(storedActivityList.length)
+            console.log("RETRIEVED:")
+            console.log(courseActivities.length)
+
             let activity = lastCourseActivity
 
             let activityLink
@@ -437,7 +443,11 @@ class CourseListener {
                                 ? `\n\nDESCRIPTION:\n ${activity.description}`
                                 : ''
                             }
-                            \n${activity.dueDate ? `DEADLINE:\n${deadlineDateString}`:''}`,
+                            \n${
+                              activity.dueDate
+                                ? `DEADLINE:\n${deadlineDateString}`
+                                : ''
+                            }`,
                   buttons: responseButtons
                 }
               }
@@ -454,7 +464,6 @@ class CourseListener {
 
             storedlastActivities[course.name] = lastCourseActivity
           }
-      
         }
       }
     }
