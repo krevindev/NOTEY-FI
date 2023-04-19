@@ -102,20 +102,24 @@ app.post('/set_reminder', async (req, res) => {
     courseWork.dueDate.month - 1, // Subtract 1 from the month value
     courseWork.dueDate.day,
     courseWork.dueTime.hours,
-    courseWork.dueTime.minutes,
-    courseWork.dueTime.seconds
-  );
+    courseWork.dueTime.minutes
+  )
 
-  console.log("DATE:")
-  console.log(courseWork.dueDate);
-  console.log("TIME:")
+  console.log('DATE:')
+  console.log(courseWork.dueDate)
+  console.log('TIME:')
   console.log(courseWork.dueTime)
-  
-  const reminderDate = moment(dueDate).subtract(7, 'days');
-  const formattedReminderDate = reminderDate.format('YYYY-MM-DD HH:mm:ss');
-  
-  console.log(`Reminder: 7 days prior to deadline - ${formattedReminderDate}`);
-  
+
+  const reminderDate = moment(dueDate).subtract(7, 'days').toDate();
+  const formattedReminderDate = reminderDate.format(
+    'dddd, MMMM Do YYYY, h:mm:ss a'
+  )
+  const formattedDueDate = moment(dueDate).format(
+    'dddd, MMMM Do YYYY, h:mm:ss a'
+  )
+
+  console.log(`Deadline: ${formattedDueDate}`)
+  console.log(`Reminder: 7 days prior to deadline - ${formattedReminderDate}`)
 
   /** Date format end */
 
