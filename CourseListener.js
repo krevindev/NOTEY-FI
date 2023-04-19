@@ -443,12 +443,8 @@ class CourseListener {
                     console.log('LNK: ' + activityLink)
                     await callSendAPI(await sender_psid, await response)
             }
+            STOREDLIST[course.id] = await courseActivities.map(ca => ca.title)
         }
-
-        STOREDLIST[course.id] = await courseActivities.map(ca => ca.title)
-
-
-       
 
       }
     }
