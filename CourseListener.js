@@ -329,10 +329,16 @@ class CourseListener {
             )
           }
         } else {
+          // if empty initialize
           storedActivityList[course.id] = await courseActivities.map(
             ca => ca.title
           )
         }
+
+        console.log("STORED LIST:")
+        console.log(
+            storedActivityList
+        )
 
         // console.log('---------------------')
         // console.log(await course.name)
@@ -742,5 +748,5 @@ function callSendAPI (sender_psid, response) {
         }
       }
     )
-  })
+  }
 }
