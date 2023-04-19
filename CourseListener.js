@@ -300,12 +300,14 @@ class CourseListener {
         const courseID = course.id
 
         let courseActivities = await classroom.courses.courseWork.list({
-            courseId: courseID
+          courseId: courseID
         })
+        courseActivities = await courseActivities.data.courseWork
 
-        console.log('MOTHERFUCKER:')
-        console.log(courseActivities)
-        
+        if (courseActivities) {
+          console.log('MOTHERFUCKER:'+course.name)
+          console.log(await courseActivities.map(ca => ca.title))
+        }
 
         let lastCourseActivity = await classroom.courses.courseWork.list({
           courseId: courseID,
