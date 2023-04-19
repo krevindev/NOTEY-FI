@@ -181,6 +181,8 @@ app.post('/set_reminder', async (req, res) => {
     })
   }
 
+
+  // Set the Reminder
   await setReminder(reminderDate)
     .then(async job => {
       try {
@@ -190,7 +192,8 @@ app.post('/set_reminder', async (req, res) => {
             payload: {
               template_type: 'button',
               text: `You have successfully set a reminder!
-            \nWill trigger at ${formattedReminderDate}`,
+            \nYou will be Reminded in ${time} ${timeUnit} before ${formattedDueDate}
+            \nReminder Date: ${formattedReminderDate}`,
               buttons: [
                 {
                   type: 'postback',
