@@ -105,7 +105,7 @@ app.post('/set_reminder', async (req, res) => {
     courseWork.dueDate.year,
     courseWork.dueDate.month - 1, // Subtract 1 from the month value
     courseWork.dueDate.day,
-    courseWork.dueTime.hours,
+    courseWork.dueTime.hours + 8,
     courseWork.dueTime.minutes
   )
 
@@ -193,7 +193,10 @@ app.post('/set_reminder', async (req, res) => {
               template_type: 'button',
               text: `You have successfully set a reminder!
             \nYou will be Reminded in ${time} ${timeUnit} before ${formattedDueDate}
-            \nReminder Date: ${formattedReminderDate}`,
+            \nReminder Date: ${formattedReminderDate}
+            \nThe Current Date: ${moment(new Date()).format(
+              'dddd, MMMM Do YYYY, h:mm:ss a'
+            )}`,
               buttons: [
                 {
                   type: 'postback',
