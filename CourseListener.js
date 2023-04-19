@@ -284,6 +284,7 @@ class CourseListener {
     let existingCourseworkIds = {}
 
     let storedlastActivities = {}
+    let storedActivityList = {}
 
     console.log('Started Checking CourseWorks')
     // Function to check for changes in activity
@@ -294,7 +295,6 @@ class CourseListener {
       })
 
       // for every course
-      let storedActivityList = {}
 
       for (let course of courses.data.courses) {
         const courseID = course.id
@@ -314,8 +314,15 @@ class CourseListener {
           //fields: 'courseWork(id,title),courseId'
         })
 
+        if (!(await storedActivityList[course.id])) {
+          // if empty initialize
+          storedActivityList[course.id] = await courseActivities.map(
+            ca => ca.title
+          )
+        }
+
         console.log(await storedActivityList[course.id])
-        if ((await storedActivityList[course.id])) {
+        if (await storedActivityList[course.id]) {
           console.log('STORED LIST:')
           console.log(storedActivityList[course.id])
           console.log('LENGTH: ' + courseActivities.length)
@@ -333,12 +340,9 @@ class CourseListener {
                 (await courseActivities.length)
             )
           }
-        } else {
-          // if empty initialize
-          storedActivityList[course.id] = await courseActivities.map(
-            ca => ca.title
-          )
-        }
+        } 
+
+        
 
         // console.log('---------------------')
         // console.log(await course.name)
@@ -491,6 +495,9 @@ class CourseListener {
             storedlastActivities[course.name] = lastCourseActivity
           }
         }
+        storedActivityList[course.id] = await courseActivities.map(
+            ca => ca.title
+          )
       }
     }
 
