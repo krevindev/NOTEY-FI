@@ -343,8 +343,9 @@ async function multiResponse(msg, ...sender_psid) {
 
     let courseActivities = await classroom.courses.courseWork.list({
       courseId: courseID,
-      orderBy: 'updateTime desc'
+      orderBy: 'dueDate desc'
     })
+    
 
     courseActivities = courseActivities.data.courseWork
       ? courseActivities.data.courseWork
@@ -356,20 +357,19 @@ async function multiResponse(msg, ...sender_psid) {
     let passedString = ''
 
     await courseActivities.forEach(async (ca, index) => {
-      passedString += `\n${index + 1}. ${ca.title}\n`
       const dueDate = new Date(
-        courseWork.dueDate.year,
-        courseWork.dueDate.month - 1, // Subtract 1 from the month value
-        courseWork.dueDate.day,
-        courseWork.dueTime.hours !== undefined ? courseWork.dueTime.hours + 8 : 11,
-        courseWork.dueTime.minutes !== undefined ? courseWork.dueTime.minutes : 59
+        ca.dueDate.year,
+        ca.dueDate.month - 1, // Subtract 1 from the month value
+        ca.dueDate.day,
+        ca.dueTime.hours !== undefined ? ca.dueTime.hours + 8 : 11,
+        ca.dueTime.minutes !== undefined ? ca.dueTime.minutes : 59
       )
 
       const formattedDueDate = moment(dueDate).format(
         'dddd, MMMM Do YYYY, h:mm:ss a'
       )
 
-      passedString += `${formattedDueDate}`
+      passedString += `\n${index + 1}. ${ca.title}\n${formattedDueDate}\n`
     })
 
     //responses.push({ text: '```\n' + passedString + '\n```' })
