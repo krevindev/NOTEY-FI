@@ -334,7 +334,25 @@ async function handleQuickReplies (sender_psid, received_payload) {
       sender_psid,
       await botResponses.response(received_payload, sender_psid)
     )
-  }else if (received_payload === 'view_deadlines'){
+  }
+  else if(received_payload.split(':')[0] == 'dead_sc'){
+    const multiResponses = await botResponses.multiResponse(
+      received_payload,
+      sender_psid
+    )
+    sendMultipleResponses(multiResponses, sender_psid)
+    // await callSendAPI(
+    //   sender_psid,
+    //   await botResponses.response(received_payload, sender_psid)
+    // )
+  } else if (received_payload.split(':')[0] == 'rem_t') {
+    await callSendAPI(sender_psid, { text: 'Setting reminder. Please wait...' })
+    await callSendAPI(
+      sender_psid,
+      await botResponses.response(received_payload, sender_psid)
+    )
+  }
+  else if (received_payload === 'view_deadlines'){
     await callSendAPI(sender_psid, await botResponses.response(received_payload, sender_psid))
   }
   else if (received_payload.split(':')[0] === 'rem_time') {
