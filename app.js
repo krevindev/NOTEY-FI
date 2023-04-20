@@ -91,12 +91,12 @@ app.post('/set_reminder', async (req, res) => {
     (await body.time[(await body.time.length) - 1]) === 'd'
       ? 'days'
       : (await body.time[(await body.time.length) - 1]) === 's'
-      ? 'seconds'
-      : (await body.time[(await body.time.length) - 1]) === 'h'
-      ? 'hours'
-      : (await body.time[(await body.time.length) - 1]) === 'm'
-      ? 'minutes'
-      : undefined
+        ? 'seconds'
+        : (await body.time[(await body.time.length) - 1]) === 'h'
+          ? 'hours'
+          : (await body.time[(await body.time.length) - 1]) === 'm'
+            ? 'minutes'
+            : undefined
   if (time == 1) timeUnit = timeUnit.substring(0, timeUnit.length - 1)
   const course = await body.course
   const courseWork = await body.courseWork
@@ -163,14 +163,14 @@ app.post('/set_reminder', async (req, res) => {
   }
 
   class SetReminder {
-    constructor (reminderDate, sender_psid, response) {
+    constructor(reminderDate, sender_psid, response) {
       this.reminderDate = reminderDate
       this.sender_psid = sender_psid
       this.response = response
       this.listenerInterval
     }
 
-    async start () {
+    async start() {
       this.sendConfirmation()
       this.listenerInterval = setInterval(() => {
         currentDate = moment(new Date()).add(8, 'hours')
@@ -189,11 +189,11 @@ app.post('/set_reminder', async (req, res) => {
         }
       }, 2000)
     }
-    async stop () {
+    async stop() {
       clearInterval(this.listenerInterval)
     }
 
-    async sendConfirmation () {
+    async sendConfirmation() {
       await callSendAPI(this.sender_psid, {
         attachment: {
           type: 'template',
@@ -215,7 +215,7 @@ app.post('/set_reminder', async (req, res) => {
         }
       })
     }
-    async sendReminder () {
+    async sendReminder() {
       await callSendAPI(this.sender_psid, this.response)
     }
   }
@@ -227,7 +227,7 @@ const botResponses = require('./bot-responses')
 const { Promise } = require('mongoose')
 
 // function for sending multiple responses at once
-async function sendMultipleResponses (multiResponses, sender_psid) {
+async function sendMultipleResponses(multiResponses, sender_psid) {
   try {
     for (const res of multiResponses) {
       await callSendAPI(sender_psid, res)
@@ -239,7 +239,7 @@ async function sendMultipleResponses (multiResponses, sender_psid) {
 }
 
 // Handles messages events
-async function handleMessage (sender_psid, received_message) {
+async function handleMessage(sender_psid, received_message) {
   let response
 
   // Checks if the message contains text
@@ -260,17 +260,7 @@ async function handleMessage (sender_psid, received_message) {
       // if it's just plain text
     } else {
       if (msg === 'test') {
-        const multiResponses = await botResponses.multiResponse(
-          'view_deadlines',
-          sender_psid
-        )
-        sendMultipleResponses(multiResponses, sender_psid)
-        // await callSendAPI(
-        //   sender_psid,
-        //   await botResponses
-        //     .response('send_reminder_options[course]', sender_psid)
-        //     .then(res => res)
-        // )
+        await callSendAPI(sender_psid, await botResponses.response("view_deadlines", sender_psid))
       } else if (msg === 'get started') {
         response = await botResponses.response(msg)
       } else if (msg[0] === '/') {
@@ -326,7 +316,7 @@ app.post('/notifications', (req, res) => {
 })
 
 // Handles QuickReplies
-async function handleQuickReplies (sender_psid, received_payload) {
+async function handleQuickReplies(sender_psid, received_payload) {
   let response
 
   if (received_payload.split(':')[0] === 'rem_sa') {
@@ -335,7 +325,7 @@ async function handleQuickReplies (sender_psid, received_payload) {
       await botResponses.response(received_payload, sender_psid)
     )
   }
-  else if(received_payload.split(':')[0] == 'dead_sc'){
+  else if (received_payload.split(':')[0] == 'dead_sc') {
     const multiResponses = await botResponses.multiResponse(
       received_payload,
       sender_psid
@@ -352,7 +342,7 @@ async function handleQuickReplies (sender_psid, received_payload) {
       await botResponses.response(received_payload, sender_psid)
     )
   }
-  else if (received_payload === 'view_deadlines'){
+  else if (received_payload === 'view_deadlines') {
     await callSendAPI(sender_psid, await botResponses.response(received_payload, sender_psid))
   }
   else if (received_payload.split(':')[0] === 'rem_time') {
@@ -454,7 +444,7 @@ async function handleQuickReplies (sender_psid, received_payload) {
 }
 
 // Handles messaging_postbacks events
-async function handlePostback (sender_psid, received_postback) {
+async function handlePostback(sender_psid, received_postback) {
   let response
 
   // Get the payload for the postback
@@ -493,7 +483,7 @@ async function handlePostback (sender_psid, received_postback) {
 }
 
 // Sends response messages via the Send API
-function callSendAPI (sender_psid, response) {
+function callSendAPI(sender_psid, response) {
   // Construct the message body
   let request_body = {
     recipient: {

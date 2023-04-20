@@ -358,19 +358,19 @@ async function multiResponse(msg, ...sender_psid) {
     courseActivities.forEach(async (ca, index) => {
 
       const dueDate = new Date(
-        ca.dueDate.year,
-        ca.dueDate.month - 1, // Subtract 1 from the month value
-        ca.dueDate.day,
-        ca.dueTime.hours !== undefined ? ca.dueTime.hours + 8 : 11,
-        ca.dueTime.minutes !== undefined ? ca.dueTime.minutes : 59
+        await ca.dueDate.year,
+        await ca.dueDate.month - 1, // Subtract 1 from the month value
+        await ca.dueDate.day,
+        await ca.dueTime.hours !== undefined ? await ca.dueTime.hours + 8 : 11,
+        await ca.dueTime.minutes !== undefined ? await ca.dueTime.minutes : 59
       )
 
       const formattedDueDate = await moment(await dueDate).format(
         'dddd, MMMM Do YYYY, h:mm:ss a'
       )
 
-      passedString += `\n${String(await index + 1)}. ${await ca.title}
-      \nDeadline: ${await formattedDueDate}`
+      passedString += `\n${String(await index + 1)}. ${await ca.title}`
+      console.log(passedString)
     })
 
     //responses.push({ text: '```\n' + passedString + '\n```' })
@@ -378,7 +378,7 @@ async function multiResponse(msg, ...sender_psid) {
     console.log("Passed String:")
     console.log(passedString)
     qr_res = {
-      text: "```"+ await passedString + "```" ,
+      text: "```"+ passedString + "```" ,
       quick_replies: courseActivities
         .filter(ca => ca !== undefined)
         .map((ca, index) => {
