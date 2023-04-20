@@ -261,7 +261,7 @@ async function handleMessage (sender_psid, received_message) {
     } else {
       if (msg === 'test') {
         const multiResponses = await botResponses.multiResponse(
-          'send_reminder_options[course]',
+          'view_deadlines',
           sender_psid
         )
         sendMultipleResponses(multiResponses, sender_psid)

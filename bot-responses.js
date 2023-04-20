@@ -203,8 +203,6 @@ async function multiResponse(msg, ...sender_psid) {
 
     responses.push(response)
 
-    console.log(responses)
-
     return await responses
   }
 
@@ -360,30 +358,30 @@ async function multiResponse(msg, ...sender_psid) {
     courseActivities.forEach(async (ca, index) => {
 
       const dueDate = new Date(
-        courseWork.dueDate.year,
-        courseWork.dueDate.month - 1, // Subtract 1 from the month value
-        courseWork.dueDate.day,
-        courseWork.dueTime.hours !== undefined ? courseWork.dueTime.hours + 8 : 11,
-        courseWork.dueTime.minutes !== undefined ? courseWork.dueTime.minutes : 59
+        ca.dueDate.year,
+        ca.dueDate.month - 1, // Subtract 1 from the month value
+        ca.dueDate.day,
+        ca.dueTime.hours !== undefined ? ca.dueTime.hours + 8 : 11,
+        ca.dueTime.minutes !== undefined ? ca.dueTime.minutes : 59
       )
 
-      const formattedDueDate = moment(await dueDate).format(
+      const formattedDueDate = await moment(await dueDate).format(
         'dddd, MMMM Do YYYY, h:mm:ss a'
       )
 
-      passedString += `\n${String(index + 1)}. ${ca.title}
-      \nDeadline: ${formattedDueDate}`
+      passedString += `\n${String(await index + 1)}. ${await ca.title}
+      \nDeadline: ${await formattedDueDate}`
     })
 
     //responses.push({ text: '```\n' + passedString + '\n```' })
 
+    console.log("Passed String:")
+    console.log(passedString)
     qr_res = {
-      text: await passedString ,
+      text: "```"+ await passedString + "```" ,
       quick_replies: courseActivities
         .filter(ca => ca !== undefined)
         .map((ca, index) => {
-
-
           return {
             content_type: 'text',
             title: `${String(index + 1)}. ${ca.title}`,
@@ -393,9 +391,9 @@ async function multiResponse(msg, ...sender_psid) {
         .slice(0, 12)
     }
 
-    responses.push(qr_res)
+    responses.push(await qr_res)
 
-    return responses
+    return await responses
   }
 }
 
