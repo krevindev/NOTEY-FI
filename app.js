@@ -334,6 +334,8 @@ async function handleQuickReplies (sender_psid, received_payload) {
       sender_psid,
       await botResponses.response(received_payload, sender_psid)
     )
+  }else if (received_payload === 'view_deadlines'){
+    await callSendAPI(sender_psid, {text:'Should display deadlines'})
   }
   else if (received_payload.split(':')[0] === 'rem_time') {
     await callSendAPI(sender_psid, {
