@@ -294,8 +294,6 @@ async function multiResponse(msg, ...sender_psid) {
 
     return responses
   } else if (msg.split(':')[0] == 'dead_sc') {
-    let passedString = ''
-
     let responses = [
       {
         text: 'Select Activity:\n'
@@ -355,30 +353,21 @@ async function multiResponse(msg, ...sender_psid) {
       courseAct => courseAct.dueDate && courseAct.dueTime
     )
 
-    courseActivities.forEach(async (ca, index) => {
+    let passedString = ''
 
-      const dueDate = new Date(
-        await ca.dueDate.year,
-        await ca.dueDate.month - 1, // Subtract 1 from the month value
-        await ca.dueDate.day,
-        await ca.dueTime.hours !== undefined ? await ca.dueTime.hours + 8 : 11,
-        await ca.dueTime.minutes !== undefined ? await ca.dueTime.minutes : 59
-      )
-
-      const formattedDueDate = await moment(await dueDate).format(
-        'dddd, MMMM Do YYYY, h:mm:ss a'
-      )
+    await courseActivities.forEach(async (ca, index) => {
 
       passedString += `\n${String(await index + 1)}. ${await ca.title}`
-      console.log(passedString)
     })
 
+
+    passedString += 'TEST PASS'
     //responses.push({ text: '```\n' + passedString + '\n```' })
 
     console.log("Passed String:")
     console.log(passedString)
     qr_res = {
-      text: "```"+ passedString + "```" ,
+      text: '```\n' + passedString.substring(2, passedString.length + 1) + '\n```',
       quick_replies: courseActivities
         .filter(ca => ca !== undefined)
         .map((ca, index) => {
