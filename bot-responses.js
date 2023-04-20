@@ -16,6 +16,8 @@ const SCOPES = process.env.SCOPE_STRING
 
 const mongoose = require('./useDB.js')
 const db = mongoose.connection
+const moment = require('moment')
+
 
 // ChatGPT Q&A
 async function askGPT(question) {
@@ -355,18 +357,33 @@ async function multiResponse(msg, ...sender_psid) {
       courseAct => courseAct.dueDate && courseAct.dueTime
     )
 
-    courseActivities.forEach((ca, index) => {
-      passedString += `\n${String(index + 1)}. ${ca.title}\n`
+    courseActivities.forEach(async (ca, index) => {
+
+      const dueDate = new Date(
+        courseWork.dueDate.year,
+        courseWork.dueDate.month - 1, // Subtract 1 from the month value
+        courseWork.dueDate.day,
+        courseWork.dueTime.hours !== undefined ? courseWork.dueTime.hours + 8 : 11,
+        courseWork.dueTime.minutes !== undefined ? courseWork.dueTime.minutes : 59
+      )
+
+      const formattedDueDate = moment(await dueDate).format(
+        'dddd, MMMM Do YYYY, h:mm:ss a'
+      )
+
+      passedString += `\n${String(index + 1)}. ${ca.title}
+      \nDeadline: ${formattedDueDate}`
     })
 
     //responses.push({ text: '```\n' + passedString + '\n```' })
 
     qr_res = {
-      text: '```\n' + passedString + '\n```',
+      text: await passedString ,
       quick_replies: courseActivities
         .filter(ca => ca !== undefined)
         .map((ca, index) => {
-          console.log(ca)
+
+
           return {
             content_type: 'text',
             title: `${String(index + 1)}. ${ca.title}`,
