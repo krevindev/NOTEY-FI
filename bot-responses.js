@@ -18,12 +18,12 @@ const mongoose = require('./useDB.js')
 const db = mongoose.connection
 
 // ChatGPT Q&A
-async function askGPT (question) {
+async function askGPT(question) {
   const apiEndpoint =
     'https://api.openai.com/v1/engines/text-davinci-003/completions'
   const accessToken = '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'
 
-  async function askQuestion (question) {
+  async function askQuestion(question) {
     try {
       const response = await axios.post(
         apiEndpoint,
@@ -63,7 +63,7 @@ async function askGPT (question) {
 
 /** BOT MAIN PROMPTS */
 
-async function axiosReq (method, data) {
+async function axiosReq(method, data) {
   const config = {
     method: method,
     url: `https://hollow-iodized-beanie.glitch.me/set_reminder`,
@@ -103,7 +103,7 @@ async function axiosReq (method, data) {
   })
 }
 
-async function multiResponse (msg, ...sender_psid) {
+async function multiResponse(msg, ...sender_psid) {
   // select a course MULTI RESPONSE
   if (msg === 'send_reminder_options[course]') {
     let passedString = ''
@@ -276,7 +276,7 @@ async function multiResponse (msg, ...sender_psid) {
     //responses.push({ text: '```\n' + passedString + '\n```' })
 
     qr_res = {
-      text: '```\n' + passedString + '\n```' ,
+      text: '```\n' + passedString + '\n```',
       quick_replies: courseActivities
         .filter(ca => ca !== undefined)
         .map((ca, index) => {
@@ -298,7 +298,7 @@ async function multiResponse (msg, ...sender_psid) {
 
 //////////////////////////////////////////////////
 
-async function response (msg, ...sender_psid) {
+async function response(msg, ...sender_psid) {
   let response
 
   //  1
@@ -315,6 +315,127 @@ async function response (msg, ...sender_psid) {
         }
       ]
     }
+  }
+
+  else if (msg === 'view_deadlines') {
+    const user = async () => {
+      return new Promise(async (resolve, reject) => {
+        await db
+          .collection('noteyfi_users')
+          .findOne({ psid: String(sender_psid) }, (err, result) => {
+            if (err) {
+              reject('Rejected')
+            } else {
+              resolve(result)
+            }
+          })
+      })
+    }
+    const token = await user()
+      .then(res => res.vle_accounts[0])
+      .catch(err => console.log(err))
+
+    const auth = await new google.auth.OAuth2(
+      CLIENT_ID,
+      CLIENT_SECRET,
+      REDIRECT_URI
+    )
+
+    await auth.setCredentials({
+      access_token: await token.access_token,
+      refresh_token: await token.refresh_token
+    })
+
+    const classroom = await google.classroom({
+      version: 'v1',
+      auth: auth
+    })
+
+    let courses = await classroom.courses.list({
+      courseStates: ['ACTIVE']
+    })
+
+    courses = courses.data.courses
+
+    const attachment_url = `https://play-lh.googleusercontent.com/w0s3au7cWptVf648ChCUP7sW6uzdwGFTSTenE178Tz87K_w1P1sFwI6h1CLZUlC2Ug`
+
+    const filteredCourses = await Promise.all(
+      courses.map(async course => {
+        const activities = await classroom.courses.courseWork.list({
+          courseId: course.id
+        })
+
+        const courseWork = (activities.data && activities.data.courseWork) || [] // Add a nullish coalescing operator to handle undefined
+
+        const filteredActs = courseWork
+          .map(cw => cw.dueDate)
+          .filter(c => c !== undefined)
+
+        console.log('ITERATED')
+        console.log(filteredActs.length)
+
+        if (filteredActs.length !== 0) {
+          return course
+        }
+      })
+    )
+
+    console.log('FILTERED COURSES:')
+    console.log(filteredCourses.filter(course => course !== undefined))
+
+    // const filteredCoursesBtns = await courses
+    //   .filter(async course => {
+    //     let courseActivities = await classroom.courses.courseWork.list({
+    //       courseId: course.id,
+    //       orderBy: 'updateTime desc',
+    //       pageToken: null
+    //     })
+    //     courseActivities = (await courseActivities.data.courseWork)
+    //       ? courseActivities.data.courseWork
+    //       : []
+    //     courseActivities = courseActivities.filter(
+    //       courseAct => courseAct.dueDate && courseAct.dueTime
+    //     )
+
+    //     console.log(courseActivities.map(ca => ca.title))
+    //     // return only the courseActivities with one or more length
+    //     return (await courseActivities.length) >= 1
+    //   })
+    //   .map(course => {
+    //     return {
+    //       type: 'postback',
+    //       title: course.name.substring(0, 20),
+    //       payload: `rem_sc:${course.id}`
+    //     }
+    //   })
+
+    /* Buttons*/
+    // const message = {
+    //   attachment: {
+    //     type: 'template',
+    //     payload: {
+    //       template_type: 'button',
+    //       text: 'From which course?',
+    //       buttons: filteredCoursesBtns
+    //     }
+    //   }
+    // }
+
+    response = {
+      text: 'SELECT A COURSE',
+      quick_replies: filteredCourses
+        .filter(course => course !== undefined)
+        .map(course => {
+          return {
+            content_type: 'text',
+            title: course.name.substring(0, 20),
+            payload: `rem_sc:${course.id}`
+          }
+        })
+        .slice(0, 12)
+    }
+
+    return response
   }
 
   // rem_t
@@ -807,7 +928,7 @@ async function response (msg, ...sender_psid) {
 /** Bot Actions */
 
 // Subscribe User
-async function subscribe (sender_psid, db) {
+async function subscribe(sender_psid, db) {
   const name = await axios
     .get(
       `https://graph.facebook.com/${sender_psid}?fields=first_name,last_name&access_token=${process.env.PAGE_ACCESS_TOKEN}`
@@ -830,7 +951,7 @@ async function subscribe (sender_psid, db) {
     db.collection('noteyfi_users').findOne(body, async (err, result) => {
       if (result == null) {
         resolve(
-          db.collection('noteyfi_users').insertOne(body, (err, result) => {})
+          db.collection('noteyfi_users').insertOne(body, (err, result) => { })
         )
       } else {
         reject('Existing')
@@ -840,7 +961,7 @@ async function subscribe (sender_psid, db) {
 }
 
 // Unsubscribe User
-async function unsubscribe (sender_psid, db) {
+async function unsubscribe(sender_psid, db) {
   const body = { psid: sender_psid }
   return new Promise((resolve, reject) => {
     db.collection('noteyfi_users').findOne(body, async (err, result) => {
@@ -853,7 +974,7 @@ async function unsubscribe (sender_psid, db) {
   })
 }
 
-async function retrieveCourses (sender_psid) {
+async function retrieveCourses(sender_psid) {
   console.log('retrieving...')
 
   // retrieve user vle tokens
@@ -917,7 +1038,7 @@ async function retrieveCourses (sender_psid) {
   console.log(await mapMe)
 }
 
-async function retrieveCourses1 (sender_psid) {
+async function retrieveCourses1(sender_psid) {
   // retrieve user vle tokens
   const userData = await db
     .collection('noteyfi_users')
