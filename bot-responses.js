@@ -741,17 +741,23 @@ async function response(msg, ...sender_psid) {
   // if the message is set reminder then return the courses to choose from
   else if (msg === 'send_reminder_options[course]') {
 
-    await cachingFunctions.removeACache(String(sender_psid)).then(res => res).catch(err => console.log(err.data))
-    const usa = await cachingFunctions.getFromCache(String(sender_psid)).then(res => res).catch(err => console.log(err));
+    //await cachingFunctions.removeACache(String(sender_psid)).then(res => res).catch(err => console.log(err.data))
+    const userCache = await cachingFunctions.getFromCache(String(sender_psid)).then(res => res).catch(err => console.log(err));
 
-    if(usa){
-      return {text: `Existing? YES`}
-    }else{
-      return {text: `Existing? NO`}
+    if (await userCache) {
+      console.log("Existing ")
+      if(userCache['courses']){
+        console.log("and has courses")
+      }else{
+        console.log("but has no courses")
+        cachingFunctions.updateACache(String(sender_psid), {courses: 'gege'})
+      }
+    } else {
+      // DO THE OLD WAYS HERE
+      return { text: `Existing? NO` }
     }
 
-    const tokens = await cachingFunctions.getFromCache(String(sender_psid)).then(res => res['vle_accounts'])
-    const token = tokens[0]
+    const token = await userCache['vle_accounts'][0]
     console.log("TEST CACHE USER:")
     console.log(await token);
 
