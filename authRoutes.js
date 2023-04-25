@@ -95,6 +95,7 @@ authRouter.get("/oauth2callback", async (req, res) => {
                         { psid: targetPSID })
                     // create CourseListeners to the user
                     listenToUser(user);
+                    //addToCache(user.psid, user)
                 })
         } catch (error) {
             console.log(error);
@@ -111,7 +112,7 @@ async function listenToUser(user) {
     new CourseListener(user).listenCourseChange();
     new CourseListener(user).pushNotification();
 
-    addToCache(user.psid, user);
+    //addToCache(user.psid, user);
 }
 
 /** listen to existing users in the database when this server is running */
@@ -168,4 +169,5 @@ function callSendAPI(sender_psid, response) {
         );
     });
 }
+
 module.exports = authRouter;

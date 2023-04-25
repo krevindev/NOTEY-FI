@@ -741,145 +741,125 @@ async function response(msg, ...sender_psid) {
   // if the message is set reminder then return the courses to choose from
   else if (msg === 'send_reminder_options[course]') {
 
-    //await cachingFunctions.removeACache(String(sender_psid)).then(res => res).catch(err => console.log(err.data))
-    const userCache = await cachingFunctions.getFromCache(String(sender_psid)).then(res => res).catch(err => console.log(err));
+    const getResponse = async (token) => {
+      let responses = []
+      let filteredCourses = await Promise.all(
+        courses.map(async course => {
+          const activities = await classroom.courses.courseWork.list({
+            courseId: course.id
+          })
 
-    if (await userCache) {
-      console.log("Existing ")
-      if(userCache['courses']){
-        console.log("and has courses")
-      }else{
-        console.log("but has no courses")
-        cachingFunctions.updateACache(String(sender_psid), {courses: 'gege'})
-      }
-    } else {
-      // DO THE OLD WAYS HERE
-      return { text: `Existing? NO` }
-    }
+          const courseWork = (activities.data && activities.data.courseWork) || [] // Add a nullish coalescing operator to handle undefined
 
-    const token = await userCache['vle_accounts'][0]
-    console.log("TEST CACHE USER:")
-    console.log(await token);
+          const filteredActs = courseWork
+            .map(cw => cw.dueDate)
+            .filter(c => c !== undefined)
 
-    // const user = async () => {
-    //   return new Promise(async (resolve, reject) => {
-    //     await db
-    //       .collection('noteyfi_users')
-    //       .findOne({ psid: String(sender_psid) }, (err, result) => {
-    //         if (err) {
-    //           reject('Rejected')
-    //         } else {
-    //           resolve(result)
-    //         }
-    //       })
-    //   })
-    // }
-    // const token = await user
-    //   .then(res => res.vle_accounts[0])
-    //   .catch(err => console.log(err))
-
-    const haveCachedCourse = await cachingFunctions.getAllFromCache(String(sender_psid))
-
-    const auth = await new google.auth.OAuth2(
-      CLIENT_ID,
-      CLIENT_SECRET,
-      REDIRECT_URI
-    )
-
-    await auth.setCredentials({
-      access_token: await token.access_token,
-      refresh_token: await token.refresh_token
-    });
-
-    const classroom = await google.classroom({
-      version: 'v1',
-      auth: auth
-    })
-
-    let courses = await classroom.courses.list({
-      courseStates: ['ACTIVE']
-    })
-
-    courses = courses.data.courses
-
-    cachingFunctions.updateACache(String(sender_psid), { courses: courses })
-
-    const attachment_url = `https://play-lh.googleusercontent.com/w0s3au7cWptVf648ChCUP7sW6uzdwGFTSTenE178Tz87K_w1P1sFwI6h1CLZUlC2Ug`
-
-    const filteredCourses = await Promise.all(
-      courses.map(async course => {
-        const activities = await classroom.courses.courseWork.list({
-          courseId: course.id
-        })
-
-        const courseWork = (activities.data && activities.data.courseWork) || [] // Add a nullish coalescing operator to handle undefined
-
-        const filteredActs = courseWork
-          .map(cw => cw.dueDate)
-          .filter(c => c !== undefined)
-
-        console.log('ITERATED')
-        console.log(filteredActs.length)
-
-        if (filteredActs.length !== 0) {
-          return course
-        }
-      })
-    )
-
-    // const filteredCoursesBtns = await courses
-    //   .filter(async course => {
-    //     let courseActivities = await classroom.courses.courseWork.list({
-    //       courseId: course.id,
-    //       orderBy: 'updateTime desc',
-    //       pageToken: null
-    //     })
-    //     courseActivities = (await courseActivities.data.courseWork)
-    //       ? courseActivities.data.courseWork
-    //       : []
-    //     courseActivities = courseActivities.filter(
-    //       courseAct => courseAct.dueDate && courseAct.dueTime
-    //     )
-
-    //     console.log(courseActivities.map(ca => ca.title))
-    //     // return only the courseActivities with one or more length
-    //     return (await courseActivities.length) >= 1
-    //   })
-    //   .map(course => {
-    //     return {
-    //       type: 'postback',
-    //       title: course.name.substring(0, 20),
-    //       payload: `rem_sc:${course.id}`
-    //     }
-    //   })
-
-    /* Buttons*/
-    // const message = {
-    //   attachment: {
-    //     type: 'template',
-    //     payload: {
-    //       template_type: 'button',
-    //       text: 'From which course?',
-    //       buttons: filteredCoursesBtns
-    //     }
-    //   }
-    // }
-
-    response = {
-      text: 'SELECT A COURSE',
-      quick_replies: filteredCourses
-        .filter(course => course !== undefined)
-        .map(course => {
-          return {
-            content_type: 'text',
-            title: course.name.substring(0, 20),
-            payload: `rem_sc:${course.id}`
+          if (filteredActs.length !== 0) {
+            return course
           }
         })
-        .slice(0, 12)
+      )
+
+      filteredCourses = await filteredCourses.filter(
+        course => course !== undefined
+      )
+
+      await filteredCourses.forEach(async (fc, index) => {
+        passedString += '\n\n' + (index + 1) + '.\n' + fc.name
+      })
+
+      responses.push({
+        text: 'SELECT A COURSE:'
+      })
+
+      response = {
+        text:
+          '```\n' + passedString.substring(2, passedString.length + 1) + '\n```',
+        quick_replies: filteredCourses
+          .filter(course => course !== undefined)
+          .map((course, index) => {
+            return {
+              content_type: 'text',
+              title: `${String(index + 1)}. ${course.name.substring(0, 20)}`,
+              payload: `rem_sc:${course.id}`
+            }
+          })
+          .slice(0, 12)
+      }
+
+      responses.push(response)
+
+      return response
     }
 
-    return response
+    //await cachingFunctions.removeACache(String(sender_psid)).then(res => res).catch(err => console.log(err.data))
+    // user cache
+    const userCache = await cachingFunctions.getFromCache(String(sender_psid)).then(res => res).catch(err => console.log(err));
+    let token;
+
+    // if the user is in cache
+    if (await userCache) {
+      console.log("Existing ")
+      // if the user has courses
+      if (userCache['courses']) {
+        console.log("and has courses")
+      }
+      // if the user doesn't have courses
+      else {
+        console.log("but has no courses")
+        await cachingFunctions.updateACache(String(sender_psid), { courses: 'gege' })
+      }
+    }
+    // if the user isn't in the cache
+    else {
+      // WE DO THE OLD WAYS HERE
+      const user = async () => {
+        return new Promise(async (resolve, reject) => {
+          await db
+            .collection('noteyfi_users')
+            .findOne({ psid: String(sender_psid) }, (err, result) => {
+              if (err) {
+                reject('Rejected')
+              } else {
+                resolve(result)
+              }
+            })
+        })
+      }
+      const token = await user()
+        .then(res => res.vle_accounts[0])
+        .catch(err => console.log(err))
+
+      const auth = await new google.auth.OAuth2(
+        CLIENT_ID,
+        CLIENT_SECRET,
+        REDIRECT_URI
+      )
+
+      await auth.setCredentials({
+        access_token: await token.access_token,
+        refresh_token: await token.refresh_token
+      })
+
+      const classroom = await google.classroom({
+        version: 'v1',
+        auth: auth
+      })
+
+      let courses = await classroom.courses.list({
+        courseStates: ['ACTIVE']
+      })
+
+      courses = courses.data.courses
+      await cachingFunctions.updateACache(String(sender_psid), { courses: courses })
+      
+      return await getResponse(token)
+    }
+
+    token = await userCache['vle_accounts'][0]
+    console.log("TEST CACHE USER:")
+    console.log(await token);
   }
 
   // if the message is unsubscribe then remove the user from the database
