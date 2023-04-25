@@ -1,13 +1,3 @@
-/*
- * Starter Project for Messenger Platform Quick Start Tutorial
- *
- * Remix this as the starting point for following the Messenger Platform
- * quick start tutorial.
- *
- * https://developers.facebook.com/docs/messenger-platform/getting-started/quick-start/
- *
- */
-
 'use strict'
 // Imports dependencies and set up http server
 const request = require('request'),
@@ -15,9 +5,7 @@ const request = require('request'),
   body_parser = require('body-parser'),
   app = express().use(body_parser.json()),
   axios = require('axios')
-const CronJob = require('cron').CronJob
 const moment = require('moment')
-const cron = require('node-cron')
 
 const { urlencoded, json } = require('body-parser')
 
@@ -36,6 +24,8 @@ const authRoutes = require('./authRoutes')
 app.use(urlencoded({ extended: true }))
 app.use(json())
 app.use(authRoutes)
+app.use(express.json()); // Enable JSON request body parsing
+
 
 // Sets server port and logs message on success
 app.listen(process.env.PORT || 1337, () => console.log('webhook is listening'))
