@@ -789,7 +789,6 @@ async function response(msg, ...sender_psid) {
     }
     // if the user isn't in the cache
     else {
-      console.log("DI OLD WAYS")
       // WE DO THE OLD WAYS HERE
       const user = async () => {
         return new Promise(async (resolve, reject) => {
@@ -852,15 +851,12 @@ async function response(msg, ...sender_psid) {
         course => course !== undefined
       )
 
-      console.log("ERROR START")
       try{
         await cachingFunctions.addToCache(String(sender_psid), await user().then(res => res).catch(err => console.log(err)))
       }catch(err){
         console.log(err)
       }
-      console.log("ERROR END")
 
-      return await getResponse(await filteredCourses)
     }
 
 
