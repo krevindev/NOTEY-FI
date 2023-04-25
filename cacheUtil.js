@@ -20,6 +20,28 @@ cacheRouter.use((req, res, next) => {
         next();
     }
 });
+// Route handler for updating data in cache
+cacheRouter.put('/update_data/:key', (req, res) => {
+    const key = req.params.key;
+    const value = req.body; // Assuming the updated value to be sent in the request body
+
+    try {
+        // Retrieve existing data from cache with the specified key
+        const existingValue = cache.get(key);
+
+        if (existingValue) {
+            // If data exists in cache, update the value object with the new value
+            const updatedValue = { ...existingValue, ...value };
+            cache.set(key, updatedValue);
+            res.json({ message: 'Data updated in cache successfully' });
+        } else {
+            // If data does not exist in cache, send error response
+            res.status(404).json({ error: 'Data not found in cache' });
+        }
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to update data in cache' });
+    }
+});
 
 // Route handler for adding data to cache
 cacheRouter.post('/add_data', (req, res) => {
