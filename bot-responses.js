@@ -743,7 +743,7 @@ async function response(msg, ...sender_psid) {
 
     const getResponse = async (courses) => {
 
-      let passedString = ''
+      let passedString = '  SELECT A COURSE: \n'
 
       await courses.forEach(async (fc, index) => {
         passedString += '\n\n' + (index + 1) + '.\n' + fc.name
@@ -851,14 +851,15 @@ async function response(msg, ...sender_psid) {
         course => course !== undefined
       )
 
-      try{
-        await cachingFunctions.addToCache(String(sender_psid), await user().then(res => res).catch(err => console.log(err)))
-      }catch(err){
+      try {
+        await cachingFunctions.addToCache(String(sender_psid), await user().then(res => res).catch(err => console.log(err))
+        .then(async res => await cachingFunctions.updateACache(String(sender_psid), { course: filteredCourses})))
+      } catch (err) {
         console.log(err)
       }
 
+      return await getResponse(filteredCourses);
     }
-
 
   }
 
