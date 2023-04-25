@@ -1,15 +1,15 @@
 const express = require('express');
 const NodeCache = require('node-cache');
 
-const app = express();
+const cacheRouter = express();
 
 // Create a new cache instance with a file-based storage
 const cache = new NodeCache({ stdTTL: 60, checkperiod: 120, useClones: false, file: 'cacheFile.json' });
 
-app.use(express.json()); // Enable JSON request body parsing
+cacheRouter.use(express.json()); // Enable JSON request body parsing
 
 // Middleware for caching
-app.use((req, res, next) => {
+cacheRouter.use((req, res, next) => {
     // Check if data is already in cache
     const data = cache.get(req.url);
     if (data) {
@@ -22,7 +22,7 @@ app.use((req, res, next) => {
 });
 
 // Route handler for adding data to cache
-app.post('/add_data', (req, res) => {
+cacheRouter.post('/add_data', (req, res) => {
     // Fetch data from request body
     const key = req.body.key;
     const value = req.body.value;
@@ -35,7 +35,7 @@ app.post('/add_data', (req, res) => {
 });
 
 // Route handler for retrieving data from cache
-app.get('/data/:key', (req, res) => {
+cacheRouter.get('/data/:key', (req, res) => {
     // Retrieve data from cache with the specified key
     const key = req.params.key;
     const value = cache.get(key);
@@ -50,7 +50,7 @@ app.get('/data/:key', (req, res) => {
 });
 
 // Route handler to retrieve and display all data from cache
-app.get('/allData', (req, res) => {
+cacheRouter.get('/allData', (req, res) => {
     // Get all the keys from cache
     const keys = cache.keys();
   
@@ -61,8 +61,4 @@ app.get('/allData', (req, res) => {
     res.json(allData);
   });
 
-// Start the Express server
-app.listen(3000, () => {
-    console.log('Server is running on port 3000');
-});
-
+module.exports = cacheRouter;

@@ -22,6 +22,7 @@
     "moment": "2.29.1",
     "mongodb": "^5.2.0",
     "mongoose": "^6.7.2",
+    "node-cache": "^5.1.2",
     "node-cron": "^3.0.2",
     "request": "^2.72.0",
     "whatwg-url": "^11.0.0"

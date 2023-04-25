@@ -18,12 +18,14 @@ const { google } = require('googleapis')
 const mongoose = require('./useDB.js')
 const db = mongoose.connection
 
-const authRoutes = require('./authRoutes')
+const authRoutes = require('./authRoutes');
+const cacheRoutes = require('./cacheUtil');
 
 // Middlewares
-app.use(urlencoded({ extended: true }))
-app.use(json())
-app.use(authRoutes)
+app.use(urlencoded({ extended: true }));
+app.use(json());
+app.use(authRoutes);
+app.use(cacheRoutes);
 app.use(express.json()); // Enable JSON request body parsing
 
 
