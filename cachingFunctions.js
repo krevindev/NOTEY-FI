@@ -50,7 +50,7 @@ function getFromCache(key) {
                 resolve(await response.data)
             })
             .catch(async error => {
-                reject(await error.response.data);
+                reject(await error.response);
             });
     })
 }

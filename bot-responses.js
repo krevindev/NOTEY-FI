@@ -776,12 +776,8 @@ async function response(msg, ...sender_psid) {
       console.log("Existing ")
       // if the user has courses
       if (userCache['courses']) {
+        console.log(" and has courses")
         return await getResponse(userCache['courses'])
-      }
-      // if the user doesn't have courses
-      else {
-        console.log("but has no courses")
-        await cachingFunctions.updateACache(String(sender_psid), { courses: 'gege' })
       }
     }
     // if the user isn't in the cache
