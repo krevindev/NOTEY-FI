@@ -740,7 +740,14 @@ async function response(msg, ...sender_psid) {
   // 3
   // if the message is set reminder then return the courses to choose from
   else if (msg === 'send_reminder_options[course]') {
-    console.log('ran')
+
+    await cachingFunctions.removeACache(String(sender_psid)).then(res => res).catch(err => console.log(err))
+
+    if(await cachingFunctions.getFromCache(String(sender_psid))){
+      console.log("existing")
+    }else{
+      console.log("not exsitng")
+    }
 
     const tokens = await cachingFunctions.getFromCache(String(sender_psid)).then(res => res['vle_accounts'])
     const token = tokens[0]
@@ -788,7 +795,7 @@ async function response(msg, ...sender_psid) {
 
     courses = courses.data.courses
 
-    cachingFunctions.updateACache(String(sender_psid), {courses: courses})
+    cachingFunctions.updateACache(String(sender_psid), { courses: courses })
 
     const attachment_url = `https://play-lh.googleusercontent.com/w0s3au7cWptVf648ChCUP7sW6uzdwGFTSTenE178Tz87K_w1P1sFwI6h1CLZUlC2Ug`
 
@@ -812,9 +819,6 @@ async function response(msg, ...sender_psid) {
         }
       })
     )
-
-    console.log('FILTERED COURSES:')
-    console.log(filteredCourses.filter(course => course !== undefined))
 
     // const filteredCoursesBtns = await courses
     //   .filter(async course => {
@@ -1182,4 +1186,4 @@ module.exports = {
   multiResponse
 }
 
-// CODE TRASH BIN
+// CODE TRASH BIN=

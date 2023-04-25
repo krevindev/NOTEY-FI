@@ -37,12 +37,10 @@ function removeACache(key) {
     return new Promise(async (resolve, reject) => {
         axios.delete('https://hollow-iodized-beanie.glitch.me/del_data/' + key)
             .then(response => {
-                // Handle success response
-                console.log(response.data); // Output: { message: 'Data removed from cache successfully' }
+                resolve(response.data) 
             })
             .catch(error => {
-                // Handle error response
-                console.error(error.response.data); // Output: { error: 'Data not found in cache' }
+                reject(error.response.data)
             });
     })
 }
