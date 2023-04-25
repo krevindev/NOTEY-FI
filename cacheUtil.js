@@ -34,6 +34,24 @@ cacheRouter.post('/add_data', (req, res) => {
     res.json({ message: 'Data added to cache successfully' });
 });
 
+// Route handler for removing data from cache based on key
+cacheRouter.delete('/data/:key', (req, res) => {
+    // Retrieve the key from the request parameters
+    const key = req.params.key;
+
+    // Remove the item from cache based on the key
+    const success = cache.del(key);
+
+    if (success) {
+        // If item is removed from cache, send success response
+        res.json({ message: 'Data removed from cache successfully' });
+    } else {
+        // If item is not found in cache, send error response
+        res.status(404).json({ error: 'Data not found in cache' });
+    }
+});
+
+
 // Route handler for retrieving data from cache
 cacheRouter.get('/data/:key', (req, res) => {
     // Retrieve data from cache with the specified key
