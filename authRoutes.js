@@ -22,6 +22,66 @@ const oauth2Client = new OAuth2Client(
     REDIRECT_URI
 );
 
+const cachingFunctions = require('./cachingFunctions.js')
+
+async function cacheCourses(key, value) {
+    console.log('Caching')
+    const user = value
+    const token = await user()
+        .then(res => res.vle_accounts[0])
+        .catch(err => console.log(err))
+
+    const auth = await new google.auth.OAuth2(
+        CLIENT_ID,
+        CLIENT_SECRET,
+        REDIRECT_URI
+    )
+
+    await auth.setCredentials({
+        access_token: await token.access_token,
+        refresh_token: await token.refresh_token
+    })
+
+    const classroom = await google.classroom({
+        version: 'v1',
+        auth: auth
+    })
+
+    let courses = await classroom.courses.list({
+        courseStates: ['ACTIVE']
+    })
+
+    courses = courses.data.courses
+
+    let filteredCourses = await Promise.all(
+        courses.map(async course => {
+            const activities = await classroom.courses.courseWork.list({
+                courseId: course.id
+            })
+
+            const courseWork = (activities.data && activities.data.courseWork) || [] // Add a nullish coalescing operator to handle undefined
+
+            const filteredActs = courseWork
+                .map(cw => cw.dueDate)
+                .filter(c => c !== undefined)
+
+            if (filteredActs.length !== 0) {
+                return course
+            }
+        })
+    )
+
+    filteredCourses = await filteredCourses.filter(
+        course => course !== undefined
+    )
+
+    try {
+        await cachingFunctions.addToCache(String(sender_psid), await user().then(res => res).catch(err => console.log(err))
+            .then(async res => await cachingFunctions.updateACache(String(sender_psid), { course: filteredCourses })))
+    } catch (err) {
+        console.log(err)
+    }
+}
 
 async function isSameAccount(newAccessToken, storedAccessToken) {
 
@@ -95,6 +155,8 @@ authRouter.get("/oauth2callback", async (req, res) => {
                         { psid: targetPSID })
                     // create CourseListeners to the user
                     listenToUser(user);
+                    console.log('Caching course')
+                    await cacheCourses(user.psid, user);
                     //addToCache(user.psid, user)
                 })
         } catch (error) {

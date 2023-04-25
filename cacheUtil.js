@@ -25,8 +25,6 @@ cacheRouter.put('/update_data/:key', (req, res) => {
     const key = req.params.key;
     const newValue = req.body;
 
-    console.log('BODY:')
-
     try {
         const existingValue = cache.get(key);
 
