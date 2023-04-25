@@ -741,7 +741,7 @@ async function response(msg, ...sender_psid) {
   // if the message is set reminder then return the courses to choose from
   else if (msg === 'send_reminder_options[course]') {
 
-    const getResponse = async (token) => {
+    const getResponse = async (courses) => {
       let responses = []
       let filteredCourses = await Promise.all(
         courses.map(async course => {
@@ -796,7 +796,6 @@ async function response(msg, ...sender_psid) {
     //await cachingFunctions.removeACache(String(sender_psid)).then(res => res).catch(err => console.log(err.data))
     // user cache
     const userCache = await cachingFunctions.getFromCache(String(sender_psid)).then(res => res).catch(err => console.log(err));
-    let token;
 
     // if the user is in cache
     if (await userCache) {
@@ -804,6 +803,9 @@ async function response(msg, ...sender_psid) {
       // if the user has courses
       if (userCache['courses']) {
         console.log("and has courses")
+        token = await userCache['vle_accounts'][0]
+        console.log("TEST CACHE USER:")
+        console.log(await token);
       }
       // if the user doesn't have courses
       else {
@@ -813,6 +815,7 @@ async function response(msg, ...sender_psid) {
     }
     // if the user isn't in the cache
     else {
+      console.log("DI OLD WAYS")
       // WE DO THE OLD WAYS HERE
       const user = async () => {
         return new Promise(async (resolve, reject) => {
@@ -852,14 +855,12 @@ async function response(msg, ...sender_psid) {
       })
 
       courses = courses.data.courses
-      await cachingFunctions.updateACache(String(sender_psid), { courses: courses })
-      
-      return await getResponse(token)
+      //await cachingFunctions.updateACache(String(sender_psid), { courses: await courses })
+
+      return await getResponse(await courses)
     }
 
-    token = await userCache['vle_accounts'][0]
-    console.log("TEST CACHE USER:")
-    console.log(await token);
+
   }
 
   // if the message is unsubscribe then remove the user from the database
