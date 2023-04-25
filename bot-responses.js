@@ -1,6 +1,5 @@
 const axios = require('axios'),
   request = require('request')
-
 const img_url =
   'https://cdn.pixabay.com/photo/2016/02/25/05/36/button-1221338_1280.png'
 
@@ -17,6 +16,8 @@ const SCOPES = process.env.SCOPE_STRING
 const mongoose = require('./useDB.js')
 const db = mongoose.connection
 const moment = require('moment')
+
+const cachingFunctions = require('./cachingFunctions.js');
 
 
 // ChatGPT Q&A
@@ -345,7 +346,7 @@ async function multiResponse(msg, ...sender_psid) {
       courseId: courseID,
       orderBy: 'dueDate desc'
     })
-    
+
 
     courseActivities = courseActivities.data.courseWork
       ? courseActivities.data.courseWork
@@ -739,19 +740,24 @@ async function response(msg, ...sender_psid) {
   // 3
   // if the message is set reminder then return the courses to choose from
   else if (msg === 'send_reminder_options[course]') {
-    const user = async () => {
-      return new Promise(async (resolve, reject) => {
-        await db
-          .collection('noteyfi_users')
-          .findOne({ psid: String(sender_psid) }, (err, result) => {
-            if (err) {
-              reject('Rejected')
-            } else {
-              resolve(result)
-            }
-          })
-      })
-    }
+
+    const user = cachingFunctions.getFromCache(String(sender_psid))
+    console.log("TEST CACHE USER:")
+    console.log(user);
+
+    // const user = async () => {
+    //   return new Promise(async (resolve, reject) => {
+    //     await db
+    //       .collection('noteyfi_users')
+    //       .findOne({ psid: String(sender_psid) }, (err, result) => {
+    //         if (err) {
+    //           reject('Rejected')
+    //         } else {
+    //           resolve(result)
+    //         }
+    //       })
+    //   })
+    // }
     const token = await user()
       .then(res => res.vle_accounts[0])
       .catch(err => console.log(err))
