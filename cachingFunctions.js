@@ -21,16 +21,15 @@ function getAllFromCache() {
     })
 }
 function updateACache(key, newValue){
+    console.log({key:key,newValue:newValue})
     return new Promise(async (resolve, reject) => {
-        axios.put(`https://hollow-iodized-beanie.glitch.me/data/${String(key)}`, newValue)
+        axios.put(`https://hollow-iodized-beanie.glitch.me/update_data/${key}`, newValue)
         .then(response => {
-            // Handle success response
-            resolve(response.data); // Output: { message: 'Data updated in cache successfully' }
+            resolve(console.log(response.data))
         })
-        .catch(error => {
-            // Handle error response
-            reject(error.response.data); // Output: { error: 'Failed to update data in cache' }
-        });
+        .catch(err => {
+            reject(console.log('May error'))
+        })
     })
 }
 function removeACache(key) {
