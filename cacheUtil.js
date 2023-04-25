@@ -35,7 +35,7 @@ cacheRouter.post('/add_data', (req, res) => {
 });
 
 // Route handler for removing data from cache based on key
-cacheRouter.delete('/data/:key', (req, res) => {
+cacheRouter.delete('/del_data/:key', (req, res) => {
     // Retrieve the key from the request parameters
     const key = req.params.key;
 
@@ -71,12 +71,12 @@ cacheRouter.get('/data/:key', (req, res) => {
 cacheRouter.get('/allData', (req, res) => {
     // Get all the keys from cache
     const keys = cache.keys();
-  
+
     // Retrieve all data from cache using keys
     const allData = cache.mget(keys);
-  
+
     // Send response
     res.json(allData);
-  });
+});
 
 module.exports = cacheRouter;
