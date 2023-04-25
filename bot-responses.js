@@ -743,7 +743,9 @@ async function response(msg, ...sender_psid) {
 
     await cachingFunctions.removeACache(String(sender_psid)).then(res => res).catch(err => console.log(err))
 
-    if(await cachingFunctions.getFromCache(String(sender_psid))){
+    console.log("what")
+
+    if(await cachingFunctions.getFromCache(String(sender_psid)).then(res => res).catch(err => console.log(err))){
       console.log("existing")
     }else{
       console.log("not exsitng")
@@ -1186,4 +1188,4 @@ module.exports = {
   multiResponse
 }
 
-// CODE TRASH BIN=
+// CODE TRASH BIN

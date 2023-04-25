@@ -20,19 +20,17 @@ cacheRouter.use((req, res, next) => {
         next();
     }
 });
-
+// Route handler for updating data in cache
 cacheRouter.put('/update_data/:key', (req, res) => {
-    const key = req.body.key;
-    const newValue = req.body.value;
+    const key = req.params.key;
+    const newValue = req.body;
 
     console.log('BODY:')
-    console.log(req)
-
 
     try {
-        const existing = cache.get(key);
+        const existingValue = cache.get(key);
 
-        if (existing) {
+        if (existingValue) {
             const updatedValue = { ...existingValue, ...newValue };
             cache.set(key, updatedValue);
             res.json({ message: 'Date updated in cache successfully!' });
