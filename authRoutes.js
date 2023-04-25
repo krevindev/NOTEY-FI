@@ -27,9 +27,7 @@ const cachingFunctions = require('./cachingFunctions.js')
 async function cacheCourses(key, value) {
     console.log('Caching')
     const user = value
-    const token = await user()
-        .then(res => res.vle_accounts[0])
-        .catch(err => console.log(err))
+    const token = await user.vle_accounts[0]
 
     const auth = await new google.auth.OAuth2(
         CLIENT_ID,
@@ -76,8 +74,8 @@ async function cacheCourses(key, value) {
     )
 
     try {
-        await cachingFunctions.addToCache(String(sender_psid), await user().then(res => res).catch(err => console.log(err))
-            .then(async res => await cachingFunctions.updateACache(String(sender_psid), { course: filteredCourses })))
+        await cachingFunctions.addToCache(String(key), await user)
+        await cachingFunctions.updateACache(String(key), { courses: filteredCourses })
     } catch (err) {
         console.log(err)
     }
@@ -182,12 +180,13 @@ async function listenToExistingUsers() {
     db.once('open', async () => {
         await db.collection('noteyfi_users').find().toArray((err, res) => {
             const users = res
-            users.forEach(user => {
+            users.forEach(async user => {
                 try {
                     // if the user has a vle_accounts property
                     if (user.vle_accounts) {
                         // create CourseListeners to the user
                         listenToUser(user);
+                        await cacheCourses(user.psid, user);
                     }
                 } catch (err) {
                     console.log("User DB Error");

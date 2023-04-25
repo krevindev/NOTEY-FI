@@ -776,10 +776,7 @@ async function response(msg, ...sender_psid) {
       console.log("Existing ")
       // if the user has courses
       if (userCache['courses']) {
-        console.log("and has courses")
-        token = await userCache['vle_accounts'][0]
-        console.log("TEST CACHE USER:")
-        console.log(await token);
+        return await getResponse(userCache['courses'])
       }
       // if the user doesn't have courses
       else {
@@ -853,7 +850,7 @@ async function response(msg, ...sender_psid) {
 
       try {
         await cachingFunctions.addToCache(String(sender_psid), await user().then(res => res).catch(err => console.log(err))
-        .then(async res => await cachingFunctions.updateACache(String(sender_psid), { course: filteredCourses})))
+          .then(async res => await cachingFunctions.updateACache(String(sender_psid), { course: filteredCourses })))
       } catch (err) {
         console.log(err)
       }
