@@ -764,6 +764,8 @@ async function response(msg, ...sender_psid) {
     //   .then(res => res.vle_accounts[0])
     //   .catch(err => console.log(err))
 
+    const haveCachedCourse = await cachingFunctions.getAllFromCache(String(sender_psid))
+
     const auth = await new google.auth.OAuth2(
       CLIENT_ID,
       CLIENT_SECRET,
@@ -786,7 +788,7 @@ async function response(msg, ...sender_psid) {
 
     courses = courses.data.courses
 
-    cachingFunctions.addToCache(String(sender_psid), {courses: courses})
+    cachingFunctions.updateACache(String(sender_psid), {courses: courses})
 
     const attachment_url = `https://play-lh.googleusercontent.com/w0s3au7cWptVf648ChCUP7sW6uzdwGFTSTenE178Tz87K_w1P1sFwI6h1CLZUlC2Ug`
 

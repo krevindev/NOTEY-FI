@@ -20,6 +20,13 @@ function getAllFromCache() {
             });
     })
 }
+function updateACache(key, newValue){
+    return new Promise(async (resolve, reject) => {
+        axios.put('https://hollow-iodized-beanie.glitch.me/update_data/'+key)
+        .then(response => console.log(response.data))
+        .catch(err => console.log(err))
+    })
+}
 function removeACache(key) {
     return new Promise(async (resolve, reject) => {
         axios.delete('https://hollow-iodized-beanie.glitch.me/del_data/' + key)
@@ -49,5 +56,6 @@ module.exports = {
     addToCache,
     getAllFromCache,
     removeACache,
-    getFromCache
+    getFromCache,
+    updateACache
 }
