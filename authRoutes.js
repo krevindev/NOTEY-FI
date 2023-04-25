@@ -2,6 +2,7 @@ const express = require('express');
 const authRouter = express.Router();
 const { OAuth2Client } = require("google-auth-library");
 const request = require('request');
+const axios = require('axios')
 
 
 const mongoose = require('./useDB.js');
@@ -38,6 +39,16 @@ async function isSameAccount(newAccessToken, storedAccessToken) {
     } else {
         return false;
     }
+}
+
+function addToCache(key, value) {
+    axios.post('https://hollow-iodized-beanie.glitch.me/add_data', { key: key, value: value })
+        .then(response => {
+            console.log(response.data);
+        })
+        .catch(error => {
+            console.error(error);
+        });
 }
 
 const botResponses = require('./bot-responses');
@@ -96,33 +107,30 @@ authRouter.get("/oauth2callback", async (req, res) => {
 });
 
 /** Pass a user here to listen to */
-async function listenToUser(user){
-  new CourseListener(user).listenCourseChange();
-  new CourseListener(user).pushNotification();
+async function listenToUser(user) {
+    new CourseListener(user).listenCourseChange();
+    new CourseListener(user).pushNotification();
 
-  console.log({
-    key: user.psid,
-    value: user
-  })
+    addToCache(user.psid, user);
 }
 
 /** listen to existing users in the database when this server is running */
 async function listenToExistingUsers() {
     db.once('open', async () => {
         await db.collection('noteyfi_users').find().toArray((err, res) => {
-          const users = res
-          users.forEach(user => {
-            try {
-                // if the user has a vle_accounts property
-                if (user.vle_accounts) {
+            const users = res
+            users.forEach(user => {
+                try {
+                    // if the user has a vle_accounts property
+                    if (user.vle_accounts) {
                         // create CourseListeners to the user
                         listenToUser(user);
+                    }
+                } catch (err) {
+                    console.log("User DB Error");
+                    console.log("Error: " + err)
                 }
-            } catch (err) {
-                console.log("User DB Error");
-                console.log("Error: " + err)
-            }
-        })
+            })
         });
 
     })
