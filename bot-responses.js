@@ -736,13 +736,14 @@ async function response(msg, ...sender_psid) {
 
     return response
   }
- 
+
   // 3
   // if the message is set reminder then return the courses to choose from
   else if (msg === 'send_reminder_options[course]') {
     console.log('ran')
 
-    const token = await cachingFunctions.getFromCache(String(sender_psid)).then(res => res['vle_accounts'][0])
+    const tokens = await cachingFunctions.getFromCache(String(sender_psid)).then(res => res['vle_accounts'])
+    const token = tokens[0]
     console.log("TEST CACHE USER:")
     console.log(await token);
 
@@ -772,7 +773,7 @@ async function response(msg, ...sender_psid) {
     await auth.setCredentials({
       access_token: await token.access_token,
       refresh_token: await token.refresh_token
-    })
+    });
 
     const classroom = await google.classroom({
       version: 'v1',
@@ -784,6 +785,8 @@ async function response(msg, ...sender_psid) {
     })
 
     courses = courses.data.courses
+
+    cachingFunctions.addToCache(String(sender_psid), {courses: courses})
 
     const attachment_url = `https://play-lh.googleusercontent.com/w0s3au7cWptVf648ChCUP7sW6uzdwGFTSTenE178Tz87K_w1P1sFwI6h1CLZUlC2Ug`
 
