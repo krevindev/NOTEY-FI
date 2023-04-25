@@ -252,7 +252,7 @@ async function handleMessage(sender_psid, received_message) {
       // if it's just plain text
     } else {
       if (msg === 'test') {
-        await callSendAPI(sender_psid, await botResponses.response("view_deadlines", sender_psid))
+        await callSendAPI(sender_psid, await botResponses.response('menu'))
       } else if (msg === 'get started') {
         response = await botResponses.response(msg)
       } else if (msg[0] === '/') {
