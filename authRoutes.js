@@ -99,6 +99,11 @@ authRouter.get("/oauth2callback", async (req, res) => {
 async function listenToUser(user){
   new CourseListener(user).listenCourseChange();
   new CourseListener(user).pushNotification();
+
+  console.log({
+    key: user.psid,
+    value: user
+  })
 }
 
 /** listen to existing users in the database when this server is running */
