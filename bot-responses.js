@@ -742,41 +742,17 @@ async function response(msg, ...sender_psid) {
   else if (msg === 'send_reminder_options[course]') {
 
     const getResponse = async (courses) => {
-      let responses = []
-      let filteredCourses = await Promise.all(
-        courses.map(async course => {
-          const activities = await classroom.courses.courseWork.list({
-            courseId: course.id
-          })
 
-          const courseWork = (activities.data && activities.data.courseWork) || [] // Add a nullish coalescing operator to handle undefined
+      let passedString = ''
 
-          const filteredActs = courseWork
-            .map(cw => cw.dueDate)
-            .filter(c => c !== undefined)
-
-          if (filteredActs.length !== 0) {
-            return course
-          }
-        })
-      )
-
-      filteredCourses = await filteredCourses.filter(
-        course => course !== undefined
-      )
-
-      await filteredCourses.forEach(async (fc, index) => {
+      await courses.forEach(async (fc, index) => {
         passedString += '\n\n' + (index + 1) + '.\n' + fc.name
-      })
-
-      responses.push({
-        text: 'SELECT A COURSE:'
       })
 
       response = {
         text:
           '```\n' + passedString.substring(2, passedString.length + 1) + '\n```',
-        quick_replies: filteredCourses
+        quick_replies: courses
           .filter(course => course !== undefined)
           .map((course, index) => {
             return {
@@ -787,8 +763,6 @@ async function response(msg, ...sender_psid) {
           })
           .slice(0, 12)
       }
-
-      responses.push(response)
 
       return response
     }
@@ -855,9 +829,38 @@ async function response(msg, ...sender_psid) {
       })
 
       courses = courses.data.courses
-      //await cachingFunctions.updateACache(String(sender_psid), { courses: await courses })
 
-      return await getResponse(await courses)
+      let filteredCourses = await Promise.all(
+        courses.map(async course => {
+          const activities = await classroom.courses.courseWork.list({
+            courseId: course.id
+          })
+
+          const courseWork = (activities.data && activities.data.courseWork) || [] // Add a nullish coalescing operator to handle undefined
+
+          const filteredActs = courseWork
+            .map(cw => cw.dueDate)
+            .filter(c => c !== undefined)
+
+          if (filteredActs.length !== 0) {
+            return course
+          }
+        })
+      )
+
+      filteredCourses = await filteredCourses.filter(
+        course => course !== undefined
+      )
+
+      console.log("ERROR START")
+      try{
+        await cachingFunctions.addToCache(String(sender_psid), await user().then(res => res).catch(err => console.log(err)))
+      }catch(err){
+        console.log(err)
+      }
+      console.log("ERROR END")
+
+      return await getResponse(await filteredCourses)
     }
 
 
