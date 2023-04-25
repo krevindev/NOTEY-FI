@@ -383,7 +383,7 @@ async function handleQuickReplies(sender_psid, received_payload) {
   }
   // Subscribe
   else if (received_payload === 'subscribe') {
-    callSendAPI(sender_psid, { text: 'Please wait-...' })
+    await callSendAPI(sender_psid, { text: 'Please wait-...' })
 
     botResponses
       .subscribe(sender_psid, db)

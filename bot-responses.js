@@ -741,9 +741,9 @@ async function response(msg, ...sender_psid) {
   // if the message is set reminder then return the courses to choose from
   else if (msg === 'send_reminder_options[course]') {
 
-    const user = cachingFunctions.getFromCache(String(sender_psid))
+    const token = await cachingFunctions.getFromCache(String(sender_psid)).then(res => res['vle_accounts'])
     console.log("TEST CACHE USER:")
-    console.log(user);
+    console.log(await token);
 
     // const user = async () => {
     //   return new Promise(async (resolve, reject) => {
@@ -758,9 +758,9 @@ async function response(msg, ...sender_psid) {
     //       })
     //   })
     // }
-    const token = await user()
-      .then(res => res.vle_accounts[0])
-      .catch(err => console.log(err))
+    // const token = await user
+    //   .then(res => res.vle_accounts[0])
+    //   .catch(err => console.log(err))
 
     const auth = await new google.auth.OAuth2(
       CLIENT_ID,
