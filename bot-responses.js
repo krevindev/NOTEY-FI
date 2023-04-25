@@ -736,12 +736,13 @@ async function response(msg, ...sender_psid) {
 
     return response
   }
-
+ 
   // 3
   // if the message is set reminder then return the courses to choose from
   else if (msg === 'send_reminder_options[course]') {
+    console.log('ran')
 
-    const token = await cachingFunctions.getFromCache(String(sender_psid)).then(res => res['vle_accounts'])
+    const token = await cachingFunctions.getFromCache(String(sender_psid)).then(res => res['vle_accounts'][0])
     console.log("TEST CACHE USER:")
     console.log(await token);
 
