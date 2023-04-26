@@ -2,7 +2,7 @@ const express = require('express');
 const authRouter = express.Router();
 const { OAuth2Client } = require("google-auth-library");
 const request = require('request');
-const axios = require('axios')
+const axios = require('axios');
 
 
 const mongoose = require('./useDB.js');
@@ -22,7 +22,7 @@ const oauth2Client = new OAuth2Client(
     REDIRECT_URI
 );
 
-const cachingFunctions = require('./cachingFunctions.js')
+const cachingFunctions = require('./cachingFunctions.js');
 
 async function cacheCourses(key, value) {
     console.log('Caching')
@@ -177,6 +177,14 @@ authRouter.get("/oauth2callback", async (req, res) => {
 async function listenToUser(user) {
    // new CourseListener(user).listenCourseChange();
     //new CourseListener(user).pushNotification();
+
+    axios.post('https://classroom-listener-server.glitch.me/pass_data', user)
+          .then(response => {
+            console.log('Webhook registration successful:', response.data)
+          })
+          .catch(error => {
+            console.error('Failed to register webhook:', error.message)
+          })
 
     //addToCache(user.psid, user);
 }
