@@ -212,8 +212,8 @@ async function multiResponse(msg, ...sender_psid) {
     let passedString = ''
 
     const userCache = await cachingFunctions.getFromCache(String(sender_psid))
-    .then(res => res)
-    .catch(err => undefined)
+      .then(res => res)
+      .catch(err => undefined)
 
 
 
@@ -773,18 +773,17 @@ async function response(msg, ...sender_psid) {
       return response
     }
     //await cachingFunctions.removeACache(String(sender_psid)).then(res => res).catch(err => console.log(err.data))
+    
     // user cache
-
     const userCache = await cachingFunctions.getFromCache(String(sender_psid))
-    .then(res => res)
-    .catch(err => undefined);
+      .then(res => res)
+      .catch(err => undefined);
 
     // if the user is in cache
     if (await userCache && await userCache['courses'] !== undefined) {
       console.log("READING FROM CACHE")
       // if the user has courses
-        console.log(userCache['courses'])
-        return await getResponse(userCache['courses'])
+      return await getResponse(userCache['courses'])
     }
     // if the user isn't in the cache
     else {
@@ -955,6 +954,12 @@ async function response(msg, ...sender_psid) {
               url: authUrl,
               title: 'Click to Sign In',
               webview_height_ratio: 'full'
+            },
+            {
+              type: 'postback',
+              title: `Cancel`,
+              webview_height_ratio: 'full',
+              payload: 'menu'
             }
           ]
         }
