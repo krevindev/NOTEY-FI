@@ -1,13 +1,15 @@
 const axios = require('axios')
 
 function addToCache(key, value) {
-    axios.post('https://hollow-iodized-beanie.glitch.me/add_data', { key: key, value: value })
+    return new Promise((resolve, reject) => {
+        axios.post('https://hollow-iodized-beanie.glitch.me/add_data', { key: key, value: value })
         .then(response => {
-            console.log(response.data);
+            resolve(response.data)
         })
         .catch(error => {
-            console.error(error);
+            reject(error)
         });
+    })
 }
 function getAllFromCache() {
     return new Promise(async (resolve, reject) => {
