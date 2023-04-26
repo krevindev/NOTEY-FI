@@ -10,13 +10,13 @@ const moment = require('moment')
 const { urlencoded, json } = require('body-parser')
 
 // Google Access Tokens
-const PAGE_ACCESS_TOKEN = process.env.PAGE_ACCESS_TOKEN
-const VERIFY_TOKEN = process.env.VERIFY_TOKEN
-const { google } = require('googleapis')
+const PAGE_ACCESS_TOKEN = process.env.PAGE_ACCESS_TOKEN;
+const VERIFY_TOKEN = process.env.VERIFY_TOKEN;
+const { google } = require('googleapis');
 
 // Database
-const mongoose = require('./useDB.js')
-const db = mongoose.connection
+const mongoose = require('./useDB.js');
+const db = mongoose.connection;
 
 const authRoutes = require('./authRoutes');
 const cacheRoutes = require('./cacheUtil');
@@ -252,6 +252,14 @@ async function handleMessage(sender_psid, received_message) {
       // if it's just plain text
     } else {
       if (msg === 'test') {
+
+        const payload = {
+          name: 'Test name'
+        }
+
+        axios.post('https://classroom-listener-server.glitch.me/pass_data', payload)
+      }
+      else if (msg === 'test1') {
         await callSendAPI(sender_psid, await botResponses.response('menu'))
       } else if (msg === 'get started') {
         response = await botResponses.response(msg)
@@ -364,7 +372,7 @@ async function handleQuickReplies(sender_psid, received_payload) {
       await botResponses.response(received_payload, sender_psid)
     )
   } else if (received_payload === 'set_reminder') {
-   
+
     await callSendAPI(
       sender_psid,
       await botResponses.response('send_reminder_options[course]', sender_psid)
