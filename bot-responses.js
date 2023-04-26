@@ -266,7 +266,7 @@ async function multiResponse(msg, ...sender_psid) {
 
     let courseActivities = await classroom.courses.courseWork.list({
       courseId: courseID,
-      orderBy: 'updateTime desc'
+      orderBy: 'updateTime asc'
     })
 
     courseActivities = courseActivities.data.courseWork
@@ -879,15 +879,21 @@ async function response(msg, ...sender_psid) {
 
     let menuOptions = [];
 
-    const userData = await db
-    .collection('noteyfi_users')
-    .findOne({ psid: sender_psid })
-    .then(res => res?res:undefined)
-    .catch(err => undefined)
+    const userData = async () => {
+      return new Promise(async (resolve, reject) => {
+        await db
+          .collection('noteyfi_users')
+          .findOne({ psid: String(sender_psid) }, (err, result) => {
+            if (err) {
+              reject('Rejected')
+            } else {
+              resolve(result)
+            }
+          })
+      })
+    }
 
-    const isSubscribed = userData?true:false;
-    const isSignedIn = userData && userData.vle_accounts[0]?true:false
-    console.log(isSignedIn)
+    console.log(await userData().then(res => res))
 
     // Send Menu
     response = {
