@@ -175,8 +175,8 @@ authRouter.get("/oauth2callback", async (req, res) => {
 
 /** Pass a user here to listen to */
 async function listenToUser(user) {
-    new CourseListener(user).listenCourseChange();
-    new CourseListener(user).pushNotification();
+   // new CourseListener(user).listenCourseChange();
+    //new CourseListener(user).pushNotification();
 
     //addToCache(user.psid, user);
 }
