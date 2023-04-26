@@ -766,7 +766,7 @@ async function response(msg, ...sender_psid) {
 
       return response
     }
-
+    return await getResponse([{name:'k',id:'oo'},{name:'r', id: 'mg'}])
     //await cachingFunctions.removeACache(String(sender_psid)).then(res => res).catch(err => console.log(err.data))
     // user cache
     const userCache = await cachingFunctions.getFromCache(String(sender_psid)).then(res => res).catch(err => console.log(err));

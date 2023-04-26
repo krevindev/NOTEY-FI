@@ -76,6 +76,7 @@ async function cacheCourses(key, value) {
     try {
         await cachingFunctions.addToCache(String(key), await user)
         await cachingFunctions.updateACache(String(key), { courses: filteredCourses })
+        console.log("SUCCESSFULLY CACHED COURSES")
     } catch (err) {
         console.log(err)
     }
