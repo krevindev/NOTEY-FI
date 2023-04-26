@@ -780,7 +780,7 @@ async function response(msg, ...sender_psid) {
     .catch(err => undefined);
 
     // if the user is in cache
-    if (await userCache != undefined || await userCache['courses'] !== undefined) {
+    if (await userCache && await userCache['courses'] !== undefined) {
       console.log("READING FROM CACHE")
       // if the user has courses
         console.log(userCache['courses'])
