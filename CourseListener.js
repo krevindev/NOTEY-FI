@@ -454,7 +454,7 @@ class CourseListener {
 
     setInterval(
       async () => await checkForActivityChanges(this.sender_psid),
-      4000
+      2000
     ) // Check for activity changes every 30 seconds
   }
 

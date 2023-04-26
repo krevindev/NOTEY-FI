@@ -211,6 +211,12 @@ async function multiResponse(msg, ...sender_psid) {
   else if (msg.split(':')[0] == 'rem_sc') {
     let passedString = ''
 
+    const userCache = await cachingFunctions.getFromCache(String(sender_psid))
+    .then(res => res)
+    .catch(err => undefined)
+
+
+
     let responses = [
       {
         text: 'Select Activity:\n'
@@ -774,7 +780,7 @@ async function response(msg, ...sender_psid) {
     .catch(err => undefined);
 
     // if the user is in cache
-    if (await userCache && userCache['courses']) {
+    if (await userCache && await userCache['courses']) {
       console.log("READING FROM CACHE")
       // if the user has courses
         console.log(userCache['courses'])
