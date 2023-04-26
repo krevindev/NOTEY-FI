@@ -267,7 +267,10 @@ async function multiResponse(msg, ...sender_psid) {
     let courseActivities = await classroom.courses.courseWork.list({
       courseId: courseID,
       orderBy: 'updateTime asc'
-    })
+    });
+
+    console.log("COURSE ACTIVITIES")
+    console.log(courseActivities.data.courseWork)
 
     courseActivities = courseActivities.data.courseWork
       ? courseActivities.data.courseWork
