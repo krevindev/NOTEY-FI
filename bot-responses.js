@@ -876,6 +876,18 @@ async function response(msg, ...sender_psid) {
       ]
     }
   } else if (msg === 'menu') {
+
+    let menuOptions = [];
+
+    let isSubscribed = await db
+    .collection('noteyfi_users')
+    .findOne({ psid: sender_psid })
+    .then(res => res?true:false)
+    .catch(err => false)
+
+    console.log("IS SUBSCRIBED?")
+    console.log(isSubscribed)
+
     // Send Menu
     response = {
       text: 'Menu:',
