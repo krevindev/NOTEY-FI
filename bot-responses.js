@@ -879,14 +879,15 @@ async function response(msg, ...sender_psid) {
 
     let menuOptions = [];
 
-    let isSubscribed = await db
+    const userData = await db
     .collection('noteyfi_users')
     .findOne({ psid: sender_psid })
-    .then(res => res?true:false)
-    .catch(err => false)
+    .then(res => res?res:undefined)
+    .catch(err => undefined)
 
-    console.log("IS SUBSCRIBED?")
-    console.log(isSubscribed)
+    const isSubscribed = userData?true:false;
+    const isSignedIn = userData && userData.vle_accounts[0]?true:false
+    console.log(isSignedIn)
 
     // Send Menu
     response = {
