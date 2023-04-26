@@ -769,22 +769,20 @@ async function response(msg, ...sender_psid) {
     //await cachingFunctions.removeACache(String(sender_psid)).then(res => res).catch(err => console.log(err.data))
     // user cache
 
-    console.log('READING CACHE')
     const userCache = await cachingFunctions.getFromCache(String(sender_psid))
     .then(res => res)
     .catch(err => undefined);
 
-    
     // if the user is in cache
-    if (await userCache) {
+    if (await userCache && userCache['courses']) {
+      console.log("READING FROM CACHE")
       // if the user has courses
-      if (userCache['courses']) {
         console.log(userCache['courses'])
         return await getResponse(userCache['courses'])
-      }
     }
     // if the user isn't in the cache
     else {
+      console.log("RETRIEVING COURSES")
       // WE DO THE OLD WAYS HERE
       const user = async () => {
         return new Promise(async (resolve, reject) => {
