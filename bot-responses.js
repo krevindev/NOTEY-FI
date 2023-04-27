@@ -211,6 +211,12 @@ async function multiResponse(msg, ...sender_psid) {
   else if (msg.split(':')[0] == 'rem_sc') {
     let passedString = ''
 
+    const userCache = await cachingFunctions.getFromCache(String(sender_psid))
+      .then(res => res)
+      .catch(err => undefined)
+
+
+
     let responses = [
       {
         text: 'Select Activity:\n'
@@ -890,7 +896,7 @@ async function response(msg, ...sender_psid) {
       })
     }
 
-    console.log(await userData().then(res => res))
+    console.log(await userData)
 
     // Send Menu
     response = {
