@@ -954,7 +954,7 @@ async function response(msg, ...sender_psid) {
 
     // Send Menu
     response = {
-      text: 'Menu:',
+      text: (userStatus == 'unsubscribed')?'Press Subscribe:':'Menu:',
       quick_replies: menuBtnsStatus[userStatus]
     }
   }
