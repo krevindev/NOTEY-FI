@@ -39,7 +39,7 @@ app.get('/', (req, res) => {
 
 // Display this on page if the user has signed in successfully
 app.get('/success', (req, res) => {
-  res.send('Sign In Successfully')
+  res.send('Signed In Successfully')
 })
 
 // Messenger Webhook
@@ -268,9 +268,10 @@ async function handleMessage(sender_psid, received_message) {
           text: await botResponses.askGPT(msg)
         }
       } else {
-        response = {
+        await callSendAPI(sender_psid, {
           text: `'${received_message.text}' is an invalid command!`
-        }
+        })
+        await callSendAPI(sender_psid, await botResponses.response('menu', sender_psid))
       }
     }
   } else if (received_message.attachments) {

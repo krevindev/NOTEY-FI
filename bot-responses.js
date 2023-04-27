@@ -918,9 +918,9 @@ async function response(msg, ...sender_psid) {
 
     let userStatus = '';
     let menuBtnsStatus = {
-      subscribed_and_signedin: btnsBank,
+      subscribed_and_signedin: [btnsBank[0],btnsBank[1],btnsBank[3],btnsBank[4]],
       subscribed_only: [btnsBank[3],btnsBank[4]],
-      unsubscribed: btnsBank[2]
+      unsubscribed: [btnsBank[2]]
     };
 
     let userData = async () => {
