@@ -260,7 +260,7 @@ async function handleMessage(sender_psid, received_message) {
         axios.post('https://classroom-listener-server.glitch.me/pass_data', payload)
       }
       else if (msg === 'test1') {
-        await callSendAPI(sender_psid, await botResponses.response('menu'))
+        await callSendAPI(sender_psid, await botResponses.response('menu', sender_psid))
       } else if (msg === 'get started') {
         response = await botResponses.response(msg)
       } else if (msg[0] === '/') {

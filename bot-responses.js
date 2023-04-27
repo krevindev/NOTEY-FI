@@ -882,11 +882,11 @@ async function response(msg, ...sender_psid) {
 
     let menuOptions = [];
 
-    const userData = async () => {
+    let userData = async () => {
       return new Promise(async (resolve, reject) => {
         await db
           .collection('noteyfi_users')
-          .findOne({ psid: String(sender_psid) }, (err, result) => {
+          .findOne({ psid: sender_psid }, (err, result) => {
             if (err) {
               reject('Rejected')
             } else {
@@ -896,7 +896,10 @@ async function response(msg, ...sender_psid) {
       })
     }
 
-    console.log(await userData)
+    userData = await userData().then(res => {
+      console.log(res)
+      return res
+    }).catch(err => 'error')
 
     // Send Menu
     response = {
