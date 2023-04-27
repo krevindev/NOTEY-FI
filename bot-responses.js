@@ -1199,7 +1199,6 @@ async function retrieveCourses1(sender_psid) {
     })
 
     const currentCourseWorkList = data.courseWork || []
-
     if (
       JSON.stringify(previousCourseWorkList) !==
       JSON.stringify(currentCourseWorkList)
