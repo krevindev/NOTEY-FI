@@ -776,7 +776,7 @@ async function response(msg, ...sender_psid) {
       return response
     }
     //await cachingFunctions.removeACache(String(sender_psid)).then(res => res).catch(err => console.log(err.data))
-    
+
     // user cache
     const userCache = await cachingFunctions.getFromCache(String(sender_psid))
       .then(res => res)
@@ -880,13 +880,13 @@ async function response(msg, ...sender_psid) {
     }
   } else if (msg === 'menu') {
 
-    let menuOptions = [];
+    let userStatus = ''
 
     let userData = async () => {
       return new Promise(async (resolve, reject) => {
         await db
           .collection('noteyfi_users')
-          .findOne({ psid: sender_psid }, (err, result) => {
+          .findOne({ psid: String(sender_psid) }, (err, result) => {
             if (err) {
               reject('Rejected')
             } else {
@@ -896,10 +896,19 @@ async function response(msg, ...sender_psid) {
       })
     }
 
-    userData = await userData().then(res => {
-      console.log(res)
-      return res
-    }).catch(err => 'error')
+    userData = await userData().then(res => res).catch(err => null);
+
+    if (userData) {
+      if (userData['vle_accounts']) {
+        userStatus = 'subscribed_and_signedin';
+      } else {
+        userStatus = 'subscribed_only';
+      }
+    } else {
+      userStatus = 'unsubscribed'
+    }
+
+    console.log(userStatus)
 
     // Send Menu
     response = {
