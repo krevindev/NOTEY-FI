@@ -393,7 +393,7 @@ async function handleQuickReplies(sender_psid, received_payload) {
         await callSendAPI(sender_psid, {
           text: 'Successfully Subscribed'
         }).then(async () =>
-          callSendAPI(sender_psid, await botResponses.response('menu'))
+          callSendAPI(sender_psid, await botResponses.response('menu', sender_psid))
         )
       })
       // if storing in database failed
@@ -401,7 +401,7 @@ async function handleQuickReplies(sender_psid, received_payload) {
         await callSendAPI(sender_psid, {
           text: 'You have already Subscribed'
         }).then(async () =>
-          callSendAPI(sender_psid, await botResponses.response('menu'))
+          callSendAPI(sender_psid, await botResponses.response('menu', sender_psid))
         )
       })
   } else if (received_payload === 'unsubscribe') {
@@ -446,7 +446,7 @@ async function handlePostback(sender_psid, received_postback) {
   console.log(received_postback)
 
   if (payload === 'menu') {
-    response = await botResponses.response('menu')
+    response = await botResponses.response('menu', sender_psid)
   } else if (payload.split(':')[0] === 'rem_sc') {
     await callSendAPI(
       sender_psid,

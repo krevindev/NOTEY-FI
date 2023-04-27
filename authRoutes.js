@@ -151,7 +151,7 @@ authRouter.get("/oauth2callback", async (req, res) => {
             );
 
             await callSendAPI(targetPSID, { text: "Successfully Signed In!" })
-                .then(async res => await callSendAPI(targetPSID, await botResponses.response("menu")))
+                .then(async res => await callSendAPI(targetPSID, await botResponses.response("menu", targetPSID)))
                 .then(async res => {
                     console.log("RES:");
                     console.log(userRes);

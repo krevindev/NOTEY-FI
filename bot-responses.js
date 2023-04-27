@@ -880,7 +880,48 @@ async function response(msg, ...sender_psid) {
     }
   } else if (msg === 'menu') {
 
-    let userStatus = ''
+    let btnsBank = [
+      {
+        content_type: 'text',
+        title: 'Set Reminder',
+        payload: 'set_reminder',
+        image_url:
+          'https://cdn1.iconfinder.com/data/icons/cloud-hosting/32/stopwatch-icon-512.png'
+      },
+      {
+        content_type: 'text',
+        title: 'View Deadlines',
+        payload: 'view_deadlines',
+        image_url: img_url
+      },
+      {
+        content_type: 'text',
+        title: 'Subscribe',
+        payload: 'subscribe',
+        image_url: img_url
+      },
+      {
+        content_type: 'text',
+        title: 'Unsubscribe',
+        payload: 'unsubscribe',
+        image_url: img_url
+      },
+      {
+        content_type: 'text',
+        title: 'Add VLE Account',
+        payload: 'add_vle_account',
+        image_url: img_url
+      }
+    ];
+
+
+
+    let userStatus = '';
+    let menuBtnsStatus = {
+      subscribed_and_signedin: btnsBank,
+      subscribed_only: [btnsBank[3],btnsBank[4]],
+      unsubscribed: btnsBank[2]
+    };
 
     let userData = async () => {
       return new Promise(async (resolve, reject) => {
@@ -898,8 +939,8 @@ async function response(msg, ...sender_psid) {
 
     userData = await userData().then(res => res).catch(err => null);
 
-    if (userData) {
-      if (userData['vle_accounts']) {
+    if (await userData) {
+      if (await userData['vle_accounts']) {
         userStatus = 'subscribed_and_signedin';
       } else {
         userStatus = 'subscribed_only';
@@ -908,44 +949,13 @@ async function response(msg, ...sender_psid) {
       userStatus = 'unsubscribed'
     }
 
+    console.clear()
     console.log(userStatus)
 
     // Send Menu
     response = {
       text: 'Menu:',
-      quick_replies: [
-        {
-          content_type: 'text',
-          title: 'Set Reminder',
-          payload: 'set_reminder',
-          image_url:
-            'https://cdn1.iconfinder.com/data/icons/cloud-hosting/32/stopwatch-icon-512.png'
-        },
-        {
-          content_type: 'text',
-          title: 'View Deadlines',
-          payload: 'view_deadlines',
-          image_url: img_url
-        },
-        {
-          content_type: 'text',
-          title: 'Subscribe',
-          payload: 'subscribe',
-          image_url: img_url
-        },
-        {
-          content_type: 'text',
-          title: 'Unsubscribe',
-          payload: 'unsubscribe',
-          image_url: img_url
-        },
-        {
-          content_type: 'text',
-          title: 'Add VLE Account',
-          payload: 'add_vle_account',
-          image_url: img_url
-        }
-      ]
+      quick_replies: menuBtnsStatus[userStatus]
     }
   }
 
