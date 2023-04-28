@@ -307,7 +307,14 @@ async function multiResponse(msg, ...sender_psid) {
             payload: `rem_sa:${courseID}:${ca.id}`
           }
         })
+        .push({
+          content_type: 'text',
+          title: 'Cancel',
+          payload: 'menu',
+          image_url: cancelIconUrl
+        })
         .slice(0, 12)
+        
     }
 
     responses.push(qr_res)
@@ -506,16 +513,18 @@ async function response(msg, ...sender_psid) {
         return {
           content_type: 'text',
           title: course.name.substring(0, 20),
-          payload: `dead_sc:${course.id}`
+          payload: `dead_sc:${course.id}`,
+          image_url: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSlq8wwrk_Y4RRR_Fe1F01WirCdo3dcJp1k8NSD-_82Y_wQ0k4ogVZpbYCBxBEnbuC3TCs'
         }
       })
       .slice(0, 12)
 
-    quick_replies.push(push({
+    quick_replies.push({
       content_type: 'text',
       title: 'Cancel',
-      payload: 'menu'
-    }))
+      payload: 'menu',
+      image_url: cancelIconUrl
+    })
 
     console.log('FILTERED COURSES:')
     console.log(filteredCourses.filter(course => course !== undefined))
