@@ -190,19 +190,26 @@ async function multiResponse(msg, ...sender_psid) {
     console.log('FILTERED COURSES:')
     console.log(filteredCourses.filter(course => course !== undefined))
 
+    let quick_replies = filteredCourses
+    .filter(course => course !== undefined)
+    .map((course, index) => {
+      return {
+        content_type: 'text',
+        title: `${String(index + 1)}. ${course.name.substring(0, 20)}`,
+        payload: `rem_sc:${course.id}`
+      }
+    })
+    .slice(0, 12)
+    quick_replies.push({
+      content_type: 'text',
+      title: 'Cancel',
+      payload: 'menu'
+    })
+
     response = {
       text:
         '```\n' + passedString.substring(2, passedString.length + 1) + '\n```',
-      quick_replies: filteredCourses
-        .filter(course => course !== undefined)
-        .map((course, index) => {
-          return {
-            content_type: 'text',
-            title: `${String(index + 1)}. ${course.name.substring(0, 20)}`,
-            payload: `rem_sc:${course.id}`
-          }
-        })
-        .slice(0, 12)
+      quick_replies: quick_replies
     }
 
     responses.push(response)
@@ -988,16 +995,18 @@ async function response(msg, ...sender_psid) {
 
     const user = await getUser(sender_psid).then(user => user).catch(err => null);
 
+    const existing = user['vle_accounts'] ? true : false
 
-    if (user['vle_accounts']) var text = "DISCLAIMER: We can only handle one account for now. If you sign in again, it will replace your current signed in account." 
-    
+    const text = existing ? "WARNING: We can only handle one account for now. If you sign in again, it will replace your current signed in account.\n\nSign in to Google Classroom: " :
+      "Sign in to Google Classroom"
+
     // return a response to the user with the auth url
     response = {
       attachment: {
         type: 'template',
         payload: {
           template_type: 'button',
-          text: text +'\nSign in to Google Classroom: ',
+          text: text,
           buttons: [
             {
               type: 'web_url',
