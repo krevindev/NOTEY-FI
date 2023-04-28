@@ -917,11 +917,9 @@ async function response(msg, ...sender_psid) {
       }
     ];
 
-
-
     let userStatus = '';
     let menuBtnsStatus = {
-      subscribed_and_signedin: [btnsBank[0], btnsBank[1],  btnsBank[4],  btnsBank[3]],
+      subscribed_and_signedin: [btnsBank[0], btnsBank[1], btnsBank[4], btnsBank[3]],
       subscribed_only: [btnsBank[4], btnsBank[3]],
       unsubscribed: [btnsBank[2]]
     };
@@ -988,13 +986,18 @@ async function response(msg, ...sender_psid) {
       prompt: 'consent'
     })
 
+    const user = await getUser(sender_psid).then(user => user).catch(err => null);
+
+
+    if (user['vle_accounts']) var text = "DISCLAIMER: We can only handle one account for now. If you sign in again, it will replace your current signed in account." 
+    
     // return a response to the user with the auth url
     response = {
       attachment: {
         type: 'template',
         payload: {
           template_type: 'button',
-          text: 'Sign in to Google Classroom: ',
+          text: text +'\nSign in to Google Classroom: ',
           buttons: [
             {
               type: 'web_url',
@@ -1012,6 +1015,7 @@ async function response(msg, ...sender_psid) {
         }
       }
     }
+
   }
 
   // if message is prompt vle accounts then prompt which vle platform the user should select
@@ -1032,7 +1036,7 @@ async function response(msg, ...sender_psid) {
           title: 'Schoology',
           payload: 'schoology_signin',
           image_url: 'https://play-lh.googleusercontent.com/H5eXed9UvaW7Jn6SCAm-_d4T0hExQ3xFoh1ml1mAgMWqw1CG0C8ltBBS7Cq99iSg4XAJ'
-        }, 
+        },
         {
           content_type: 'text',
           title: 'Cancel',
@@ -1040,11 +1044,26 @@ async function response(msg, ...sender_psid) {
           image_url: cancelIconUrl
         }
       ]
+    }
   }
+
+  return await response
+}
+// get the user's data from database
+async function getUser(sender_psid) {
+  return new Promise(async (resolve, reject) => {
+    await db
+      .collection('noteyfi_users')
+      .findOne({ psid: String(sender_psid) }, (err, result) => {
+        if (err) {
+          reject('Rejected')
+        } else {
+          resolve(result)
+        }
+      })
+  })
 }
 
-return await response
-}
 
 /** Bot Actions */
 

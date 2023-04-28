@@ -434,13 +434,14 @@ async function handleQuickReplies(sender_psid, received_payload) {
     await callSendAPI(
       sender_psid,
       await botResponses.response('google classroom', sender_psid)
-    ).then(
-      async () => await callSendAPI(sender_psid, { text: 'Signing in...' })
     )
+    // ).then(
+    //   async () => await callSendAPI(sender_psid, { text: 'Signing in...' })
+    // )
   } else if (received_payload === 'schoology_signin') {
     await callSendAPI(
       sender_psid,
-      {text:`That feature is not available yet`}
+      { text: `That feature is not available yet` }
     ).then(
       async () => await callSendAPI(
         sender_psid,
