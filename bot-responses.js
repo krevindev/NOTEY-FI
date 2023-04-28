@@ -507,7 +507,6 @@ async function response(msg, ...sender_psid) {
           content_type: 'text',
           title: course.name.substring(0, 20),
           payload: `dead_sc:${course.id}`,
-          image_url: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSlq8wwrk_Y4RRR_Fe1F01WirCdo3dcJp1k8NSD-_82Y_wQ0k4ogVZpbYCBxBEnbuC3TCs'
         }
       })
       .slice(0, 12)
@@ -949,7 +948,7 @@ async function response(msg, ...sender_psid) {
         content_type: 'text',
         title: 'Add VLE Account',
         payload: 'add_vle_account',
-        image_url: img_url
+        image_url: 'https://cdn.glitch.global/df116b28-1bf9-459e-9b76-9696e80b6334/add_icon.png?v=1682710584376'
       }
     ];
 
