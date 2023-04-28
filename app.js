@@ -312,9 +312,9 @@ async function handleMessage(sender_psid, received_message) {
 const postback_payload = 'get_started';
 
 axios.post(`https://graph.facebook.com/v2.6/me/messenger_profile?access_token=${PAGE_ACCESS_TOKEN}`, {
-    get_started: {
-        payload: postback_payload
-    }
+  get_started: {
+    payload: postback_payload
+  }
 })
 // Google Classroom Notification
 app.post('/notifications', (req, res) => {
@@ -327,7 +327,7 @@ app.post('/notifications', (req, res) => {
 async function handleQuickReplies(sender_psid, received_payload) {
   let response
 
-  if(received_payload === 'menu'){
+  if (received_payload === 'menu') {
     await callSendAPI(sender_psid, await botResponses.response(received_payload, sender_psid))
   }
   else if (received_payload.split(':')[0] === 'rem_sa') {
@@ -436,6 +436,16 @@ async function handleQuickReplies(sender_psid, received_payload) {
       await botResponses.response('google classroom', sender_psid)
     ).then(
       async () => await callSendAPI(sender_psid, { text: 'Signing in...' })
+    )
+  } else if (received_payload === 'schoology_signin') {
+    await callSendAPI(
+      sender_psid,
+      {text:`That feature is not available yet`}
+    ).then(
+      async () => await callSendAPI(
+        sender_psid,
+        await botResponses.response('prompt vle accounts')
+      )
     )
   } else {
     callSendAPI(sender_psid, {
