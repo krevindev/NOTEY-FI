@@ -2,6 +2,7 @@ const axios = require('axios'),
   request = require('request')
 const img_url =
   'https://cdn.pixabay.com/photo/2016/02/25/05/36/button-1221338_1280.png'
+const subscribeIconUrl = 'https://cdn.glitch.global/df116b28-1bf9-459e-9b76-9696e80b6334/bell-icon.png?v=1682663211003';
 
 const callback_url = `https://hollow-iodized-beanie.glitch.me/`
 
@@ -421,7 +422,7 @@ async function response(msg, ...sender_psid) {
           content_type: 'text',
           title: 'Subscribe',
           payload: 'subscribe',
-          image_url: img_url
+          image_url: subscribeIconUrl
         }
       ]
     }
@@ -898,7 +899,7 @@ async function response(msg, ...sender_psid) {
         content_type: 'text',
         title: 'Subscribe',
         payload: 'subscribe',
-        image_url: img_url
+        image_url: subscribeIconUrl
       },
       {
         content_type: 'text',
@@ -918,8 +919,8 @@ async function response(msg, ...sender_psid) {
 
     let userStatus = '';
     let menuBtnsStatus = {
-      subscribed_and_signedin: [btnsBank[0],btnsBank[1],btnsBank[3],btnsBank[4]],
-      subscribed_only: [btnsBank[3],btnsBank[4]],
+      subscribed_and_signedin: [btnsBank[0], btnsBank[1], btnsBank[3], btnsBank[4]],
+      subscribed_only: [btnsBank[3], btnsBank[4]],
       unsubscribed: [btnsBank[2]]
     };
 
@@ -954,7 +955,7 @@ async function response(msg, ...sender_psid) {
 
     // Send Menu
     response = {
-      text: (userStatus == 'unsubscribed')?'Press Subscribe:':'Menu:',
+      text: (userStatus == 'unsubscribed') ? 'Press Subscribe:' : 'Menu:',
       quick_replies: menuBtnsStatus[userStatus]
     }
   }
@@ -1199,6 +1200,7 @@ async function retrieveCourses1(sender_psid) {
     })
 
     const currentCourseWorkList = data.courseWork || []
+
     if (
       JSON.stringify(previousCourseWorkList) !==
       JSON.stringify(currentCourseWorkList)
