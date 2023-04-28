@@ -262,7 +262,7 @@ async function handleMessage(sender_psid, received_message) {
       else if (msg === 'test1') {
         await callSendAPI(sender_psid, await botResponses.response('menu', sender_psid))
       } else if (msg === 'get started') {
-        response = await botResponses.response(msg)
+        await callSendAPI(sender_psid, await botResponses.response('menu', sender_psid))
       } else if (msg[0] === '/') {
         response = {
           text: await botResponses.askGPT(msg)

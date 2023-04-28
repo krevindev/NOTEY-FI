@@ -191,15 +191,15 @@ async function multiResponse(msg, ...sender_psid) {
     console.log(filteredCourses.filter(course => course !== undefined))
 
     let quick_replies = filteredCourses
-    .filter(course => course !== undefined)
-    .map((course, index) => {
-      return {
-        content_type: 'text',
-        title: `${String(index + 1)}. ${course.name.substring(0, 20)}`,
-        payload: `rem_sc:${course.id}`
-      }
-    })
-    .slice(0, 12)
+      .filter(course => course !== undefined)
+      .map((course, index) => {
+        return {
+          content_type: 'text',
+          title: `${String(index + 1)}. ${course.name.substring(0, 20)}`,
+          payload: `rem_sc:${course.id}`
+        }
+      })
+      .slice(0, 12)
     quick_replies.push({
       content_type: 'text',
       title: 'Cancel',
@@ -500,20 +500,29 @@ async function response(msg, ...sender_psid) {
       })
     )
 
+    let quick_replies = filteredCourses
+      .filter(course => course !== undefined)
+      .map(course => {
+        return {
+          content_type: 'text',
+          title: course.name.substring(0, 20),
+          payload: `dead_sc:${course.id}`
+        }
+      })
+      .slice(0, 12)
+
+    quick_replies.push(push({
+      content_type: 'text',
+      title: 'Cancel',
+      payload: 'menu'
+    }))
+
     console.log('FILTERED COURSES:')
     console.log(filteredCourses.filter(course => course !== undefined))
     response = {
       text: 'SELECT A COURSE',
-      quick_replies: filteredCourses
-        .filter(course => course !== undefined)
-        .map(course => {
-          return {
-            content_type: 'text',
-            title: course.name.substring(0, 20),
-            payload: `dead_sc:${course.id}`
-          }
-        })
-        .slice(0, 12)
+      quick_replies: quick_replies
+        
     }
 
     return response
