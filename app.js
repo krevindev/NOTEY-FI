@@ -309,7 +309,7 @@ async function handleMessage(sender_psid, received_message) {
   // Send the response message
   callSendAPI(sender_psid, response)
 }
-const postback_payload = 'get started';
+const postback_payload = 'get_started';
 
 axios.post(`https://graph.facebook.com/v2.6/me/messenger_profile?access_token=${PAGE_ACCESS_TOKEN}`, {
     get_started: {
@@ -467,9 +467,9 @@ async function handlePostback(sender_psid, received_postback) {
     )
   } else if (payload === 'subscribe') {
     response = { text: 'Subscribing...' }
-  } else if (payload === '<postback_payload>') {
+  } else if (payload === 'get_started') {
     console.log('RECEIVED RECEIVED')
-    response = await botResponses.response('get started')
+    response = await botResponses.response('menu', sender_psid)
   }
 
   // Set the response based on the postback payload
