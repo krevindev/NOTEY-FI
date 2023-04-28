@@ -3,8 +3,10 @@ const axios = require('axios'),
 const img_url =
   'https://cdn.pixabay.com/photo/2016/02/25/05/36/button-1221338_1280.png'
 const subscribeIconUrl = 'https://cdn.glitch.global/df116b28-1bf9-459e-9b76-9696e80b6334/bell-icon.png?v=1682700610750';
-const viewDeadlinesIconUrl = 'https://static-00.iconduck.com/assets.00/deadline-icon-512x444-z2o6fd9d.png'
-const callback_url = `https://hollow-iodized-beanie.glitch.me/`
+const viewDeadlinesIconUrl = 'https://static-00.iconduck.com/assets.00/deadline-icon-512x444-z2o6fd9d.png';
+const cancelIconUrl = 'https://img.freepik.com/free-icon/x-button_318-391115.jpg';
+const unsubscribeIconUrl = 'https://cdn.glitch.global/df116b28-1bf9-459e-9b76-9696e80b6334/unsubscribe_bell.PNG?v=1682700782587';
+const callback_url = `https://hollow-iodized-beanie.glitch.me/`;
 
 const { OAuth2Client, JWT } = require('google-auth-library')
 const { google } = require('googleapis')
@@ -875,7 +877,7 @@ async function response(msg, ...sender_psid) {
           content_type: 'text',
           title: 'Unsubscribe',
           payload: 'unsubscribe',
-          image_url: img_url
+          image_url: unsubscribeIconUrl
         }
       ]
     }
@@ -905,7 +907,7 @@ async function response(msg, ...sender_psid) {
         content_type: 'text',
         title: 'Unsubscribe',
         payload: 'unsubscribe',
-        image_url: img_url
+        image_url: unsubscribeIconUrl
       },
       {
         content_type: 'text',
@@ -920,7 +922,7 @@ async function response(msg, ...sender_psid) {
     let userStatus = '';
     let menuBtnsStatus = {
       subscribed_and_signedin: [btnsBank[0], btnsBank[1], btnsBank[3], btnsBank[4]],
-      subscribed_only: [btnsBank[3], btnsBank[4]],
+      subscribed_only: [btnsBank[4], btnsBank[3]],
       unsubscribed: [btnsBank[2]]
     };
 
@@ -1023,21 +1025,25 @@ async function response(msg, ...sender_psid) {
           content_type: 'text',
           title: 'Google Classroom',
           payload: 'google_classroom_signin',
-          image_url:
-            'https://uxwing.com/wp-content/themes/uxwing/download/brands-and-social-media/google-classroom-icon.png'
+          image_url: 'https://uxwing.com/wp-content/themes/uxwing/download/brands-and-social-media/google-classroom-icon.png'
         },
         {
           content_type: 'text',
           title: 'Schoology',
           payload: 'schoology_signin',
-          image_url:
-            'https://play-lh.googleusercontent.com/H5eXed9UvaW7Jn6SCAm-_d4T0hExQ3xFoh1ml1mAgMWqw1CG0C8ltBBS7Cq99iSg4XAJ'
+          image_url: 'https://play-lh.googleusercontent.com/H5eXed9UvaW7Jn6SCAm-_d4T0hExQ3xFoh1ml1mAgMWqw1CG0C8ltBBS7Cq99iSg4XAJ'
+        }, 
+        {
+          content_type: 'text',
+          title: 'Cancel',
+          payload: 'menu',
+          image_url: cancelIconUrl
         }
       ]
-    }
   }
+}
 
-  return await response
+return await response
 }
 
 /** Bot Actions */
