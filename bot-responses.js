@@ -3,7 +3,7 @@ const axios = require('axios'),
 const img_url =
   'https://cdn.pixabay.com/photo/2016/02/25/05/36/button-1221338_1280.png'
 const subscribeIconUrl = 'https://cdn.glitch.global/df116b28-1bf9-459e-9b76-9696e80b6334/bell-icon.png?v=1682663211003';
-
+const viewDeadlinesIconUrl = 'https://static-00.iconduck.com/assets.00/deadline-icon-512x444-z2o6fd9d.png'
 const callback_url = `https://hollow-iodized-beanie.glitch.me/`
 
 const { OAuth2Client, JWT } = require('google-auth-library')
@@ -893,7 +893,7 @@ async function response(msg, ...sender_psid) {
         content_type: 'text',
         title: 'View Deadlines',
         payload: 'view_deadlines',
-        image_url: img_url
+        image_url: viewDeadlinesIconUrl
       },
       {
         content_type: 'text',
@@ -1089,138 +1089,11 @@ async function unsubscribe(sender_psid, db) {
   })
 }
 
-async function retrieveCourses(sender_psid) {
-  console.log('retrieving...')
-
-  // retrieve user vle tokens
-  const userData = await db
-    .collection('noteyfi_users')
-    .findOne({ psid: sender_psid })
-    .then(res => res)
-
-  const vleTokens = await userData.vle_accounts
-
-  let coursesReturn = []
-
-  const mapMe = await Promise.all(
-    vleTokens.map(async token => {
-      const oauth2Client = new OAuth2Client(
-        CLIENT_ID,
-        CLIENT_SECRET,
-        REDIRECT_URI
-      )
-
-      await oauth2Client.setCredentials({
-        access_token: token.access_token,
-        token_type: token.token_type,
-        expiry_date: token.expiry_date,
-        refresh_token: token.refresh_token
-      })
-
-      const classroom = await google.classroom({
-        version: 'v1',
-        auth: oauth2Client
-      })
-
-      // Call the refreshAccessToken method to refresh the access token
-      await oauth2Client.refreshAccessToken((err, tokens) => {
-        if (err) {
-          console.error('Error refreshing access tokenzz:', err)
-        } else {
-          console.log('Access token refreshed:', tokens.access_token)
-          // Store the new access token in your database or other storage mechanism
-        }
-      })
-
-      const getCourses = async () => {
-        return new Promise(async (resolve, reject) => {
-          await classroom.courses.list({}, (err, res) => {
-            if (err) {
-              reject(err)
-            } else {
-              resolve(res.data.courses)
-            }
-          })
-        })
-      }
-
-      return await getCourses().then(res => {
-        res.map(course => `Name: ${course.name} ID: ${course.id}`)
-      })
-    })
-  )
-
-  console.log(await mapMe)
-}
-
-async function retrieveCourses1(sender_psid) {
-  // retrieve user vle tokens
-  const userData = await db
-    .collection('noteyfi_users')
-    .findOne({ psid: sender_psid })
-    .then(res => res)
-
-  const vleTokens = await userData.vle_accounts
-  const token = vleTokens[0]
-
-  const oauth2Client = await new OAuth2Client(
-    CLIENT_ID,
-    CLIENT_SECRET,
-    REDIRECT_URI
-  )
-
-  await oauth2Client.setCredentials({
-    access_token: token.access_token,
-    token_type: token.token_type,
-    expiry_date: token.expiry_date,
-    refresh_token: token.refresh_token
-  })
-
-  const classroom = await google.classroom({
-    version: 'v1',
-    auth: oauth2Client
-  })
-
-  // Call the refreshAccessToken method to refresh the access token
-  await oauth2Client.refreshAccessToken((err, tokens) => {
-    if (err) {
-      console.error('Error refreshing access tokenzz:', err)
-    } else {
-      console.log('Access token refreshed:', tokens.access_token)
-      // Store the new access token in your database or other storage mechanism
-    }
-  })
-
-  //token1
-  let previousCourseWorkList = []
-
-  setInterval(async () => {
-    const { data } = await classroom.courses.courseWork.list({
-      courseId: 'COURSE_ID_HERE'
-    })
-
-    const currentCourseWorkList = data.courseWork || []
-
-    if (
-      JSON.stringify(previousCourseWorkList) !==
-      JSON.stringify(currentCourseWorkList)
-    ) {
-      // Course work list has changed, emit event
-      console.log('Course work list has changed!')
-
-      // Code to send notification to webhook URL
-    }
-
-    previousCourseWorkList = currentCourseWorkList
-  }, 5 * 60 * 1000) // Check every 5 minutes
-}
-
 module.exports = {
   askGPT,
   response,
   unsubscribe,
   subscribe,
-  retrieveCourses1,
   multiResponse
 }
 
