@@ -307,14 +307,7 @@ async function multiResponse(msg, ...sender_psid) {
             payload: `rem_sa:${courseID}:${ca.id}`
           }
         })
-        .push({
-          content_type: 'text',
-          title: 'Cancel',
-          payload: 'menu',
-          image_url: cancelIconUrl
-        })
         .slice(0, 12)
-        
     }
 
     responses.push(qr_res)
@@ -531,7 +524,7 @@ async function response(msg, ...sender_psid) {
     response = {
       text: 'SELECT A COURSE',
       quick_replies: quick_replies
-        
+
     }
 
     return response
@@ -892,9 +885,27 @@ async function response(msg, ...sender_psid) {
     }
 
   }
-
-  // if the message is unsubscribe then remove the user from the database
   else if (msg === 'unsubscribe') {
+    response = {
+      text: 'Are you sure you want to unsubscribe?',
+      quick_replies: [
+        {
+          content_type: 'text',
+          title: `Yes, I want to unsubscribe`,
+          payload: 'unsub_yes',
+          image_url: img_url
+        },
+        {
+          content_type: 'text',
+          title: `No, return to menu`,
+          payload: 'menu',
+          image_url: img_url
+        }
+      ]
+    }
+  }
+  // if the message is unsubscribe then remove the user from the database
+  else if (msg === 'unsub_yes') {
     response = {
       text: 'Unsubscribe:',
       quick_replies: [

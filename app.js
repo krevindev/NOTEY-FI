@@ -415,16 +415,20 @@ async function handleQuickReplies(sender_psid, received_payload) {
           callSendAPI(sender_psid, await botResponses.response('menu', sender_psid))
         )
       })
-  } else if (received_payload === 'unsubscribe') {
+  }
+  else if(received_payload === 'unsub_yes'){
     botResponses
-      .unsubscribe(sender_psid, db)
-      .then(() => callSendAPI(sender_psid, { text: 'You have unsubscribed' }))
-      .catch(() =>
-        callSendAPI(sender_psid, { text: "You haven't subscribed yet" })
-      )
-      .finally(async () =>
-        callSendAPI(sender_psid, await botResponses.response('get started'))
-      )
+    .unsubscribe(sender_psid, db)
+    .then(() => callSendAPI(sender_psid, { text: 'You have unsubscribed' }))
+    .catch(() =>
+      callSendAPI(sender_psid, { text: "You haven't subscribed yet" })
+    )
+    .finally(async () =>
+      callSendAPI(sender_psid, await botResponses.response('get started'))
+    )
+  } 
+  else if (received_payload === 'unsubscribe') {
+    await callSendAPI(sender_psid, await botResponses.response('unsubscribe'))
   } else if (received_payload === 'add_vle_account') {
     await callSendAPI(
       sender_psid,
