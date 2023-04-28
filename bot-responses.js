@@ -2,7 +2,7 @@ const axios = require('axios'),
   request = require('request')
 const img_url =
   'https://cdn.pixabay.com/photo/2016/02/25/05/36/button-1221338_1280.png'
-const subscribeIconUrl = 'https://cdn.glitch.global/df116b28-1bf9-459e-9b76-9696e80b6334/bell-icon.png?v=1682663211003';
+const subscribeIconUrl = 'https://cdn.glitch.global/df116b28-1bf9-459e-9b76-9696e80b6334/bell-icon.png?v=1682700610750';
 const viewDeadlinesIconUrl = 'https://static-00.iconduck.com/assets.00/deadline-icon-512x444-z2o6fd9d.png'
 const callback_url = `https://hollow-iodized-beanie.glitch.me/`
 
