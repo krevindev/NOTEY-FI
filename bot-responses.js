@@ -893,13 +893,13 @@ async function response(msg, ...sender_psid) {
           content_type: 'text',
           title: `Yes, I want to unsubscribe`,
           payload: 'unsub_yes',
-          image_url: img_url
+          image_url: 'https://cdn.glitch.global/df116b28-1bf9-459e-9b76-9696e80b6334/check_icon2.png?v=1682710016606'
         },
         {
           content_type: 'text',
           title: `No, return to menu`,
           payload: 'menu',
-          image_url: img_url
+          image_url: 'https://cdn.glitch.global/df116b28-1bf9-459e-9b76-9696e80b6334/x_icon2.png?v=1682710328512'
         }
       ]
     }
