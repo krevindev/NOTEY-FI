@@ -42,67 +42,10 @@ app.get('/success', (req, res) => {
   res.send('Signed In Successfully')
 })
 
-
-function sendWelcomeMessage(sender_psid) {
-  let message = {
-    "attachment": {
-      "type": "template",
-      "payload": {
-        "template_type": "button",
-        "text": "Welcome to our bot! How can we help you today?",
-        "buttons": [
-          {
-            "type": "postback",
-            "title": "Order pizza",
-            "payload": "ORDER_PIZZA"
-          },
-          {
-            "type": "postback",
-            "title": "Get support",
-            "payload": "GET_SUPPORT"
-          },
-          {
-            "type": "postback",
-            "title": "View menu",
-            "payload": "VIEW_MENU"
-          }
-        ]
-      }
-    }
-  };
-
-  let request_body = {
-    "recipient": {
-      "id": sender_psid
-    },
-    "message": message
-  };
-
-  request({
-    "uri": "https://graph.facebook.com/v12.0/me/messages",
-    "qs": { "access_token": PAGE_ACCESS_TOKEN },
-    "method": "POST",
-    "json": request_body
-  }, (err, res, body) => {
-    if (!err) {
-      console.log('Message sent!')
-    } else {
-      console.error("Unable to send message:" + err);
-    }
-  });
-}
-
 // Messenger Webhook
 app.post('/webhook', (req, res) => {
   // Parse the request body from the POST
-  let body = req.
-
-    body.entry.forEach((entry) => {
-
-      let webhook_event = entry.messaging[0]
-
-      sendWelcomeMessage(webhook_event.sender.id)
-    })
+  let body = req.body
 
   // Check the webhook event is from a Page subscription
   if (body.object === 'page') {
@@ -115,8 +58,6 @@ app.post('/webhook', (req, res) => {
       // Get the sender PSID
       let sender_psid = webhook_event.sender.id
       console.log('Sender PSID: ' + sender_psid)
-
-
 
       // Check if the event is a message or postback and
       // pass the event to the appropriate handler function
@@ -133,8 +74,6 @@ app.post('/webhook', (req, res) => {
     res.sendStatus(404)
   }
 })
-
-
 
 app.post('/set_reminder', async (req, res) => {
   let body = await req.body
