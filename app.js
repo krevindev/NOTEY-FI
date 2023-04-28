@@ -309,10 +309,10 @@ async function handleMessage(sender_psid, received_message) {
   // Send the response message
   callSendAPI(sender_psid, response)
 }
-const postback_payload = 'GET_STARTED_PAYLOAD';
+const postback_payload = 'get started';
 
 axios.post(`https://graph.facebook.com/v2.6/me/messenger_profile?access_token=${PAGE_ACCESS_TOKEN}`, {
-    test: {
+    get_started: {
         payload: postback_payload
     }
 })
