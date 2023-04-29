@@ -604,15 +604,27 @@ async function response(msg, ...sender_psid) {
           courseId: fCourse.id
         })
         fCourseActs = fCourseActs.data.courseWork;
-        return { [fCourse.name]: fCourseActs }
+        return {
+          course: fCourse.name,
+          activities: fCourseActs.map(act => act.title)
+        }
       }
-    }))
+    })).then(arr => arr.filter(item => item !== undefined))
 
-    
+
+    passedArr.forEach(arr => {
+      passedString += `COURSE: ${arr.course} \n`
+      arr.activities.forEach((act, index) => {
+        passedString += `${index + 1}: ${act}\n`
+      })
+      passedString += '\n'
+    })
+
+
     console.log('PASSED STRING:')
-    console.log(await passedArr)
+    console.log(passedString)
 
-
+    return { text: "```\n" + passedString + "\n```" }
 
   }
 
