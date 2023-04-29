@@ -654,29 +654,19 @@ async function response(msg, ...sender_psid) {
     console.log(passedString)
 
     return {
-      attachment: {
-        type: 'template',
-        payload: {
-          template_type: 'button',
-          text:  "```\nREMAINING DEADLINES:\n\n" + passedString + "```",
-          buttons: [
-            {
-              type: 'postback',
-              title: `Set a Reminder`,
-              payload: 'menu',
-              webview_height_ratio: 'full'
-            },
-            {
-              type: 'postback',
-              title: `Return to Menu`,
-              webview_height_ratio: 'full',
-              payload: 'menu'
-            }
-          ]
+      text: "```\nREMAINING DEADLINES:\n\n" + passedString + "```",
+      quick_replies: [
+        {
+          content_type: 'text',
+          title: 'Return to Menu',
+          payload: 'menu'
+        },{
+          content_type: 'text',
+          title: 'Set a Reminder',
+          payload: 'set_reminder'
         }
-      }
+      ]
     }
-
   }
 
   // rem_t
@@ -930,7 +920,7 @@ async function response(msg, ...sender_psid) {
       let passedString = '  SELECT A COURSE: \n'
 
       await courses.forEach(async (fc, index) => {
-        passedString += '\n\n' + (index + 1) + '.\n' + fc.name
+        passedString += '\n\n' + (index + 1) + '.\t' + fc.name
       })
 
       let quick_replies = courses
