@@ -635,22 +635,24 @@ async function response(msg, ...sender_psid) {
                 });
 
                 // Filter unsubmitted course works
-                const unsubmittedCourseWorks = await courseWorks.data.courseWork.filter(cw => !submittedIds.includes(cw.id));
+                const unsubmittedCourseWorks = await courseWorks.data.courseWork.filter(cw => cw);
+
                 console.log("UNSUBMITTED:")
+                console.log(fCourse.name)
                 console.log(await unsubmittedCourseWorks)
 
-                return await unsubmittedCourseWorks;
+                return undefined;
               } else {
                 return undefined
               }
             }
-           
+
             return await getUnsubmittedCourseWorks(fCourse.id).then(async res => await res)
           }).filter(cw => cw !== undefined || cw !== {})
         )
 
         console.log(fCourse.name)
-        console.log(await unsubmittedCW)
+        //console.log(await unsubmittedCW)
 
         return {
           course: fCourse.name,
