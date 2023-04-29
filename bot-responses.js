@@ -635,14 +635,15 @@ async function response(msg, ...sender_psid) {
                 });
 
                 // Filter unsubmitted course works
-                const unsubmittedCourseWorks = await courseWorks.data.courseWork.filter(cw => !submittedIds.includes(cw.id));
+                let unsubmittedCourseWorks = await courseWorks.data.courseWork.filter(cw => !submittedIds.includes(cw.id));
+                
 
-                console.log("UNSUBMITTED:")
-                console.log(fCourse.name)
-                console.log("Submitted IDs")
-                console.log(await submittedIds)
-                console.log("Filtered")
-                console.log(await unsubmittedCourseWorks.map(ucw => ucw.id))
+                // console.log("UNSUBMITTED:")
+                // console.log(fCourse.name)
+                // console.log("Submitted IDs")
+                // console.log(await submittedIds) 
+                // console.log("Filtered")
+                // console.log(await unsubmittedCourseWorks.map(ucw => ucw.title))
 
                 return await unsubmittedCourseWorks;
               } else {
@@ -650,11 +651,12 @@ async function response(msg, ...sender_psid) {
               }
             }
 
-            console.log("AAAAAAAAAAAAAAAAAAAAA")
-            console.log(await getUnsubmittedCourseWorks(fCourse.id).then(async res => await res))
             return await getUnsubmittedCourseWorks(fCourse.id).then(async res => await res)
           }).filter(cw => cw !== undefined || cw !== {})
         )
+
+        console.log("UNSUB:")
+        console.log(await unsubmittedCW.map(ucw => ucw))
 
         return {
           course: fCourse.name,
