@@ -580,7 +580,10 @@ async function response(msg, ...sender_psid) {
           courseId: course.id,
           orderBy: 'dueDate asc'
         })
+        const unsubmittedCourseWork = await classroom.courses.courseWork.studentSubmissions
 
+        console.log(course.name)
+        console.log(unsubmittedCourseWork)
 
         const courseWork = (activities.data && activities.data.courseWork) || [] // Add a nullish coalescing operator to handle undefined
 
