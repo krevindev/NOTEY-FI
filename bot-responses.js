@@ -969,8 +969,8 @@ async function response(msg, ...sender_psid) {
       subscribed_and_signedin: [btnsBank[0], btnsBank[1], btnsBank[4], btnsBank[5], btnsBank[3]],
       subscribed_only: [btnsBank[4], btnsBank[3]],
       unsubscribed: [btnsBank[2]],
-      muted: [btnsBank[0], btnsBank[1], btnsBank[4], btnsBank[5], btnsBank[3], btnsBank[6]],
-      unmuted: [btnsBank[0], btnsBank[1], btnsBank[4], btnsBank[5], btnsBank[3], btnsBank[5]]
+      muted: [btnsBank[0], btnsBank[1], btnsBank[4], btnsBank[3], btnsBank[6]],
+      unmuted: [btnsBank[0], btnsBank[1], btnsBank[4], btnsBank[3], btnsBank[5]]
     };
 
     let userData = async () => {
@@ -991,9 +991,9 @@ async function response(msg, ...sender_psid) {
 
     if (await userData) {
       if (await userData['vle_accounts']) {
-        userStatus = 'subscribed_and_signedin';
+        //userStatus = 'subscribed_and_signedin';
 
-        if (userData && userData.muted) {
+        if (userData['muted']) {
           userStatus = 'muted';
         } else {
           userStatus = 'unmuted';
@@ -1034,6 +1034,7 @@ async function response(msg, ...sender_psid) {
         }
       }
     )
+    return { text: 'You have unmuted the notifications' }
   }
 
   // if the message is google classroom then send a sign in link to the user
