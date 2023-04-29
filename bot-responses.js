@@ -639,28 +639,21 @@ async function response(msg, ...sender_psid) {
         fCourseActs = await fCourseActs.data.courseWork.filter(act => act.dueDate !== undefined);
 
 
-        fCourseActs = await fCourseActs.filter(async fact => {
+        fCourseActs = await Promise.all(fCourseActs.map(async fact => {
           const submissions = await classroom.courses.courseWork.studentSubmissions.list({
             courseId: fCourse.id,
             userId: 'me',
             courseWorkId: fact.id
           });
 
-
-
-
-          if (await submissions.data.studentSubmissions) {
-            //console.log(submissions.data.studentSubmissions.map(sub => sub.courseWorkId))
-            //console.log(submissions.data.studentSubmissions.map(sub => sub.courseWorkId).includes(fact.id))
-            //console.log(fact.title)
-            return false
-          } else {
-            console.log("NO")
-            return true
+          if (submissions.data.studentSubmissions && submissions.data.studentSubmissions.length === 0) {
+            console.log(fact)
+            return fact; // keep the course work if it has not been submitted
           }
+        }));
+        fCourseActs = fCourseActs.filter(fact => fact); // remove any falsy values (i.e. null or undefined)
 
-        })
-        console.log(await fCourseActs.map(f => f.title))
+        console.log(fCourseActs.map(fact => fact.title))
 
         return {
           course: fCourse.name,
