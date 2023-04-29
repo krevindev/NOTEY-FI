@@ -652,11 +652,12 @@ async function response(msg, ...sender_psid) {
             }
 
             return await getUnsubmittedCourseWorks(fCourse.id).then(async res => await res)
-          }).filter(cw => cw !== undefined || cw !== {})
+          }).filter(cw => cw !== undefined && cw !== {})
         )
 
         console.log("UNSUB:")
-        console.log(await unsubmittedCW.map(ucw => ucw))
+
+        console.log(await fCourseActs.filter(fc => fc.id).filter( async fc => !await unsubmittedCW.map(ucw => ucw.id).includes(fc.id)).map(fc => fc.title))
 
         return {
           course: fCourse.name,
