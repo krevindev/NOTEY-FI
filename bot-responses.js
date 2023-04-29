@@ -366,7 +366,6 @@ async function multiResponse(msg, ...sender_psid) {
       orderBy: 'dueDate desc'
     })
 
-
     courseActivities = courseActivities.data.courseWork
       ? courseActivities.data.courseWork
       : []
@@ -1008,8 +1007,6 @@ async function response(msg, ...sender_psid) {
         //userStatus = 'subscribed_and_signedin';
 
         if (userData['muted']) {
-          console.log("IS MUTED?")
-          console.log*userData['muted']
           userStatus = 'muted';
         } else {
           userStatus = 'unmuted';

@@ -16,7 +16,6 @@ const CLIENT_SECRET = process.env.CLIENT_SECRET;
 const REDIRECT_URI = process.env.REDIRECT_URI;
 const SCOPES = process.env.SCOPE_STRING;
 
-
 const oauth2Client = new OAuth2Client(
     CLIENT_ID,
     CLIENT_SECRET,
@@ -191,29 +190,29 @@ async function listenToUser(user) {
 }
 
 /** listen to existing users in the database when this server is running */
-async function listenToExistingUsers() {
-    db.once('open', async () => {
-        await db.collection('noteyfi_users').find().toArray((err, res) => {
-            const users = res
-            users.forEach(async user => {
-                try {
-                    // if the user has a vle_accounts property
-                    if (user.vle_accounts) {
-                        // create CourseListeners to the user
-                        listenToUser(user);
-                        await cacheCourses(user.psid, user);
-                    }
-                } catch (err) {
-                    console.log("User DB Error");
-                    console.log("Error: " + err)
-                }
-            })
-        });
+// async function listenToExistingUsers() {
+//     db.once('open', async () => {
+//         await db.collection('noteyfi_users').find().toArray((err, res) => {
+//             const users = res
+//             users.forEach(async user => {
+//                 try {
+//                     // if the user has a vle_accounts property
+//                     if (user.vle_accounts) {
+//                         // create CourseListeners to the user
+//                         listenToUser(user);
+//                         await cacheCourses(user.psid, user);
+//                     }
+//                 } catch (err) {
+//                     console.log("User DB Error");
+//                     console.log("Error: " + err)
+//                 }
+//             })
+//         });
 
-    })
-}
+//     })
+// }
 
-listenToExistingUsers();
+//listenToExistingUsers();
 
 // Sends response messages via the Send API
 function callSendAPI(sender_psid, response) {
