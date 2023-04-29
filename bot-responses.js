@@ -583,38 +583,18 @@ async function response(msg, ...sender_psid) {
         })
 
 
-        async function getUnsubmittedCourseWorks(courseId) {
 
-          // Get a list of all student submissions for the current user
-          const submissions = await classroom.courses.courseWork.studentSubmissions.list({
-            courseId: course.id,
-            userId: 'me'
-          });
-
-          // Extract the IDs of submitted course works
-          const submittedIds = submissions.data.studentSubmissions.map(submission => submission.courseWorkId);
-
-          // Get a list of all course works for the given course
-          const courseWorks = await classroom.courses.courseWork.list({
-            courseId: course.id
-          });
-
-          // Filter unsubmitted course works
-          const unsubmittedCourseWorks = courseWorks.data.courseWork.filter(cw => !submittedIds.includes(cw.id));
-
-          return unsubmittedCourseWorks;
-        }
-
-        console.log(await getUnsubmittedCourseWorks(course.id))
 
         const courseWork = (activities.data && activities.data.courseWork) || [] // Add a nullish coalescing operator to handle undefined
+
+
+
 
         const filteredActs = courseWork
           .map(cw => cw.dueDate)
           .filter(c => c !== undefined)
 
-        console.log('ITERATED')
-        console.log(filteredActs.length)
+        
 
         if (filteredActs.length !== 0) {
           return course
@@ -633,6 +613,33 @@ async function response(msg, ...sender_psid) {
         })
 
         fCourseActs = fCourseActs.data.courseWork.filter(act => act.dueDate !== undefined);
+
+        fCourseActs.forEach(async facts => {
+          async function getUnsubmittedCourseWorks(courseId) {
+
+            // Get a list of all student submissions for the current user
+            const submissions = await classroom.courses.courseWork.studentSubmissions.list({
+              courseId: courseId,
+              userId: 'me',
+              courseWorkId: facts.id
+            });
+  
+            // Extract the IDs of submitted course works
+            const submittedIds = submissions.data.studentSubmissions.map(submission => submission.facts.id);
+  
+            // Get a list of all course works for the given course
+            const courseWorks = await classroom.courses.courseWork.list({
+              courseId: courseId
+            });
+  
+            // Filter unsubmitted course works
+            const unsubmittedCourseWorks = courseWorks.data.courseWork.filter(cw => !submittedIds.includes(cw.id));
+  
+            return unsubmittedCourseWorks;
+          }
+  
+          console.log(await getUnsubmittedCourseWorks(fCourse.id))
+        })
 
         return {
           course: fCourse.name,
