@@ -576,10 +576,20 @@ async function response(msg, ...sender_psid) {
 
     let filteredCourses = await Promise.all(
       courses.map(async course => {
-        const activities = await classroom.courses.courseWork.list({
+        let activities = await classroom.courses.courseWork.list({
           courseId: course.id,
-          orderBy: 'dueDate asc'
+          orderBy: 'dueDate asc',
+          courseWorkStates: ['DRAFT', 'PUBLISHED']
         })
+
+        activities = await activities.data.courseWork.filter(activity => {
+          return activity.submissionState === "NOT_TURNED_IN"
+        })
+
+        console.log(activities)
+
+
+
 
         const courseWork = (activities.data && activities.data.courseWork) || [] // Add a nullish coalescing operator to handle undefined
 
