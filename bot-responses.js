@@ -547,6 +547,70 @@ async function response(msg, ...sender_psid) {
     return response
   }
 
+  else if (msg === 'view_deadlines2') {
+    const user = await getUser(sender_psid)
+    const token = user['vle_accounts'][0]
+
+    const auth = await new google.auth.OAuth2(
+      CLIENT_ID,
+      CLIENT_SECRET,
+      REDIRECT_URI
+    )
+
+    await auth.setCredentials({
+      access_token: await token.access_token,
+      refresh_token: await token.refresh_token
+    })
+
+    const classroom = await google.classroom({
+      version: 'v1',
+      auth: auth
+    })
+
+    let passedObj = {}
+
+    let courses = await classroom.courses.list({
+      courseStates: ['ACTIVE']
+    })
+    courses = courses.data.courses
+
+    let filteredCourses = await Promise.all(
+      courses.map(async course => {
+        const activities = await classroom.courses.courseWork.list({
+          courseId: course.id
+        })
+
+        const courseWork = (activities.data && activities.data.courseWork) || [] // Add a nullish coalescing operator to handle undefined
+
+        const filteredActs = courseWork
+          .map(cw => cw.dueDate)
+          .filter(c => c !== undefined)
+
+        console.log('ITERATED')
+        console.log(filteredActs.length)
+
+        if (filteredActs.length !== 0) {
+          return course
+        }
+      })
+    )
+
+    console.log('REHASHED:')
+
+    filteredCourses.forEach(async fCourse => {
+      if(fCourse){
+        let fCourseActs = await classroom.courses.courseWork.list({
+          courseId: fCourse.id
+        })
+        fCourseActs = fCourseActs.data.courseWork
+  
+        console.log('Course: ' + fCourse.title)
+        console.log(fCourseActs)
+      }
+    })
+
+  }
+
   // rem_t
   else if (msg.split(':')[0] == 'rem_t') {
     const time = msg.split(':')[1]
@@ -963,7 +1027,7 @@ async function response(msg, ...sender_psid) {
       {
         content_type: 'text',
         title: 'View Deadlines',
-        payload: 'view_deadlines',
+        payload: 'view_deadlines2',
         image_url: viewDeadlinesIconUrl
       },
       {
