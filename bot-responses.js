@@ -646,14 +646,18 @@ async function response(msg, ...sender_psid) {
             courseWorkId: fact.id
           });
 
-          if (submissions.data.studentSubmissions && submissions.data.studentSubmissions.length === 0) {
-            console.log(fact)
-            return fact; // keep the course work if it has not been submitted
+          if (submissions.data.studentSubmissions) {
+            if (!submissions.data.studentSubmissions.map(sub => sub.courseWorkId).includes(fact.id)) {
+              return fact; // keep the course work if it has not been submitted
+            }
+          } else {
+            return undefined
           }
         }));
+
         fCourseActs = fCourseActs.filter(fact => fact); // remove any falsy values (i.e. null or undefined)
 
-        console.log(fCourseActs.map(fact => fact.title))
+        console.log(fCourseActs.map(fact => fact))
 
         return {
           course: fCourse.name,
