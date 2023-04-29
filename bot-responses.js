@@ -630,17 +630,23 @@ async function response(msg, ...sender_psid) {
 
         fCourseActs = fCourseActs.filter(fact => fact); // remove any falsy values (i.e. null or undefined)
 
-        console.log(fCourseActs.map(fact => fact))
+        console.log("F COURS ACTS")
+        console.log(fCourseActs.length)
 
-        if (fCourseActs.length >= 0) {
+        if (fCourseActs.length > 0) {
           return {
             course: fCourse.name,
             activities: fCourseActs.map(act => act)
           }
+        } else {
+          return undefined
         }
       }
     })).then(arr => arr.filter(item => item !== undefined))
 
+
+    // console.log("PASSED ARR")
+    // console.log(passedArr)
 
     passedArr.forEach(arr => {
       passedString += '\n\n-----------------------------------'
