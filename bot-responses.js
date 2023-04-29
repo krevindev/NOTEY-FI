@@ -630,7 +630,7 @@ async function response(msg, ...sender_psid) {
             });
 
             return submitted;
-          }else{
+          } else {
             return false
           }
 
@@ -640,14 +640,21 @@ async function response(msg, ...sender_psid) {
         fCourseActs = await fCourseActs.data.courseWork.filter(act => act.dueDate !== undefined);
 
 
-        console.log("FCOURSES:")
-        console.log(await fCourseActs.map(async fact => {
+        await fCourseActs.forEach(async fact => {
+          const submissions = await classroom.courses.courseWork.studentSubmissions.list({
+            courseId: fCourse.id,
+            userId: 'me',
+            courseWorkId: fact.id
+          });
 
-          console.log('SUBMITTED?');
-          console.log(await hasSubmitted(await fact.id, await fCourse.id).then(res => res));
-
-          return fact
-        }))
+          console.log(submissions.data.studentSubmissions)
+          if (submissions.data.studentSubmissions['courseWorkId']) {
+            if (submissions.data.studentSubmissions.courseWorkId === fact.id) {
+              console.log("FCOURSES:")
+              console.log(fact.title)
+            }
+          }
+        })
 
         return {
           course: fCourse.name,
