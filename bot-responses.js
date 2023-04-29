@@ -617,24 +617,36 @@ async function response(msg, ...sender_psid) {
 
 
     passedArr.forEach(arr => {
+      passedString += '\n\n-----------------------------------'
       passedString += `\nCOURSE: ${arr.course} \n`
+      passedString += '-----------------------------------\n'
+
       arr.activities.forEach((act, index) => {
 
-        const dueDate = new Date(
-          act.dueDate.year,
-          act.dueDate.month - 1, // Subtract 1 from the month value
-          act.dueDate.day,
-          act.dueTime.hours !== undefined ? act.dueTime.hours + 8 : 11,
-          act.dueTime.minutes !== undefined ? act.dueTime.minutes : 59
-        )
+        const dueDate = moment({
+          year: act.dueDate.year,
+          month: act.dueDate.month - 1,
+          day: act.dueDate.day,
+          hour: act.dueTime.hours !== undefined ? act.dueTime.hours + 8 : 11,
+          minute: act.dueTime.minutes !== undefined ? act.dueTime.minutes : 59
+        })
 
         const formattedDueDate = moment(dueDate).format(
           'dddd, MMMM Do YYYY, h:mm:ss a'
         )
+        let status
+        const timeDiff = moment.duration(dueDate.diff(moment()))
 
-        passedString += `${index + 1}: ${act.title}\nDeadline: ${formattedDueDate} ${dueDate < moment(new Date()).add(8, 'hours') ? '( Late )\n\n' : '\n\n'}`
+        if (dueDate < moment(new Date()).add(8, 'hours')) {
+          status = `(Late) ${timeDiff.humanize(true)} overdue`
+        } else {
+          status = `(Pending) ${timeDiff.humanize(true)} left`
+        }
+
+        passedString += `${index + 1}: ${act.title}\n`;
+        passedString += `Deadline: ${formattedDueDate} \n`;
+        passedString += `Status: ${status}\n\n`;
       })
-      passedString += '-----------------------------------\n'
     })
 
 
