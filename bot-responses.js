@@ -603,7 +603,6 @@ async function response(msg, ...sender_psid) {
     )
 
     let passedString = '';
-    console.log('REHASHED:')
 
     let passedArr = await Promise.all(filteredCourses.map(async fCourse => {
 
@@ -640,21 +639,28 @@ async function response(msg, ...sender_psid) {
         fCourseActs = await fCourseActs.data.courseWork.filter(act => act.dueDate !== undefined);
 
 
-        await fCourseActs.forEach(async fact => {
+        fCourseActs = await fCourseActs.filter(async fact => {
           const submissions = await classroom.courses.courseWork.studentSubmissions.list({
             courseId: fCourse.id,
             userId: 'me',
             courseWorkId: fact.id
           });
 
-          console.log(submissions.data.studentSubmissions)
-          if (submissions.data.studentSubmissions['courseWorkId']) {
-            if (submissions.data.studentSubmissions.courseWorkId === fact.id) {
-              console.log("FCOURSES:")
-              console.log(fact.title)
-            }
+
+
+
+          if (await submissions.data.studentSubmissions) {
+            //console.log(submissions.data.studentSubmissions.map(sub => sub.courseWorkId))
+            //console.log(submissions.data.studentSubmissions.map(sub => sub.courseWorkId).includes(fact.id))
+            //console.log(fact.title)
+            return false
+          } else {
+            console.log("NO")
+            return true
           }
+
         })
+        console.log(await fCourseActs.map(f => f.title))
 
         return {
           course: fCourse.name,
