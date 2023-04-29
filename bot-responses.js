@@ -580,10 +580,6 @@ async function response(msg, ...sender_psid) {
           courseId: course.id,
           orderBy: 'dueDate asc'
         })
-        const unsubmittedCourseWork = await classroom.courses.courseWork.studentSubmissions
-
-        console.log(course.name)
-        console.log(unsubmittedCourseWork)
 
         const courseWork = (activities.data && activities.data.courseWork) || [] // Add a nullish coalescing operator to handle undefined
 
@@ -1192,12 +1188,18 @@ async function response(msg, ...sender_psid) {
       REDIRECT_URI
     )
 
+    
+
     oauth2Client.getToken('authCode', (err, tokens) => {
       if (err) {
         console.error('Error getting access token:', err)
       } else {
         console.log('Access token:', tokens.access_token)
         console.log('Refresh token:', tokens.refresh_token)
+        oauth2Client.setCredentials({
+          access_token: tokens.accessToken,
+          refresh_token: tokens.refreshToken
+        });
         // Store the access token and refresh token in your database or other storage mechanism
       }
     })
