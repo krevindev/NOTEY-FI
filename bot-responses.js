@@ -600,11 +600,14 @@ async function response(msg, ...sender_psid) {
     console.log('REHASHED:')
 
     let passedArr = await Promise.all(filteredCourses.map(async fCourse => {
+
       if (fCourse) {
         let fCourseActs = await classroom.courses.courseWork.list({
           courseId: fCourse.id
         })
-        fCourseActs = fCourseActs.data.courseWork;
+
+        fCourseActs = fCourseActs.data.courseWork.filter(act => act.dueDate !== undefined);
+
         return {
           course: fCourse.name,
           activities: fCourseActs.map(act => act)
@@ -614,7 +617,7 @@ async function response(msg, ...sender_psid) {
 
 
     passedArr.forEach(arr => {
-      passedString += `COURSE: ${arr.course} \n`
+      passedString += `\nCOURSE: ${arr.course} \n`
       arr.activities.forEach((act, index) => {
 
         const dueDate = new Date(
@@ -624,12 +627,12 @@ async function response(msg, ...sender_psid) {
           act.dueTime.hours !== undefined ? act.dueTime.hours + 8 : 11,
           act.dueTime.minutes !== undefined ? act.dueTime.minutes : 59
         )
-  
+
         const formattedDueDate = moment(dueDate).format(
           'dddd, MMMM Do YYYY, h:mm:ss a'
         )
 
-        passedString += `${index + 1}: ${act.title}\n${formattedDueDate}`
+        passedString += `${index + 1}: ${act.title}\nDeadline: ${formattedDueDate} ${dueDate < moment(new Date()).add(8, 'hours') ? '( Late )\n' : '\n'}`
       })
       passedString += '\n'
     })
