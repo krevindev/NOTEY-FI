@@ -311,7 +311,7 @@ async function multiResponse(msg, ...sender_psid) {
     quick_replies.push({
       content_type: 'text',
       title: 'Return',
-      payload: 'send_reminder_options[course]',
+      payload: 'set_reminder',
       image_url: backIconUrl
     })
 
@@ -663,7 +663,7 @@ async function response(msg, ...sender_psid) {
       .then(res => res.data)
 
     const response = {
-      text: `Set a Reminder for ${selectedActivity.title}`,
+      text: `Set a Reminder for \n'${selectedActivity.title}'`,
       quick_replies: [
         {
           content_type: 'text',
