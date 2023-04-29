@@ -622,6 +622,8 @@ async function response(msg, ...sender_psid) {
           });
 
           if (submissions.data.studentSubmissions) {
+            // console.log('SUBMISSIONS:')
+            // console.log(submissions.data.studentSubmissions)
             // Check if the course work has been submitted by the user
             const submitted = submissions.data.studentSubmissions.some(submission => {
               return submission.courseWorkId === courseWorkId && submission.state === 'TURNED_IN';
@@ -635,9 +637,17 @@ async function response(msg, ...sender_psid) {
         }
 
 
-        fCourseActs = fCourseActs.data.courseWork.filter(act => act.dueDate !== undefined).filter(act => !hasSubmitted(act.id, fCourse.id));
+        fCourseActs = await fCourseActs.data.courseWork.filter(act => act.dueDate !== undefined);
 
-        console.log(fCourseActs.map(fact => fact.title))
+
+        console.log("FCOURSES:")
+        console.log(await fCourseActs.map(async fact => {
+
+          console.log('SUBMITTED?');
+          console.log(await hasSubmitted(await fact.id, await fCourse.id).then(res => res));
+
+          return fact
+        }))
 
         return {
           course: fCourse.name,
