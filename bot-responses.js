@@ -23,7 +23,7 @@ const moment = require('moment')
 const cachingFunctions = require('./cachingFunctions.js');
 
 
-// ChatGPT Q&A
+// Chat  Q&A
 async function askGPT(question) {
   const apiEndpoint =
     'https://api.openai.com/v1/engines/text-davinci-003/completions'
@@ -918,6 +918,8 @@ async function response(msg, ...sender_psid) {
     }
   } else if (msg === 'menu') {
 
+    let isMuted = false;
+
     let btnsBank = [
       {
         content_type: 'text',
@@ -949,14 +951,26 @@ async function response(msg, ...sender_psid) {
         title: 'Add VLE Account',
         payload: 'add_vle_account',
         image_url: 'https://cdn.glitch.global/df116b28-1bf9-459e-9b76-9696e80b6334/add_icon.png?v=1682710584376'
+      }, {
+        content_type: 'text',
+        title: 'Mute Notification',
+        payload: 'mute_notif',
+        image_url: img_url
+      }, {
+        content_type: 'text',
+        title: 'Unmute Notification',
+        payload: 'unmute_notif',
+        image_url: img_url
       }
     ];
-
     let userStatus = '';
+
     let menuBtnsStatus = {
-      subscribed_and_signedin: [btnsBank[0], btnsBank[1], btnsBank[4], btnsBank[3]],
+      subscribed_and_signedin: [btnsBank[0], btnsBank[1], btnsBank[4], btnsBank[5], btnsBank[3]],
       subscribed_only: [btnsBank[4], btnsBank[3]],
-      unsubscribed: [btnsBank[2]]
+      unsubscribed: [btnsBank[2]],
+      muted: [btnsBank[0], btnsBank[1], btnsBank[4], btnsBank[5], btnsBank[3], btnsBank[6]],
+      unmuted: [btnsBank[0], btnsBank[1], btnsBank[4], btnsBank[5], btnsBank[3], btnsBank[5]]
     };
 
     let userData = async () => {
@@ -978,9 +992,17 @@ async function response(msg, ...sender_psid) {
     if (await userData) {
       if (await userData['vle_accounts']) {
         userStatus = 'subscribed_and_signedin';
+
+        if (userData && userData.muted) {
+          userStatus = 'muted';
+        } else {
+          userStatus = 'unmuted';
+        }
+
       } else {
         userStatus = 'subscribed_only';
       }
+
     } else {
       userStatus = 'unsubscribed'
     }
@@ -993,6 +1015,25 @@ async function response(msg, ...sender_psid) {
       text: (userStatus == 'unsubscribed') ? 'Press Subscribe:' : 'Menu:',
       quick_replies: menuBtnsStatus[userStatus]
     }
+  }
+  else if (msg === 'mute_notif') {
+
+    await db.collection("noteyfi_users").updateOne(
+      { psid: sender_psid },
+      { $set: { muted: true } }
+    );
+
+    return { text: 'You have muted the notifications' }
+  }
+  else if (msg == 'unmute_notif') {
+    await db.collection('noteyfi_users').updateOne(
+      { psid: sender_psid },
+      {
+        $set: {
+          muted: false
+        }
+      }
+    )
   }
 
   // if the message is google classroom then send a sign in link to the user

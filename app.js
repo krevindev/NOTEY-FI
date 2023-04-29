@@ -416,6 +416,10 @@ async function handleQuickReplies(sender_psid, received_payload) {
         )
       })
   }
+  else if (received_payload === 'mute_notif' || received_payload === 'unmute_notif'){
+    await callSendAPI(sender_psid, await botResponses.response(received_payload))
+    await callSendAPI(sender_psid, await botResponses.response('menu', sender_psid))
+  }
   else if(received_payload === 'unsub_yes'){
     botResponses
     .unsubscribe(sender_psid, db)
