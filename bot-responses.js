@@ -632,9 +632,9 @@ async function response(msg, ...sender_psid) {
           'dddd, MMMM Do YYYY, h:mm:ss a'
         )
 
-        passedString += `${index + 1}: ${act.title}\nDeadline: ${formattedDueDate} ${dueDate < moment(new Date()).add(8, 'hours') ? '( Late )\n' : '\n'}`
+        passedString += `${index + 1}: ${act.title}\nDeadline: ${formattedDueDate} ${dueDate < moment(new Date()).add(8, 'hours') ? '( Late )\n\n' : '\n\n'}`
       })
-      passedString += '\n'
+      passedString += '-----------------------------------\n'
     })
 
 
