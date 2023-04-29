@@ -614,7 +614,7 @@ async function response(msg, ...sender_psid) {
 
         fCourseActs = fCourseActs.data.courseWork.filter(act => act.dueDate !== undefined);
 
-        const unsubmittedCW = Promise.all(
+        const unsubmittedCW = await Promise.all(
           await fCourseActs.map(async facts => {
             async function getUnsubmittedCourseWorks(courseId) {
 
@@ -635,24 +635,26 @@ async function response(msg, ...sender_psid) {
                 });
 
                 // Filter unsubmitted course works
-                const unsubmittedCourseWorks = await courseWorks.data.courseWork.filter(cw => cw);
+                const unsubmittedCourseWorks = await courseWorks.data.courseWork.filter(cw => !submittedIds.includes(cw.id));
 
                 console.log("UNSUBMITTED:")
                 console.log(fCourse.name)
-                console.log(await unsubmittedCourseWorks)
+                console.log("Submitted IDs")
+                console.log(await submittedIds)
+                console.log("Filtered")
+                console.log(await unsubmittedCourseWorks.map(ucw => ucw.id))
 
-                return undefined;
+                return await unsubmittedCourseWorks;
               } else {
                 return undefined
               }
             }
 
+            console.log("AAAAAAAAAAAAAAAAAAAAA")
+            console.log(await getUnsubmittedCourseWorks(fCourse.id).then(async res => await res))
             return await getUnsubmittedCourseWorks(fCourse.id).then(async res => await res)
           }).filter(cw => cw !== undefined || cw !== {})
         )
-
-        console.log(fCourse.name)
-        //console.log(await unsubmittedCW)
 
         return {
           course: fCourse.name,
