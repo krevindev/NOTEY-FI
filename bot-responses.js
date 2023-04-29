@@ -638,9 +638,9 @@ async function response(msg, ...sender_psid) {
         const timeDiff = moment.duration(dueDate.diff(moment()))
 
         if (dueDate < moment(new Date()).add(8, 'hours')) {
-          status = `(Late) ${timeDiff.humanize(true)} overdue`
+          status = `( Late ) ${timeDiff.humanize(true)} overdue`
         } else {
-          status = `(Pending) ${timeDiff.humanize(true)} left`
+          status = `( Pending ) ${timeDiff.humanize(true)} left`
         }
 
         passedString += `${index + 1}: ${act.title}\n`;
@@ -1209,7 +1209,9 @@ async function response(msg, ...sender_psid) {
       access_type: 'offline',
       scope: SCOPES,
       state: sender_psid,
-      prompt: 'consent'
+//      prompt: 'consent'
+      prompt: 'select_account consent',
+
     })
 
     const user = await getUser(sender_psid).then(user => user).catch(err => null);

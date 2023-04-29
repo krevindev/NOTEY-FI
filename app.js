@@ -39,8 +39,23 @@ app.get('/', (req, res) => {
 
 // Display this on page if the user has signed in successfully
 app.get('/success', (req, res) => {
-  res.send('Signed In Successfully')
-})
+  res.send(`
+    <html>
+      <head>
+        <title>Sign In Success</title>
+        <script>
+          window.onload = function() {
+            window.close();
+          }
+        </script>
+      </head>
+      <body>
+        <h1>Signed In Successfully</h1>
+      </body>
+    </html>
+  `);
+});
+
 
 // Messenger Webhook
 app.post('/webhook', (req, res) => {
