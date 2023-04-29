@@ -576,14 +576,11 @@ async function response(msg, ...sender_psid) {
 
     let filteredCourses = await Promise.all(
       courses.map(async course => {
-        const activities = await classroom.courses.courseWork.list({
+        let activities = await classroom.courses.courseWork.list({
           courseId: course.id,
           orderBy: 'dueDate asc'
         })
 
-        activities.data.courseWork.forEach(c => {
-          console.log(c)
-        })
 
         const courseWork = (activities.data && activities.data.courseWork) || [] // Add a nullish coalescing operator to handle undefined
 
