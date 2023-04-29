@@ -569,6 +569,7 @@ async function response(msg, ...sender_psid) {
 
 
 
+
     let courses = await classroom.courses.list({
       courseStates: ['ACTIVE']
     })
@@ -580,6 +581,31 @@ async function response(msg, ...sender_psid) {
           courseId: course.id,
           orderBy: 'dueDate asc'
         })
+
+
+        async function getUnsubmittedCourseWorks(courseId) {
+
+          // Get a list of all student submissions for the current user
+          const submissions = await classroom.courses.courseWork.studentSubmissions.list({
+            courseId: course.id,
+            userId: 'me'
+          });
+
+          // Extract the IDs of submitted course works
+          const submittedIds = submissions.data.studentSubmissions.map(submission => submission.courseWorkId);
+
+          // Get a list of all course works for the given course
+          const courseWorks = await classroom.courses.courseWork.list({
+            courseId: course.id
+          });
+
+          // Filter unsubmitted course works
+          const unsubmittedCourseWorks = courseWorks.data.courseWork.filter(cw => !submittedIds.includes(cw.id));
+
+          return unsubmittedCourseWorks;
+        }
+
+        console.log(await getUnsubmittedCourseWorks(course.id))
 
         const courseWork = (activities.data && activities.data.courseWork) || [] // Add a nullish coalescing operator to handle undefined
 
