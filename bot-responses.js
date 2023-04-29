@@ -394,20 +394,29 @@ async function multiResponse(msg, ...sender_psid) {
 
     //responses.push({ text: '```\n' + passedString + '\n```' })
 
+    let quick_replies = courseActivities
+    .filter(ca => ca !== undefined)
+    .map((ca, index) => {
+      return {
+        content_type: 'text',
+        title: `${String(index + 1)}. ${ca.title}`,
+        payload: `rem_sa:${courseID}:${ca.id}`
+      }
+    })
+    .slice(0, 12)
+    quick_replies.push({
+      content_type: 'text',
+      title: 'Back',
+      payload: 'view_deadlines',
+      image_url: 'https://www.vhv.rs/dpng/d/276-2767433_back-button-white-png-transparent-png.png'
+    })
+    
+
     console.log("Passed String:")
     console.log(passedString)
     qr_res = {
       text: "```" + passedString + "```",
-      quick_replies: courseActivities
-        .filter(ca => ca !== undefined)
-        .map((ca, index) => {
-          return {
-            content_type: 'text',
-            title: `${String(index + 1)}. ${ca.title}`,
-            payload: `rem_sa:${courseID}:${ca.id}`
-          }
-        })
-        .slice(0, 12)
+      quick_replies: quick_replies
     }
 
     responses.push(await qr_res)
@@ -513,7 +522,7 @@ async function response(msg, ...sender_psid) {
 
     quick_replies.push({
       content_type: 'text',
-      title: 'Cancel',
+      title: 'Return to Menu',
       payload: 'menu',
       image_url: cancelIconUrl
     })
@@ -671,6 +680,11 @@ async function response(msg, ...sender_psid) {
           content_type: 'text',
           title: '7 days',
           payload: `rem_t:7d:${courseID}:${courseWorkID}`
+        },{
+          content_type: 'text',
+          title: 'Cancel',
+          payload: 'menu',
+          image_url: cancelIconUrl
         }
       ]
     }
