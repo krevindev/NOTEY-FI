@@ -611,31 +611,6 @@ async function response(msg, ...sender_psid) {
           courseId: fCourse.id
         })
 
-        async function hasSubmitted(courseWorkId, courseId) {
-
-          // Get a list of all student submissions for the current user
-          const submissions = await classroom.courses.courseWork.studentSubmissions.list({
-            courseId,
-            userId: 'me',
-            courseWorkId: courseWorkId
-          });
-
-          if (submissions.data.studentSubmissions) {
-            // console.log('SUBMISSIONS:')
-            // console.log(submissions.data.studentSubmissions)
-            // Check if the course work has been submitted by the user
-            const submitted = submissions.data.studentSubmissions.some(submission => {
-              return submission.courseWorkId === courseWorkId && submission.state === 'TURNED_IN';
-            });
-
-            return submitted;
-          } else {
-            return false
-          }
-
-        }
-
-
         fCourseActs = await fCourseActs.data.courseWork.filter(act => act.dueDate !== undefined);
 
 
@@ -647,11 +622,9 @@ async function response(msg, ...sender_psid) {
           });
 
           if (submissions.data.studentSubmissions) {
-            if (!submissions.data.studentSubmissions.map(sub => sub.courseWorkId).includes(fact.id)) {
-              return fact; // keep the course work if it has not been submitted
-            }
+            if (!submissions.data.studentSubmissions.map(sub => sub.courseWorkId).includes(fact.id)) return fact
           } else {
-            return undefined
+            return fact
           }
         }));
 
@@ -659,9 +632,11 @@ async function response(msg, ...sender_psid) {
 
         console.log(fCourseActs.map(fact => fact))
 
-        return {
-          course: fCourse.name,
-          activities: fCourseActs.map(act => act)
+        if (fCourseActs.length >= 0) {
+          return {
+            course: fCourse.name,
+            activities: fCourseActs.map(act => act)
+          }
         }
       }
     })).then(arr => arr.filter(item => item !== undefined))
