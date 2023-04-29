@@ -395,22 +395,22 @@ async function multiResponse(msg, ...sender_psid) {
     //responses.push({ text: '```\n' + passedString + '\n```' })
 
     let quick_replies = courseActivities
-    .filter(ca => ca !== undefined)
-    .map((ca, index) => {
-      return {
-        content_type: 'text',
-        title: `${String(index + 1)}. ${ca.title}`,
-        payload: `rem_sa:${courseID}:${ca.id}`
-      }
-    })
-    .slice(0, 12)
+      .filter(ca => ca !== undefined)
+      .map((ca, index) => {
+        return {
+          content_type: 'text',
+          title: `${String(index + 1)}. ${ca.title}`,
+          payload: `rem_sa:${courseID}:${ca.id}`
+        }
+      })
+      .slice(0, 12)
     quick_replies.push({
       content_type: 'text',
       title: 'Back',
       payload: 'view_deadlines',
       image_url: 'https://www.vhv.rs/dpng/d/276-2767433_back-button-white-png-transparent-png.png'
     })
-    
+
 
     console.log("Passed String:")
     console.log(passedString)
@@ -680,7 +680,7 @@ async function response(msg, ...sender_psid) {
           content_type: 'text',
           title: '7 days',
           payload: `rem_t:7d:${courseID}:${courseWorkID}`
-        },{
+        }, {
           content_type: 'text',
           title: 'Cancel',
           payload: 'menu',
@@ -1008,9 +1008,12 @@ async function response(msg, ...sender_psid) {
         //userStatus = 'subscribed_and_signedin';
 
         if (userData['muted']) {
+          console.log("IS MUTED?")
+          console.log*userData['muted']
           userStatus = 'muted';
         } else {
           userStatus = 'unmuted';
+          await db.collection('noteyfi_users').updateOne({ psid: String(sender_psid) }, { $set: { muted: false } });
         }
 
       } else {
@@ -1033,7 +1036,7 @@ async function response(msg, ...sender_psid) {
   else if (msg === 'mute_notif') {
 
     await db.collection("noteyfi_users").updateOne(
-      { psid: sender_psid },
+      { psid: String(sender_psid) },
       { $set: { muted: true } }
     );
 
@@ -1041,7 +1044,7 @@ async function response(msg, ...sender_psid) {
   }
   else if (msg == 'unmute_notif') {
     await db.collection('noteyfi_users').updateOne(
-      { psid: sender_psid },
+      { psid: String(sender_psid) },
       {
         $set: {
           muted: false
