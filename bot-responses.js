@@ -658,12 +658,15 @@ async function response(msg, ...sender_psid) {
       quick_replies: [
         {
           content_type: 'text',
-          title: 'Return to Menu',
-          payload: 'menu'
-        },{
-          content_type: 'text',
           title: 'Set a Reminder',
-          payload: 'set_reminder'
+          payload: 'set_reminder',
+          image_url: 'https://cdn1.iconfinder.com/data/icons/cloud-hosting/32/stopwatch-icon-512.png'
+        }
+        , {
+          content_type: 'text',
+          title: 'Return to Menu',
+          payload: 'menu',
+          image_url: cancelIconUrl
         }
       ]
     }
@@ -1123,8 +1126,8 @@ async function response(msg, ...sender_psid) {
       subscribed_and_signedin: [btnsBank[0], btnsBank[1], btnsBank[4], btnsBank[5], btnsBank[3]],
       subscribed_only: [btnsBank[4], btnsBank[3]],
       unsubscribed: [btnsBank[2]],
-      muted: [btnsBank[0], btnsBank[1], btnsBank[4], btnsBank[3], btnsBank[6]],
-      unmuted: [btnsBank[0], btnsBank[1], btnsBank[4], btnsBank[3], btnsBank[5]]
+      muted: [btnsBank[0], btnsBank[1], btnsBank[4], btnsBank[3]],
+      unmuted: [btnsBank[0], btnsBank[1], btnsBank[4], btnsBank[3]]
     };
 
     let userData = async () => {
