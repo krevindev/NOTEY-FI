@@ -363,7 +363,7 @@ async function multiResponse(msg, ...sender_psid) {
 
     let courseActivities = await classroom.courses.courseWork.list({
       courseId: courseID,
-      orderBy: 'dueDate desc'
+      orderBy: 'dueDate asc'
     })
 
     courseActivities = courseActivities.data.courseWork
@@ -740,7 +740,7 @@ async function response(msg, ...sender_psid) {
 
     let courseActivities = await classroom.courses.courseWork.list({
       courseId: courseID,
-      orderBy: 'updateTime desc'
+      orderBy: 'dueDate asc'
       //pageToken: null
     })
 
