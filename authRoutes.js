@@ -75,12 +75,12 @@ async function cacheCourses(key, value) {
 
     try {
         await cachingFunctions.addToCache(String(key), await user)
-        .then(async res => {
-            await cachingFunctions.updateACache(String(key), { courses: filteredCourses })
-            .then(res => res)
-            .catch(err => console.log(err))
-        }).catch(err => console.log(err))
-        
+            .then(async res => {
+                await cachingFunctions.updateACache(String(key), { courses: filteredCourses })
+                    .then(res => res)
+                    .catch(err => console.log(err))
+            }).catch(err => console.log(err))
+
         console.log("SUCCESSFULLY CACHED COURSES")
     } catch (err) {
         console.log(err)
@@ -145,10 +145,14 @@ authRouter.get("/oauth2callback", async (req, res) => {
                 { psid: targetPSID },
                 {
                     $push: {
-                        vle_accounts: tokens,
+                        vle_accounts: {
+                            $each: [tokens],
+                            $position: 0
+                        }
                     },
                 }
             );
+
 
             await callSendAPI(targetPSID, { text: "Successfully Signed In!" })
                 .then(async res => await callSendAPI(targetPSID, await botResponses.response("menu", targetPSID)))
@@ -175,16 +179,16 @@ authRouter.get("/oauth2callback", async (req, res) => {
 
 /** Pass a user here to listen to */
 async function listenToUser(user) {
-   // new CourseListener(user).listenCourseChange();
+    // new CourseListener(user).listenCourseChange();
     //new CourseListener(user).pushNotification();
 
     axios.post('https://classroom-listener-server.glitch.me/pass_data', user)
-          .then(response => {
+        .then(response => {
             console.log('Webhook registration successful:', response.data)
-          })
-          .catch(error => {
+        })
+        .catch(error => {
             console.error('Failed to register webhook:', error.message)
-          })
+        })
 
     //addToCache(user.psid, user);
 }
