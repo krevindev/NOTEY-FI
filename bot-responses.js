@@ -5,6 +5,7 @@ const img_url =
 const subscribeIconUrl = 'https://cdn.glitch.global/df116b28-1bf9-459e-9b76-9696e80b6334/bell-icon.png?v=1682700610750';
 const viewDeadlinesIconUrl = 'https://static-00.iconduck.com/assets.00/deadline-icon-512x444-z2o6fd9d.png';
 const cancelIconUrl = 'https://img.freepik.com/free-icon/x-button_318-391115.jpg';
+const backIconUrl = 'https://www.vhv.rs/dpng/d/276-2767433_back-button-white-png-transparent-png.png';
 const unsubscribeIconUrl = 'https://cdn.glitch.global/df116b28-1bf9-459e-9b76-9696e80b6334/unsubscribe_bell.PNG?v=1682700782587';
 const callback_url = `https://hollow-iodized-beanie.glitch.me/`;
 
@@ -200,10 +201,12 @@ async function multiResponse(msg, ...sender_psid) {
         }
       })
       .slice(0, 12)
+
     quick_replies.push({
       content_type: 'text',
       title: 'Cancel',
-      payload: 'menu'
+      payload: 'menu',
+      image_url: cancelIconUrl
     })
 
     response = {
@@ -294,20 +297,27 @@ async function multiResponse(msg, ...sender_psid) {
     })
 
     //responses.push({ text: '```\n' + passedString + '\n```' })
+    let quick_replies = courseActivities
+      .filter(ca => ca !== undefined)
+      .map((ca, index) => {
+        console.log(ca)
+        return {
+          content_type: 'text',
+          title: `${String(index + 1)}. ${ca.title}`,
+          payload: `rem_sa:${courseID}:${ca.id}`
+        }
+      })
+      .slice(0, 12)
+    quick_replies.push({
+      content_type: 'text',
+      title: 'Return',
+      payload: 'send_reminder_options[course]',
+      image_url: backIconUrl
+    })
 
     qr_res = {
       text: '```\n' + passedString + '\n```',
-      quick_replies: courseActivities
-        .filter(ca => ca !== undefined)
-        .map((ca, index) => {
-          console.log(ca)
-          return {
-            content_type: 'text',
-            title: `${String(index + 1)}. ${ca.title}`,
-            payload: `rem_sa:${courseID}:${ca.id}`
-          }
-        })
-        .slice(0, 12)
+      quick_replies: quick_replies
     }
 
     responses.push(qr_res)
@@ -407,7 +417,7 @@ async function multiResponse(msg, ...sender_psid) {
       content_type: 'text',
       title: 'Back',
       payload: 'view_deadlines',
-      image_url: 'https://www.vhv.rs/dpng/d/276-2767433_back-button-white-png-transparent-png.png'
+      image_url: backIconUrl
     })
 
 
@@ -791,19 +801,28 @@ async function response(msg, ...sender_psid) {
         passedString += '\n\n' + (index + 1) + '.\n' + fc.name
       })
 
+      let quick_replies = courses
+        .filter(course => course !== undefined)
+        .map((course, index) => {
+          return {
+            content_type: 'text',
+            title: `${String(index + 1)}. ${course.name.substring(0, 20)}`,
+            payload: `rem_sc:${course.id}`
+          }
+        })
+        .slice(0, 12)
+
+      quick_replies.push({
+        content_type: 'text',
+        title: 'Return to Menu',
+        payload: 'menu',
+        image_url: cancelIconUrl
+      })
+
       response = {
         text:
           '```\n' + passedString.substring(2, passedString.length + 1) + '\n```',
-        quick_replies: courses
-          .filter(course => course !== undefined)
-          .map((course, index) => {
-            return {
-              content_type: 'text',
-              title: `${String(index + 1)}. ${course.name.substring(0, 20)}`,
-              payload: `rem_sc:${course.id}`
-            }
-          })
-          .slice(0, 12)
+        quick_replies: quick_replies
       }
 
       return response
