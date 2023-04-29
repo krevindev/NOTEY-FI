@@ -577,7 +577,8 @@ async function response(msg, ...sender_psid) {
     let filteredCourses = await Promise.all(
       courses.map(async course => {
         const activities = await classroom.courses.courseWork.list({
-          courseId: course.id
+          courseId: course.id,
+          orderBy: 'dueDate asc'
         })
 
         const courseWork = (activities.data && activities.data.courseWork) || [] // Add a nullish coalescing operator to handle undefined
@@ -606,7 +607,7 @@ async function response(msg, ...sender_psid) {
         fCourseActs = fCourseActs.data.courseWork;
         return {
           course: fCourse.name,
-          activities: fCourseActs.map(act => act.title)
+          activities: fCourseActs.map(act => act)
         }
       }
     })).then(arr => arr.filter(item => item !== undefined))
@@ -615,7 +616,20 @@ async function response(msg, ...sender_psid) {
     passedArr.forEach(arr => {
       passedString += `COURSE: ${arr.course} \n`
       arr.activities.forEach((act, index) => {
-        passedString += `${index + 1}: ${act}\n`
+
+        const dueDate = new Date(
+          act.dueDate.year,
+          act.dueDate.month - 1, // Subtract 1 from the month value
+          act.dueDate.day,
+          act.dueTime.hours !== undefined ? act.dueTime.hours + 8 : 11,
+          act.dueTime.minutes !== undefined ? act.dueTime.minutes : 59
+        )
+  
+        const formattedDueDate = moment(dueDate).format(
+          'dddd, MMMM Do YYYY, h:mm:ss a'
+        )
+
+        passedString += `${index + 1}: ${act.title}\n${formattedDueDate}`
       })
       passedString += '\n'
     })
@@ -624,7 +638,7 @@ async function response(msg, ...sender_psid) {
     console.log('PASSED STRING:')
     console.log(passedString)
 
-    return { text: "```\n" + passedString + "\n```" }
+    return { text: "```\nREMAINING DEADLINES:\n\n" + passedString + "```" }
 
   }
 
