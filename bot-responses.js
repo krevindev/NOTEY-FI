@@ -653,7 +653,29 @@ async function response(msg, ...sender_psid) {
     console.log('PASSED STRING:')
     console.log(passedString)
 
-    return { text: "```\nREMAINING DEADLINES:\n\n" + passedString + "```" }
+    return {
+      attachment: {
+        type: 'template',
+        payload: {
+          template_type: 'button',
+          text:  "```\nREMAINING DEADLINES:\n\n" + passedString + "```",
+          buttons: [
+            {
+              type: 'postback',
+              title: `Set a Reminder`,
+              payload: 'menu',
+              webview_height_ratio: 'full'
+            },
+            {
+              type: 'postback',
+              title: `Return to Menu`,
+              webview_height_ratio: 'full',
+              payload: 'menu'
+            }
+          ]
+        }
+      }
+    }
 
   }
 
@@ -1188,7 +1210,7 @@ async function response(msg, ...sender_psid) {
       REDIRECT_URI
     )
 
-    
+
 
     oauth2Client.getToken('authCode', (err, tokens) => {
       if (err) {
@@ -1209,7 +1231,7 @@ async function response(msg, ...sender_psid) {
       access_type: 'offline',
       scope: SCOPES,
       state: sender_psid,
-//      prompt: 'consent'
+      //      prompt: 'consent'
       prompt: 'select_account consent',
 
     })
