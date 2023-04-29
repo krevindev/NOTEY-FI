@@ -567,7 +567,7 @@ async function response(msg, ...sender_psid) {
       auth: auth
     })
 
-    let passedObj = {}
+    
 
     let courses = await classroom.courses.list({
       courseStates: ['ACTIVE']
@@ -594,20 +594,26 @@ async function response(msg, ...sender_psid) {
         }
       })
     )
-
+    let passedObj = {};
+    let passedString = '';
     console.log('REHASHED:')
 
     filteredCourses.forEach(async fCourse => {
-      if(fCourse){
+      if (fCourse) {
         let fCourseActs = await classroom.courses.courseWork.list({
           courseId: fCourse.id
         })
-        fCourseActs = fCourseActs.data.courseWork
-  
-        console.log('Course: ' + fCourse.title)
-        console.log(fCourseActs)
+        fCourseActs = fCourseActs.data.courseWork;
+
+        passedObj[fCourse.name] = fCourseActs
+
+        console.log(passedObj)
+
       }
     })
+
+    console.log('PASSED STRING:')
+    console.log(passedObj)
 
   }
 
