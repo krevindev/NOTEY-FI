@@ -621,18 +621,21 @@ async function response(msg, ...sender_psid) {
           });
           return teachers.data.teachers.some((teacher) => teacher.userId === userId);
         }
-        async function getUnsubmittedCourseWorks(courseId, isTeacher) {
+
+        async function getUnsubmittedCourseWorks(courseId, isTeacher, courseWorkId) {
           let submissions;
           if (isTeacher) {
             // Get a list of all student submissions for the given course
             submissions = await classroom.courses.courseWork.studentSubmissions.list({
-              courseId
+              courseId,
+              courseWorkId
             });
           } else {
             // Get a list of all student submissions for the current user
             submissions = await classroom.courses.courseWork.studentSubmissions.list({
               courseId,
-              userId: 'me'
+              userId: 'me',
+              courseWorkId
             });
           }
 
@@ -650,14 +653,23 @@ async function response(msg, ...sender_psid) {
           return unsubmittedCourseWorks;
         }
 
-        console.log("Is Teacher?")
-        // Assuming you have the user's access token, you can use it to retrieve the ID token
-        const tokenInfo = await auth.getTokenInfo(await token.access_token);
-        const userId = await tokenInfo.sub;
+        const unsub = Promise.all(
+          fCourseActs.map(async fact => {
+            // Assuming you have the user's access token, you can use it to retrieve the ID token
+            const tokenInfo = await auth.getTokenInfo(await token.access_token);
+            const userId = await tokenInfo.sub;
 
-        const unsubCW = await getUnsubmittedCourseWorks(fCourse.id, userId);
+            const unsubCW = await getUnsubmittedCourseWorks(fCourse.id, userId, fact.id).then(res => res);
 
-        console.log(unsubCW)
+            return await unsubCW
+          })
+        )
+
+        console.log(await fCourse.name)
+        console.log(await unsub)
+
+
+
 
         return {
           course: fCourse.name,
@@ -701,8 +713,8 @@ async function response(msg, ...sender_psid) {
     })
 
 
-    console.log('PASSED STRING:')
-    console.log(passedString)
+    // console.log('PASSED STRING:')
+    // console.log(passedString)
 
     return {
       text: "```\nREMAINING DEADLINES:\n\n" + passedString + "```",
