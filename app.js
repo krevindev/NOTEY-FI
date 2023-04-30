@@ -209,7 +209,7 @@ app.post('/set_reminder', async (req, res) => {
             text: `You have successfully set a reminder!
           \nYou will be Reminded ${time} ${timeUnit} before ${formattedDueDate}
           \nReminder Date: ${formattedReminderDate}
-          \nThe Current Date: ${formattedCurrentDate}`,
+          \nDeadline Date: ${formattedDueDate}`,
             buttons: [
               {
                 type: 'postback',

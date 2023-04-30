@@ -701,7 +701,7 @@ async function response(msg, ...sender_psid) {
     
     if(isEverythingEmpty) passedString += "You have no remaininig activities\n"
 
-    passedString += "\n NOTICE: Due to an unfixed bug, some unsubmitted activites may have been filtered out if you're a student"
+    passedString += "\n DISCLAIMER: Due to an unfixed bug, some unsubmitted activities don't display if you are a student in a certain class"
 
     // console.log('PASSED STRING:')
     // console.log(passedString)
