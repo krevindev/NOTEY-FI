@@ -166,15 +166,33 @@ async function multiResponse(msg, ...sender_psid) {
 
         const courseWork = (activities.data && activities.data.courseWork) || [] // Add a nullish coalescing operator to handle undefined
 
-        const filteredActs = courseWork
+        const filteredActs = await courseWork
           .map(cw => cw.dueDate)
           .filter(c => c !== undefined)
+          .filter(async fact => {
+            const submissions = await classroom.courses.courseWork.studentSubmissions.list({
+              courseId: await course.id,
+              userId: 'me',
+              courseWorkId: await fact.id
+            });
 
-        if (filteredActs.length !== 0) {
+            if (submissions.data.studentSubmissions) {
+              if (!submissions.data.studentSubmissions.map(sub => sub.courseWorkId).includes(fact.id)) return true
+            } else {
+              return false
+            }
+          }).filter(c => c !== undefined)
+        console.log("FILTERED ACTS")
+        console.log(course.name)
+        console.log(await filteredActs)
+
+
+        if (filteredActs.length > 0) {
           return course
         }
       })
     )
+
 
     filteredCourses = await filteredCourses.filter(
       course => course !== undefined
