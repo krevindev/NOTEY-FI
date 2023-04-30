@@ -618,18 +618,46 @@ async function response(msg, ...sender_psid) {
         async function isUserTeacher(courseId, userId) {
           const teachers = await classroom.courses.teachers.list({
             courseId,
-            userId: userId
+          });
+          return teachers.data.teachers.some((teacher) => teacher.userId === userId);
+        }
+        async function getUnsubmittedCourseWorks(courseId, isTeacher) {
+          let submissions;
+          if (isTeacher) {
+            // Get a list of all student submissions for the given course
+            submissions = await classroom.courses.courseWork.studentSubmissions.list({
+              courseId
+            });
+          } else {
+            // Get a list of all student submissions for the current user
+            submissions = await classroom.courses.courseWork.studentSubmissions.list({
+              courseId,
+              userId: 'me'
+            });
+          }
+
+          // Extract the IDs of submitted course works
+          const submittedIds = submissions.data.studentSubmissions.map(submission => submission.courseWorkId);
+
+          // Get a list of all course works for the given course
+          const courseWorks = await classroom.courses.courseWork.list({
+            courseId
           });
 
-          return teachers.data.teachers.some(teacher => teacher.userId === userId);
+          // Filter unsubmitted course works
+          const unsubmittedCourseWorks = courseWorks.data.courseWork.filter(cw => !submittedIds.includes(cw.id));
+
+          return unsubmittedCourseWorks;
         }
 
         console.log("Is Teacher?")
         // Assuming you have the user's access token, you can use it to retrieve the ID token
         const tokenInfo = await auth.getTokenInfo(await token.access_token);
-        const userId = tokenInfo.sub
+        const userId = await tokenInfo.sub;
 
-        console.log(await isUserTeacher(fCourse.id, userId))
+        const unsubCW = await getUnsubmittedCourseWorks(fCourse.id, userId);
+
+        console.log(unsubCW)
 
         return {
           course: fCourse.name,
