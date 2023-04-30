@@ -622,24 +622,26 @@ async function response(msg, ...sender_psid) {
           return teachers.data.teachers.some((teacher) => teacher.userId === userId);
         }
 
-        async function getUnsubmittedCourseWorks(courseId) {
-          const tokenInfo = await auth.getTokenInfo(await token.access_token);
-          const userId = await tokenInfo.sub;
-          // Get a list of all course works
-          const courseWorks = await classroom.courses.courseWork.list({ courseId });
+        const tokenInfo = await auth.getTokenInfo(await token.access_token);
+        const userId = await tokenInfo.sub;
 
-          // Get a list of submitted course work IDs
-          const submittedIds = (await classroom.courses.courseWork.list({ courseId })).data.courseWork.map(cw => cw.id);
+        async function displayUnsubmittedActivities(courseId, userId, isTeacher) {
+          const unsubmittedCourseWorks = await getUnsubmittedCourseWorks(courseId, isTeacher);
+          const unsubmittedActivities = [];
 
-          // Filter unsubmitted course works
-          const unsubmittedCourseWorks = courseWorks.data.courseWork.filter(cw => !submittedIds.includes(cw.id));
+          for (const courseWork of unsubmittedCourseWorks) {
+            const isSubmitted = await isCourseWorkSubmitted(courseId, courseWork.id, userId);
+            if (!isSubmitted) {
+              unsubmittedActivities.push(courseWork.title);
+            }
+          }
 
-          return unsubmittedCourseWorks;
+          console.log(`User ${userId} has ${unsubmittedActivities.length} unsubmitted activities in course ${courseId}:`);
+          console.log(unsubmittedActivities);
         }
-        // Assuming you have the user's access token, you can use it to retrieve the ID token
 
 
-        console.log(await getUnsubmittedCourseWorks(fCourse.id))
+        console.log(await displayUnsubmittedActivities(fCourse.id, userId, isUserTeacher(fCourse.id, userId)))
 
         return {
           course: fCourse.name,
