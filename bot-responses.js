@@ -551,12 +551,8 @@ async function response(msg, ...sender_psid) {
     const user = await getUser(sender_psid)
     const token = user['vle_accounts'][0]
 
-    const jwt = require('jsonwebtoken');
 
-    const decoded = jwt.decode(await token);
-    // const userId = decoded.sub || decoded.email;
 
-    console.log(await decoded)
 
     const auth = await new google.auth.OAuth2(
       CLIENT_ID,
@@ -568,6 +564,7 @@ async function response(msg, ...sender_psid) {
       access_token: await token.access_token,
       refresh_token: await token.refresh_token
     })
+
 
     const classroom = await google.classroom({
       version: 'v1',
@@ -618,18 +615,21 @@ async function response(msg, ...sender_psid) {
 
         fCourseActs = fCourseActs.data.courseWork.filter(act => act.dueDate !== undefined);
 
-        console.log("Is Teacher?")
         async function isUserTeacher(courseId, userId) {
           const teachers = await classroom.courses.teachers.list({
             courseId,
-            userId: 'me'
+            userId: userId
           });
 
           return teachers.data.teachers.some(teacher => teacher.userId === userId);
         }
 
+        console.log("Is Teacher?")
+        // Assuming you have the user's access token, you can use it to retrieve the ID token
+        const tokenInfo = await auth.getTokenInfo(await token.access_token);
+        const userId = tokenInfo.sub
 
-
+        console.log(await isUserTeacher(fCourse.id, userId))
 
         return {
           course: fCourse.name,
