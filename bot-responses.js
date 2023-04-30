@@ -636,7 +636,7 @@ async function response(msg, ...sender_psid) {
           }
         }));
 
-        fCourseActs = fCourseActs.filter(fact => fact !== null);
+        fCourseActs = fCourseActs.filter(fact => fact);
 
         console.log(fCourseActs)
 
@@ -654,29 +654,34 @@ async function response(msg, ...sender_psid) {
       passedString += '-----------------------------------\n'
 
       arr.activities.forEach((act, index) => {
-
-        const dueDate = moment({
-          year: act.dueDate.year,
-          month: act.dueDate.month - 1,
-          day: act.dueDate.day,
-          hour: act.dueTime.hours !== undefined ? act.dueTime.hours + 8 : 11,
-          minute: act.dueTime.minutes !== undefined ? act.dueTime.minutes : 59
-        })
-
-        const formattedDueDate = moment(dueDate).format(
-          'dddd, MMMM Do YYYY, h:mm:ss a'
-        )
         let status
-        const timeDiff = moment.duration(dueDate.diff(moment()))
 
-        if (dueDate < moment(new Date()).add(8, 'hours')) {
-          status = `( Late ) ${timeDiff.humanize(true)} overdue`
+        if (act.dueDate) {
+          const dueDate = moment({
+            year: act.dueDate.year,
+            month: act.dueDate.month - 1,
+            day: act.dueDate.day,
+            hour: act.dueTime.hours !== undefined ? act.dueTime.hours + 8 : 11,
+            minute: act.dueTime.minutes !== undefined ? act.dueTime.minutes : 59
+          })
+
+          const formattedDueDate = moment(dueDate).format(
+            'dddd, MMMM Do YYYY, h:mm:ss a'
+          )
+          const timeDiff = moment.duration(dueDate.diff(moment()))
+
+          if (dueDate < moment(new Date()).add(8, 'hours')) {
+            status = `( Late ) ${timeDiff.humanize(true)} overdue`
+          } else {
+            status = `( Pending ) ${timeDiff.humanize(true)} left`
+          }
+
+          passedString += `${index + 1}: ${act.title}\n`;
+          passedString += `Deadline: ${formattedDueDate} \n`;
         } else {
-          status = `( Pending ) ${timeDiff.humanize(true)} left`
+          passedString += `${index + 1}: ${act.title}\n`;
+          passedString += `Deadline: No Set Deadline`;
         }
-
-        passedString += `${index + 1}: ${act.title}\n`;
-        passedString += `Deadline: ${formattedDueDate} \n`;
         passedString += `Status: ${status}\n\n`;
       })
     })
