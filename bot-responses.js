@@ -615,33 +615,30 @@ async function response(msg, ...sender_psid) {
 
         fCourseActs = fCourseActs.data.courseWork.filter(act => act.dueDate !== undefined);
 
-        async function isUserTeacher(courseId, userId) {
-          const teachers = await classroom.courses.teachers.list({
-            courseId,
-          });
-          return teachers.data.teachers.some((teacher) => teacher.userId === userId);
-        }
-
         const tokenInfo = await auth.getTokenInfo(await token.access_token);
         const userId = await tokenInfo.sub;
 
-        async function displayUnsubmittedActivities(courseId, userId, isTeacher) {
-          const unsubmittedCourseWorks = await getUnsubmittedCourseWorks(courseId, isTeacher);
-          const unsubmittedActivities = [];
-
-          for (const courseWork of unsubmittedCourseWorks) {
-            const isSubmitted = await isCourseWorkSubmitted(courseId, courseWork.id, userId);
-            if (!isSubmitted) {
-              unsubmittedActivities.push(courseWork.title);
-            }
+        fCourseActs = await Promise.all(fCourseActs.map(async fact => {
+          if (!fact.id) {
+            return null; // Skip course work without an ID
           }
 
-          console.log(`User ${userId} has ${unsubmittedActivities.length} unsubmitted activities in course ${courseId}:`);
-          console.log(unsubmittedActivities);
-        }
+          const submissions = await classroom.courses.courseWork.studentSubmissions.list({
+            courseId: fCourse.id,
+            userId: 'me',
+            courseWorkId: fact.id
+          });
 
+          if (submissions.data.studentSubmissions) {
+            if (!submissions.data.studentSubmissions.map(sub => sub.courseWorkId).includes(fact.id)) return fact;
+          } else {
+            return fact;
+          }
+        }));
 
-        console.log(await displayUnsubmittedActivities(fCourse.id, userId, isUserTeacher(fCourse.id, userId)))
+        fCourseActs = fCourseActs.filter(fact => fact !== null);
+
+        console.log(fCourseActs)
 
         return {
           course: fCourse.name,
