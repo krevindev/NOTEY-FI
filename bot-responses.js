@@ -551,6 +551,13 @@ async function response(msg, ...sender_psid) {
     const user = await getUser(sender_psid)
     const token = user['vle_accounts'][0]
 
+    const jwt = require('jsonwebtoken');
+
+    const decoded = jwt.decode(await token);
+    // const userId = decoded.sub || decoded.email;
+
+    console.log(await decoded)
+
     const auth = await new google.auth.OAuth2(
       CLIENT_ID,
       CLIENT_SECRET,
@@ -620,11 +627,8 @@ async function response(msg, ...sender_psid) {
 
           return teachers.data.teachers.some(teacher => teacher.userId === userId);
         }
-        
-        const tokenInfo = await auth.getTokenInfo(await auth.credentials.access_token);
-        const userId = await tokenInfo.sub;
 
-        console.log(await tokenInfo)
+
 
 
         return {
