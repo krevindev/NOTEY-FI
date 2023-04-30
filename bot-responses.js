@@ -567,7 +567,7 @@ async function response(msg, ...sender_psid) {
       auth: auth
     })
 
-    
+
 
 
     let courses = await classroom.courses.list({
@@ -582,7 +582,7 @@ async function response(msg, ...sender_psid) {
           orderBy: 'dueDate asc'
         })
 
-        
+
 
         const courseWork = (activities.data && activities.data.courseWork) || [] // Add a nullish coalescing operator to handle undefined
 
@@ -610,6 +610,22 @@ async function response(msg, ...sender_psid) {
         })
 
         fCourseActs = fCourseActs.data.courseWork.filter(act => act.dueDate !== undefined);
+
+        console.log("Is Teacher?")
+        async function isUserTeacher(courseId, userId) {
+          const teachers = await classroom.courses.teachers.list({
+            courseId,
+            userId: 'me'
+          });
+
+          return teachers.data.teachers.some(teacher => teacher.userId === userId);
+        }
+        
+        const tokenInfo = await auth.getTokenInfo(await auth.credentials.access_token);
+        const userId = await tokenInfo.sub;
+
+        console.log(await tokenInfo)
+
 
         return {
           course: fCourse.name,
@@ -922,6 +938,8 @@ async function response(msg, ...sender_psid) {
   else if (msg === 'send_reminder_options[course]') {
 
     const getResponse = async (courses) => {
+
+
 
       let passedString = '  SELECT A COURSE: \n'
 
