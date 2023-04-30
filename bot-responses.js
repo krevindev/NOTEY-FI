@@ -622,54 +622,24 @@ async function response(msg, ...sender_psid) {
           return teachers.data.teachers.some((teacher) => teacher.userId === userId);
         }
 
-        async function getUnsubmittedCourseWorks(courseId, isTeacher, courseWorkId) {
-          let submissions;
-          if (isTeacher) {
-            // Get a list of all student submissions for the given course
-            submissions = await classroom.courses.courseWork.studentSubmissions.list({
-              courseId,
-              courseWorkId
-            });
-          } else {
-            // Get a list of all student submissions for the current user
-            submissions = await classroom.courses.courseWork.studentSubmissions.list({
-              courseId,
-              userId: 'me',
-              courseWorkId
-            });
-          }
+        async function getUnsubmittedCourseWorks(courseId) {
+          const tokenInfo = await auth.getTokenInfo(await token.access_token);
+          const userId = await tokenInfo.sub;
+          // Get a list of all course works
+          const courseWorks = await classroom.courses.courseWork.list({ courseId });
 
-          // Extract the IDs of submitted course works
-          const submittedIds = submissions.data.studentSubmissions.map(submission => submission.courseWorkId);
-
-          // Get a list of all course works for the given course
-          const courseWorks = await classroom.courses.courseWork.list({
-            courseId
-          });
+          // Get a list of submitted course work IDs
+          const submittedIds = (await classroom.courses.courseWork.list({ courseId })).data.courseWork.map(cw => cw.id);
 
           // Filter unsubmitted course works
           const unsubmittedCourseWorks = courseWorks.data.courseWork.filter(cw => !submittedIds.includes(cw.id));
 
           return unsubmittedCourseWorks;
         }
-
-        const unsub = Promise.all(
-          fCourseActs.map(async fact => {
-            // Assuming you have the user's access token, you can use it to retrieve the ID token
-            const tokenInfo = await auth.getTokenInfo(await token.access_token);
-            const userId = await tokenInfo.sub;
-
-            const unsubCW = await getUnsubmittedCourseWorks(fCourse.id, userId, fact.id).then(res => res);
-
-            return await unsubCW
-          })
-        ).then(async unsub => {
-          console.log(Object.keys(await unsub))
-        })
+        // Assuming you have the user's access token, you can use it to retrieve the ID token
 
 
-
-
+        console.log(await getUnsubmittedCourseWorks(fCourse.id))
 
         return {
           course: fCourse.name,
