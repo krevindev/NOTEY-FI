@@ -594,9 +594,6 @@ async function response(msg, ...sender_psid) {
           .map(cw => cw.dueDate)
           .filter(c => c !== undefined)
 
-        console.log('ITERATED')
-        console.log(filteredActs.length)
-
         if (filteredActs.length !== 0) {
           return course
         }
@@ -618,9 +615,23 @@ async function response(msg, ...sender_psid) {
         const tokenInfo = await auth.getTokenInfo(await token.access_token);
         const userId = await tokenInfo.sub;
 
+        const currentUser = await classroom.userProfiles.get({ userId: 'me' });
+        const isTeacher = await isUserTeacher(userId)
+
+        async function isUserTeacher(userId) {
+          const userProfile = await classroom.userProfiles.get({
+            userId
+          });
+
+          return userProfile.data.verifiedTeacher;
+        }
+
+
         fCourseActs = await Promise.all(fCourseActs.map(async fact => {
-          if (!fact.id) {
-            return null; // Skip course work without an ID
+          if (isTeacher) {
+            // Remove this check for teachers
+          } else if (!fact.id) {
+            return null; // Skip course work without an ID for students
           }
 
           const submissions = await classroom.courses.courseWork.studentSubmissions.list({
@@ -638,8 +649,6 @@ async function response(msg, ...sender_psid) {
 
         fCourseActs = fCourseActs.filter(fact => fact);
 
-        console.log(fCourseActs)
-
         return {
           course: fCourse.name,
           activities: fCourseActs.map(act => act)
@@ -649,41 +658,43 @@ async function response(msg, ...sender_psid) {
 
 
     passedArr.forEach(arr => {
-      passedString += '\n\n-----------------------------------'
-      passedString += `\nCOURSE: ${arr.course} \n`
-      passedString += '-----------------------------------\n'
+      if (arr.activities.length > 0) {
+        passedString += '\n\n-----------------------------------'
+        passedString += `\nCOURSE: ${arr.course} \n`
+        passedString += '-----------------------------------\n'
 
-      arr.activities.forEach((act, index) => {
-        let status
+        arr.activities.forEach((act, index) => {
+          let status
 
-        if (act.dueDate) {
-          const dueDate = moment({
-            year: act.dueDate.year,
-            month: act.dueDate.month - 1,
-            day: act.dueDate.day,
-            hour: act.dueTime.hours !== undefined ? act.dueTime.hours + 8 : 11,
-            minute: act.dueTime.minutes !== undefined ? act.dueTime.minutes : 59
-          })
+          if (act.dueDate) {
+            const dueDate = moment({
+              year: act.dueDate.year,
+              month: act.dueDate.month - 1,
+              day: act.dueDate.day,
+              hour: act.dueTime.hours !== undefined ? act.dueTime.hours + 8 : 11,
+              minute: act.dueTime.minutes !== undefined ? act.dueTime.minutes : 59
+            })
 
-          const formattedDueDate = moment(dueDate).format(
-            'dddd, MMMM Do YYYY, h:mm:ss a'
-          )
-          const timeDiff = moment.duration(dueDate.diff(moment()))
+            const formattedDueDate = moment(dueDate).format(
+              'dddd, MMMM Do YYYY, h:mm:ss a'
+            )
+            const timeDiff = moment.duration(dueDate.diff(moment()))
 
-          if (dueDate < moment(new Date()).add(8, 'hours')) {
-            status = `( Late ) ${timeDiff.humanize(true)} overdue`
+            if (dueDate < moment(new Date()).add(8, 'hours')) {
+              status = `( Late ) ${timeDiff.humanize(true)} overdue`
+            } else {
+              status = `( Pending ) ${timeDiff.humanize(true)} left`
+            }
+
+            passedString += `${index + 1}: ${act.title}\n`;
+            passedString += `Deadline: ${formattedDueDate} \n`;
           } else {
-            status = `( Pending ) ${timeDiff.humanize(true)} left`
+            passedString += `${index + 1}: ${act.title}\n`;
+            passedString += `Deadline: No Set Deadline`;
           }
-
-          passedString += `${index + 1}: ${act.title}\n`;
-          passedString += `Deadline: ${formattedDueDate} \n`;
-        } else {
-          passedString += `${index + 1}: ${act.title}\n`;
-          passedString += `Deadline: No Set Deadline`;
-        }
-        passedString += `Status: ${status}\n\n`;
-      })
+          passedString += `Status: ${status}\n\n`;
+        })
+      }
     })
 
 
