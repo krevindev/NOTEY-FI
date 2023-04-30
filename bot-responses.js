@@ -627,23 +627,23 @@ async function response(msg, ...sender_psid) {
         }
 
 
-        // fCourseActs = await Promise.all(fCourseActs.map(async fact => {
-        //   if (isTeacher) {
-        //     // Remove this check for teachers
-        //   }
+        fCourseActs = await Promise.all(fCourseActs.map(async fact => {
+          if (isTeacher) {
+            // Remove this check for teachers
+          }
 
-        //   const submissions = await classroom.courses.courseWork.studentSubmissions.list({
-        //     courseId: fCourse.id,
-        //     userId: 'me',
-        //     courseWorkId: fact.id
-        //   });
+          const submissions = await classroom.courses.courseWork.studentSubmissions.list({
+            courseId: fCourse.id,
+            userId: 'me',
+            courseWorkId: fact.id
+          });
 
-        //   if (submissions.data.studentSubmissions) {
-        //     if (!submissions.data.studentSubmissions.map(sub => sub.courseWorkId).includes(fact.id)) return fact;
-        //   } else {
-        //     return fact;
-        //   }
-        // }));
+          if (submissions.data.studentSubmissions) {
+            if (!submissions.data.studentSubmissions.map(sub => sub.courseWorkId).includes(fact.id)) return fact;
+          } else {
+            return fact;
+          }
+        }));
 
 
 
@@ -697,6 +697,9 @@ async function response(msg, ...sender_psid) {
         })
       }
     })
+
+    const passActs = Object.keys(passedArr).map(key => passedArr[activities])
+    console.log(passActs)
 
     passedString += "\n NOTICE: Due to an unfixed bug, some unsubmitted activites may have been filtered out if you're a student"
 
