@@ -697,9 +697,9 @@ async function response(msg, ...sender_psid) {
         })
       }
     })
-
-    const passActs = Object.keys(passedArr).map(key => passedArr[activities])
-    console.log(passActs)
+    const isEverythingEmpty = passedArr.map(arr => arr.activities.length).every(elem => elem === 0)
+    
+    if(isEverythingEmpty) passedString += "You have no remaininig activities\n"
 
     passedString += "\n NOTICE: Due to an unfixed bug, some unsubmitted activites may have been filtered out if you're a student"
 
