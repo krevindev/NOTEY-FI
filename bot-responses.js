@@ -158,6 +158,41 @@ async function multiResponse(msg, ...sender_psid) {
 
     const attachment_url = `https://play-lh.googleusercontent.com/w0s3au7cWptVf648ChCUP7sW6uzdwGFTSTenE178Tz87K_w1P1sFwI6h1CLZUlC2Ug`
 
+    // let filteredCourses = await Promise.all(
+    //   courses.map(async course => {
+    //     const activities = await classroom.courses.courseWork.list({
+    //       courseId: course.id
+    //     })
+
+    //     const courseWork = (activities.data && activities.data.courseWork) || [] // Add a nullish coalescing operator to handle undefined
+
+    //     const filteredActs = await courseWork
+    //       .map(cw => cw.dueDate)
+    //       .filter(c => c !== undefined)
+    //       .filter(async fact => {
+    //         const submissions = await classroom.courses.courseWork.studentSubmissions.list({
+    //           courseId: await course.id,
+    //           userId: 'me',
+    //           courseWorkId: await fact.id
+    //         });
+
+    //         if (submissions.data.studentSubmissions) {
+    //           if (!submissions.data.studentSubmissions.map(sub => sub.courseWorkId).includes(fact.id)) return true
+    //         } else {
+    //           return false
+    //         }
+    //       })
+    //       .filter(c => c !== undefined)
+    //     console.log("FILTERED ACTS")
+    //     console.log(course.name)
+    //     console.log(await filteredActs)
+
+
+    //     if (filteredActs.length > 0) {
+    //       return course
+    //     }
+    //   })
+    // )
     let filteredCourses = await Promise.all(
       courses.map(async course => {
         const activities = await classroom.courses.courseWork.list({
@@ -181,7 +216,8 @@ async function multiResponse(msg, ...sender_psid) {
             } else {
               return false
             }
-          }).filter(c => c !== undefined)
+          })
+          .filter(c => c !== undefined)
         console.log("FILTERED ACTS")
         console.log(course.name)
         console.log(await filteredActs)
@@ -192,7 +228,6 @@ async function multiResponse(msg, ...sender_psid) {
         }
       })
     )
-
 
     filteredCourses = await filteredCourses.filter(
       course => course !== undefined
@@ -1069,6 +1104,7 @@ async function response(msg, ...sender_psid) {
           const filteredActs = courseWork
             .map(cw => cw.dueDate)
             .filter(c => c !== undefined)
+            
 
           if (filteredActs.length !== 0) {
             return course
