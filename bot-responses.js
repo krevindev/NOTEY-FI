@@ -1125,29 +1125,29 @@ async function multiResponse(msg, ...sender_psid) {
               let fCourseActs = await classroom.courses.courseWork.list({
                 courseId: fCourse.id
               })
-  
+
               fCourseActs = await fCourseActs.data.courseWork.filter(act => act.dueDate !== undefined);
-  
-  
+
+
               fCourseActs = await Promise.all(fCourseActs.map(async fact => {
                 const submissions = await classroom.courses.courseWork.studentSubmissions.list({
                   courseId: fCourse.id,
                   userId: 'me',
                   courseWorkId: fact.id
                 });
-  
+
                 if (submissions.data.studentSubmissions) {
                   if (!submissions.data.studentSubmissions.map(sub => sub.courseWorkId).includes(fact.id)) return fact
                 } else {
                   return fact
                 }
               }));
-  
+
               fCourseActs = fCourseActs.filter(fact => fact); // remove any falsy values (i.e. null or undefined)
-  
+
               console.log("F COURS ACTS")
               console.log(fCourseActs.length)
-  
+
               if (fCourseActs.length > 0) {
                 return fCourse
               } else {
@@ -2502,20 +2502,43 @@ async function response(msg, ...sender_psid) {
           fCourseActs = await fCourseActs.data.courseWork.filter(act => act.dueDate !== undefined);
 
 
-          fCourseActs = await Promise.all(fCourseActs.map(async fact => {
+          // fCourseActs = await Promise.all(fCourseActs.map(async fact => {
+          //   const submissions = await classroom.courses.courseWork.studentSubmissions.list({
+          //     courseId: fCourse.id,
+          //     userId: 'me',
+          //     courseWorkId: fact.id
+          //   });
+
+          //   if (submissions.data.studentSubmissions) {
+          //     if (!submissions.data.studentSubmissions.map(sub => sub.courseWorkId).includes(fact.id)) return fact
+          //   } else {
+          //     return fact
+          //   }
+          // }));
+
+
+          async function getUnsubmittedCourseWorks(courseId) {
+            // Get a list of all student submissions for the current user
             const submissions = await classroom.courses.courseWork.studentSubmissions.list({
-              courseId: fCourse.id,
-              userId: 'me',
-              courseWorkId: fact.id
+              courseId,
+              userId: 'me'
             });
 
-            if (submissions.data.studentSubmissions) {
-              if (!submissions.data.studentSubmissions.map(sub => sub.courseWorkId).includes(fact.id)) return fact
-            } else {
-              return fact
-            }
-          }));
+            // Extract the IDs of submitted course works
+            const submittedIds = submissions.data.studentSubmissions.map(submission => submission.courseWorkId);
 
+            // Get a list of all course works for the given course
+            const courseWorks = await classroom.courses.courseWork.list({
+              courseId
+            });
+
+            // Filter unsubmitted course works
+            const unsubmittedCourseWorks = courseWorks.data.courseWork.filter(cw => !submittedIds.includes(cw.id));
+
+            return unsubmittedCourseWorks;
+          }
+
+          fCourseActs = await getUnsubmittedCourseWorks(fCourse.id)
           fCourseActs = fCourseActs.filter(fact => fact); // remove any falsy values (i.e. null or undefined)
 
           console.log("F COURS ACTS")
