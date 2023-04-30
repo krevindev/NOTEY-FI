@@ -2503,11 +2503,37 @@ async function response(msg, ...sender_psid) {
 
 
           fCourseActs = await Promise.all(fCourseActs.map(async fact => {
-            const submissions = await classroom.courses.courseWork.studentSubmissions.list({
-              courseId: fCourse.id,
-              userId: 'me',
-              courseWorkId: fact.id
-            });
+
+            async function isUserTeacher(courseId) {
+
+              // Get the authenticated user's user ID
+              const userInfo = await oauth2.userinfo.get();
+              const userId = userInfo.data.id;
+
+              const teachers = await classroom.courses.teachers.list({
+                courseId,
+                userId: 'me'
+              });
+
+
+              return teachers.data.teachers.some(teacher => teacher.userId === userId);
+            }
+            let submissions;
+
+            if (isUserTeacher(fCourse.id)) {
+              submissions = await classroom.courses.courseWork.studentSubmissions.list({
+                courseId: fCourse.id,
+                courseWorkId: fact.id
+              });
+            } else {
+              submissions = await classroom.courses.courseWork.studentSubmissions.list({
+                courseId: fCourse.id,
+                userId: 'me',
+                courseWorkId: fact.id
+              });
+            }
+
+
 
             if (submissions.data.studentSubmissions) {
               if (!submissions.data.studentSubmissions.map(sub => sub.courseWorkId).includes(fact.id)) return fact
@@ -2516,7 +2542,7 @@ async function response(msg, ...sender_psid) {
             }
           }));
 
-          
+
 
           fCourseActs = fCourseActs.filter(fact => fact); // remove any falsy values (i.e. null or undefined)
 
