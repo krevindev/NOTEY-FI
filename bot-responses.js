@@ -612,7 +612,7 @@ async function response(msg, ...sender_psid) {
 
         fCourseActs = fCourseActs.data.courseWork.filter(act => act.dueDate !== undefined);
 
-        const tokenInfo = await auth.getTokenInfo(await token.access_token);
+        const tokenInfo = await auth.getTokenInfo(await auth.credentials.access_token);
         const userId = await tokenInfo.sub;
 
         const currentUser = await classroom.userProfiles.get({ userId: 'me' });
@@ -627,23 +627,23 @@ async function response(msg, ...sender_psid) {
         }
 
 
-        fCourseActs = await Promise.all(fCourseActs.map(async fact => {
-          if (isTeacher) {
-            // Remove this check for teachers
-          }
+        // fCourseActs = await Promise.all(fCourseActs.map(async fact => {
+        //   if (isTeacher) {
+        //     // Remove this check for teachers
+        //   }
 
-          const submissions = await classroom.courses.courseWork.studentSubmissions.list({
-            courseId: fCourse.id,
-            userId: 'me',
-            courseWorkId: fact.id
-          });
+        //   const submissions = await classroom.courses.courseWork.studentSubmissions.list({
+        //     courseId: fCourse.id,
+        //     userId: 'me',
+        //     courseWorkId: fact.id
+        //   });
 
-          if (submissions.data.studentSubmissions) {
-            if (!submissions.data.studentSubmissions.map(sub => sub.courseWorkId).includes(fact.id)) return fact;
-          } else {
-            return fact;
-          }
-        }));
+        //   if (submissions.data.studentSubmissions) {
+        //     if (!submissions.data.studentSubmissions.map(sub => sub.courseWorkId).includes(fact.id)) return fact;
+        //   } else {
+        //     return fact;
+        //   }
+        // }));
 
 
 
@@ -698,6 +698,7 @@ async function response(msg, ...sender_psid) {
       }
     })
 
+    passedString += "\n NOTICE: Due to an unfixed bug, some unsubmitted activites may have been filtered out if you're a student"
 
     // console.log('PASSED STRING:')
     // console.log(passedString)
