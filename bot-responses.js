@@ -663,10 +663,10 @@ async function response(msg, ...sender_psid) {
 
             return await unsubCW
           })
-        )
+        ).then(async unsub => {
+          console.log(Object.keys(await unsub))
+        })
 
-        console.log(await fCourse.name)
-        console.log(await unsub)
 
 
 
