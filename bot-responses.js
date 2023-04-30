@@ -279,7 +279,7 @@ async function multiResponse(msg, ...sender_psid) {
 
     let courseActivities = await classroom.courses.courseWork.list({
       courseId: courseID,
-      orderBy: 'updateTime asc'
+      orderBy: 'dueDate asc'
     });
 
     console.log("COURSE ACTIVITIES")
@@ -288,9 +288,17 @@ async function multiResponse(msg, ...sender_psid) {
     courseActivities = courseActivities.data.courseWork
       ? courseActivities.data.courseWork
       : []
-    courseActivities = courseActivities.filter(
-      courseAct => courseAct.dueDate && courseAct.dueTime
-    )
+    // Get the current time
+    const currentTime = new Date().getTime();
+
+    // Filter only the course activities that have a due date and time, and the due time hasn't passed yet
+    courseActivities = courseActivities.filter(async courseAct => {
+      if (!courseAct.dueDate || !courseAct.dueTime) {
+        return false;
+      }
+      return  await moment(await courseAct.dueDate) > moment(new Date()).add(8, 'hours');
+    });
+
 
     courseActivities.forEach((ca, index) => {
       passedString += `\n${String(index + 1)}. ${ca.title}\n`
@@ -698,8 +706,8 @@ async function response(msg, ...sender_psid) {
       }
     })
     const isEverythingEmpty = passedArr.map(arr => arr.activities.length).every(elem => elem === 0)
-    
-    if(isEverythingEmpty) passedString += "You have no remaininig activities\n"
+
+    if (isEverythingEmpty) passedString += "You have no remaininig activities\n"
 
     passedString += "\n DISCLAIMER: Due to an unfixed bug, some unsubmitted activities don't display if you are a student in a certain class"
 
