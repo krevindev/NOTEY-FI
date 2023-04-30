@@ -630,8 +630,6 @@ async function response(msg, ...sender_psid) {
         fCourseActs = await Promise.all(fCourseActs.map(async fact => {
           if (isTeacher) {
             // Remove this check for teachers
-          } else if (!fact.id) {
-            return null; // Skip course work without an ID for students
           }
 
           const submissions = await classroom.courses.courseWork.studentSubmissions.list({
@@ -646,6 +644,9 @@ async function response(msg, ...sender_psid) {
             return fact;
           }
         }));
+
+
+
 
         fCourseActs = fCourseActs.filter(fact => fact);
 
