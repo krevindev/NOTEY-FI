@@ -34,6 +34,7 @@ app.listen(process.env.PORT || 1337, () => console.log('webhook is listening'))
 
 //
 app.get('/', (req, res) => {
+  console.log("Pinged!")
   res.send('Running...')
 })
 
