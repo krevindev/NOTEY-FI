@@ -485,7 +485,7 @@ async function handleQuickReplies(sender_psid, received_payload) {
     const user = await db.collection("noteyfi_users").findOne(
       { psid: String(sender_psid) })
 
-    await axios.post('https://classroom-listener-server.glitch.me/stop_listening', user)
+    await axios.post('https://classroom-listener-server.glitch.me/stop_listening', await user)
       .then(response => {
         console.log(response.data);
       })
