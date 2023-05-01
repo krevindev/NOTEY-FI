@@ -267,13 +267,9 @@ async function handleMessage(sender_psid, received_message) {
 
       // if it's just plain text
     } else {
-      if (msg === 'test') {
-
-        const payload = {
-          name: 'Test name'
-        }
-
-        axios.post('https://classroom-listener-server.glitch.me/pass_data', payload)
+      if (msg === 'ha' || msg === 'ha?') {
+        await callSendAPI(sender_psid, {text: 'ha?'})
+        await callSendAPI(sender_psid, {text: 'tawo?'})
       }
       else if (msg === 'test1') {
         await callSendAPI(sender_psid, await botResponses.response('menu', sender_psid))
