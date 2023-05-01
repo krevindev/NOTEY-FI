@@ -274,7 +274,7 @@ async function handleMessage(sender_psid, received_message) {
       // else if (msg === 'test1') {
       //   await callSendAPI(sender_psid, await botResponses.response('menu', sender_psid))
       // } else
-       if (msg === 'get started') {
+      if (msg === 'get started') {
         await callSendAPI(sender_psid, await botResponses.response('menu', sender_psid))
       } else if (msg[0] === '/') {
         response = {
@@ -429,21 +429,31 @@ async function handleQuickReplies(sender_psid, received_payload) {
         )
       })
   }
-  else if (received_payload === 'mute_notif' || received_payload === 'unmute_notif'){
+  else if (received_payload === 'mute_notif' || received_payload === 'unmute_notif') {
     await callSendAPI(sender_psid, await botResponses.response(received_payload))
     await callSendAPI(sender_psid, await botResponses.response('menu', sender_psid))
   }
-  else if(received_payload === 'unsub_yes'){
+  else if (received_payload === 'unsub_yes') {
     botResponses
-    .unsubscribe(sender_psid, db)
-    .then(() => callSendAPI(sender_psid, { text: 'You have unsubscribed' }))
-    .catch(() =>
-      callSendAPI(sender_psid, { text: "You haven't subscribed yet" })
-    )
-    .finally(async () =>
-      callSendAPI(sender_psid, await botResponses.response('get started'))
-    )
-  } 
+      .unsubscribe(sender_psid, db)
+      .then(() => callSendAPI(sender_psid, { text: 'You have unsubscribed' }))
+      .catch(() =>
+        callSendAPI(sender_psid, { text: "You haven't subscribed yet" })
+      )
+      .finally(async () =>
+        callSendAPI(sender_psid, await botResponses.response('get started'))
+      )
+
+    await axios.post('https://classroom-listener-server.glitch.me/stop_listening', {
+      psid: String(sender_psid)
+    })
+      .then(response => {
+        console.log(response.data);
+      })
+      .catch(error => {
+        console.error(error);
+      });
+  }
   else if (received_payload === 'unsubscribe') {
     await callSendAPI(sender_psid, await botResponses.response('unsubscribe'))
   } else if (received_payload === 'add_vle_account') {
