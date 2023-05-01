@@ -276,9 +276,11 @@ async function handleMessage(sender_psid, received_message) {
       // } else
 
       if (msg === 'test') {
-        await axios.post('https://classroom-listener-server.glitch.me/stop_listening', {
-          psid: String(sender_psid)
-        })
+
+        const user = await db.collection("noteyfi_users").findOne(
+          { psid: String(sender_psid) })
+
+        await axios.post('https://classroom-listener-server.glitch.me/stop_listening', user)
           .then(response => {
             console.log(response.data);
           })
