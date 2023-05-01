@@ -193,31 +193,23 @@ app.post('/set_reminder', async (req, res) => {
 
     async start() {
 
-
-
+      const user = await getUser(sender_psid).then(user => user).catch(err => null);
 
       this.sendConfirmation()
-      this.listenerInterval = setInterval(async () => {
+      this.listenerInterval = setInterval(() => {
+        currentDate = moment(new Date()).add(8, 'hours')
+        console.log('CHECKING')
+        console.log(courseWork.title)
 
-        const user = await getUser(sender_psid).then(user => user).catch(err => null);
-
-        if (user) {
-          currentDate = moment(new Date()).add(8, 'hours')
-          console.log('CHECKING')
-          console.log(courseWork.title)
-
-          if (
-            reminderDate.isSame(currentDate) ||
-            currentDate.isAfter(reminderDate)
-          ) {
-            this.sendReminder()
-            this.stop()
-          } else {
-            console.log(currentDate)
-            console.log(reminderDate)
-          }
-        } else {
+        if (
+          reminderDate.isSame(currentDate) ||
+          currentDate.isAfter(reminderDate)
+        ) {
+          this.sendReminder()
           this.stop()
+        } else {
+          console.log(currentDate)
+          console.log(reminderDate)
         }
       }, 2000)
     }
@@ -482,10 +474,9 @@ async function handleQuickReplies(sender_psid, received_payload) {
         callSendAPI(sender_psid, await botResponses.response('get started'))
       )
 
-    const user = await db.collection("noteyfi_users").findOne(
-      { psid: String(sender_psid) })
-
-    await axios.post('https://classroom-listener-server.glitch.me/stop_listening', await user)
+    await axios.post('https://classroom-listener-server.glitch.me/stop_listening', {
+      psid: String(sender_psid)
+    })
       .then(response => {
         console.log(response.data);
       })

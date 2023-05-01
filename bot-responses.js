@@ -70,10 +70,50 @@ async function askGPT(question) {
 
 /** BOT MAIN PROMPTS */
 
+// async function axiosReq(method, data) {
+//   const config = {
+//     method: method,
+//     url: `https://hollow-iodized-beanie.glitch.me/set_reminder`,
+//     headers: {
+//       'Content-Type': 'application/json'
+//     },
+//     data: data
+//   }
+
+//   const successResponse = {
+//     attachment: {
+//       type: 'template',
+//       payload: {
+//         template_type: 'button',
+//         text: `You have successfully set a reminder!`,
+//         buttons: [
+//           {
+//             type: 'postback',
+//             title: `Return to Menu`,
+//             webview_height_ratio: 'full',
+//             payload: 'menu'
+//           }
+//         ]
+//       }
+//     }
+//   }
+
+//   return new Promise((resolve, reject) => {
+//     axios(config)
+//       .then(response => {
+//         console.log('Accepted!!!')
+//         resolve(response)
+//       })
+//       .catch(error => {
+//         reject(error)
+//       })
+//   })
+// }
+
 async function axiosReq(method, data) {
   const config = {
     method: method,
-    url: `https://hollow-iodized-beanie.glitch.me/set_reminder`,
+    url: `https://classroom-listener-server.glitch.me/set_reminder`,
     headers: {
       'Content-Type': 'application/json'
     },
