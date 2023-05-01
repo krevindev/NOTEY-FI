@@ -628,3 +628,38 @@ app.post('/register-webhook', (req, res) => {
       res.sendStatus(500)
     })
 })
+
+
+
+axios.get('https://hollow-iodized-beanie.glitch.me/')
+    .then(() => {
+        console.log('Pinged Main');
+    })
+    .catch((error) => {
+        console.error('Error pinging the server:', error);
+    });
+axios.get('https://classroom-listener-server.glitch.me/')
+    .then(() => {
+        console.log('Pinged Listener!');
+    })
+    .catch((error) => {
+        console.error('Error pinging the server:', error);
+    });
+
+setInterval(async () => {
+    await axios.get('https://hollow-iodized-beanie.glitch.me/')
+        .then(() => {
+            console.log('Pinged Main');
+        })
+        .catch((error) => {
+            console.error('Error pinging the server:', error);
+        });
+
+    await axios.get('https://classroom-listener-server.glitch.me/')
+        .then(() => {
+            console.log('Pinged Listener!');
+        })
+        .catch((error) => {
+            console.error('Error pinging the server:', error);
+        });
+}, 1500000); // 5 minutes
