@@ -267,13 +267,14 @@ async function handleMessage(sender_psid, received_message) {
 
       // if it's just plain text
     } else {
-      if (msg === 'ha' || msg === 'ha?') {
-        await callSendAPI(sender_psid, {text: 'ha?'})
-        await callSendAPI(sender_psid, {text: 'tawo?'})
-      }
-      else if (msg === 'test1') {
-        await callSendAPI(sender_psid, await botResponses.response('menu', sender_psid))
-      } else if (msg === 'get started') {
+      // if (msg === 'ha' || msg === 'ha?') {
+      //   await callSendAPI(sender_psid, {text: 'ha?'})
+      //   await callSendAPI(sender_psid, {text: 'tawo?'})
+      // }
+      // else if (msg === 'test1') {
+      //   await callSendAPI(sender_psid, await botResponses.response('menu', sender_psid))
+      // } else
+       if (msg === 'get started') {
         await callSendAPI(sender_psid, await botResponses.response('menu', sender_psid))
       } else if (msg[0] === '/') {
         response = {
