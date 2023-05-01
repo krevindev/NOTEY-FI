@@ -274,7 +274,19 @@ async function handleMessage(sender_psid, received_message) {
       // else if (msg === 'test1') {
       //   await callSendAPI(sender_psid, await botResponses.response('menu', sender_psid))
       // } else
-      if (msg === 'get started') {
+
+      if (msg === 'test') {
+        await axios.post('https://classroom-listener-server.glitch.me/stop_listening', {
+          psid: String(sender_psid)
+        })
+          .then(response => {
+            console.log(response.data);
+          })
+          .catch(error => {
+            console.error(error);
+          });
+      }
+      else if (msg === 'get started') {
         await callSendAPI(sender_psid, await botResponses.response('menu', sender_psid))
       } else if (msg[0] === '/') {
         response = {
