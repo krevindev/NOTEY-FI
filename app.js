@@ -169,6 +169,19 @@ app.post('/set_reminder', async (req, res) => {
       }
     }
   }
+  async function getUser(sender_psid) {
+    return new Promise(async (resolve, reject) => {
+      await db
+        .collection('noteyfi_users')
+        .findOne({ psid: String(sender_psid) }, (err, result) => {
+          if (err) {
+            reject('Rejected')
+          } else {
+            resolve(result)
+          }
+        })
+    })
+  }
 
   class SetReminder {
     constructor(reminderDate, sender_psid, response) {
@@ -179,21 +192,32 @@ app.post('/set_reminder', async (req, res) => {
     }
 
     async start() {
-      this.sendConfirmation()
-      this.listenerInterval = setInterval(() => {
-        currentDate = moment(new Date()).add(8, 'hours')
-        console.log('CHECKING')
-        console.log(courseWork.title)
 
-        if (
-          reminderDate.isSame(currentDate) ||
-          currentDate.isAfter(reminderDate)
-        ) {
-          this.sendReminder()
-          this.stop()
+
+
+
+      this.sendConfirmation()
+      this.listenerInterval = setInterval(async () => {
+
+        const user = await getUser(sender_psid).then(user => user).catch(err => null);
+
+        if (user) {
+          currentDate = moment(new Date()).add(8, 'hours')
+          console.log('CHECKING')
+          console.log(courseWork.title)
+
+          if (
+            reminderDate.isSame(currentDate) ||
+            currentDate.isAfter(reminderDate)
+          ) {
+            this.sendReminder()
+            this.stop()
+          } else {
+            console.log(currentDate)
+            console.log(reminderDate)
+          }
         } else {
-          console.log(currentDate)
-          console.log(reminderDate)
+          this.stop()
         }
       }, 2000)
     }
@@ -458,9 +482,10 @@ async function handleQuickReplies(sender_psid, received_payload) {
         callSendAPI(sender_psid, await botResponses.response('get started'))
       )
 
-    await axios.post('https://classroom-listener-server.glitch.me/stop_listening', {
-      psid: String(sender_psid)
-    })
+    const user = await db.collection("noteyfi_users").findOne(
+      { psid: String(sender_psid) })
+
+    await axios.post('https://classroom-listener-server.glitch.me/stop_listening', user)
       .then(response => {
         console.log(response.data);
       })
