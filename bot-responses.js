@@ -738,8 +738,8 @@ async function response(msg, ...sender_psid) {
       }
     })
     const isEverythingEmpty = passedArr.map(arr => arr.activities.length).every(elem => elem === 0)
-    
-    if(isEverythingEmpty) passedString += "You have no remaininig activities\n"
+
+    if (isEverythingEmpty) passedString += "You have no remaininig activities\n"
 
     passedString += "\n DISCLAIMER: Due to an unfixed bug, some unsubmitted activities don't display if you are a student in a certain class"
 
@@ -1013,8 +1013,6 @@ async function response(msg, ...sender_psid) {
 
     const getResponse = async (courses) => {
 
-
-
       let passedString = '  SELECT A COURSE: \n'
 
       await courses.forEach(async (fc, index) => {
@@ -1114,6 +1112,16 @@ async function response(msg, ...sender_psid) {
           const filteredActs = courseWork
             .map(cw => cw.dueDate)
             .filter(c => c !== undefined)
+
+          const tokenInfo = await auth.getTokenInfo(await auth.credentials.access_token);
+          const userId = await tokenInfo.sub;
+
+          const unsubmittedCourseWorks = await classroom.courses.courseWork.studentSubmissions.list({
+            courseId: course.id,
+            userId: userId,
+            states: ['NEW', 'CREATED', 'TURNED_IN_LATE']
+          });
+          console.log(unsubmittedCourseWorks)
 
           if (filteredActs.length !== 0) {
             return course
