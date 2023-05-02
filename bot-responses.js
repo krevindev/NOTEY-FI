@@ -1122,10 +1122,12 @@ async function response(msg, ...sender_psid) {
             return await unsubmittedCourseWorks.data
           }).filter(dat => dat !== {})
         ).then(res => {
-          console.log('unsub')
-          console.log(res)
-          return res.filter(r => r !== {})
+          return res
         })
+
+        console.log('unsub1')
+        console.log(await unsubmitted)
+        console.log('unsub2')
       })
 
       let filteredCourses = await Promise.all(
