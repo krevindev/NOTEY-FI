@@ -1116,12 +1116,21 @@ async function response(msg, ...sender_psid) {
           const tokenInfo = await auth.getTokenInfo(await auth.credentials.access_token);
           const userId = await tokenInfo.sub;
 
-          const unsubmittedCourseWorks = await classroom.courses.courseWork.studentSubmissions.list({
-            courseId: course.id,
-            userId: userId,
-            states: ['NEW', 'CREATED', 'TURNED_IN_LATE']
-          });
-          console.log(unsubmittedCourseWorks)
+          filteredActs.forEach(async fact => {
+            const unsubmittedCourseWorks = await classroom.courses.courseWork.studentSubmissions.list({
+              courseId: course.id,
+              userId: userId,
+              states: ['NEW', 'CREATED', 'TURNED_IN_LATE'],
+              courseWorkId: fact.id
+            });
+
+            console.log(unsubmittedCourseWorks)
+
+          })
+
+
+
+
 
           if (filteredActs.length !== 0) {
             return course
