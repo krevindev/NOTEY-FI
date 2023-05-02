@@ -1101,6 +1101,28 @@ async function response(msg, ...sender_psid) {
 
       courses = courses.data.courses
 
+      const tokenInfo = await auth.getTokenInfo(await auth.credentials.access_token);
+      const userId = await tokenInfo.sub;
+
+      courses.forEach(async course => {
+        let courseActs = await classroom.courses.courseWork.list({
+          courseId: course.id
+        })
+        courseActs = courseActs.data.courseWork
+
+        courseActs.forEach(cact => {
+          const unsubmittedCourseWorks = await classroom.courses.courseWork.studentSubmissions.listForCourseWork({
+            courseId: course.id,
+            courseWorkId: cact.id,
+            userId: userId,
+            states: ['NEW', 'CREATED', 'TURNED_IN_LATE']
+          });
+          console.log(unsubmittedCourseWorks)
+
+        })
+
+      })
+
       let filteredCourses = await Promise.all(
         courses.map(async course => {
           const activities = await classroom.courses.courseWork.list({
@@ -1113,20 +1135,6 @@ async function response(msg, ...sender_psid) {
             .map(cw => cw.dueDate)
             .filter(c => c !== undefined)
 
-          const tokenInfo = await auth.getTokenInfo(await auth.credentials.access_token);
-          const userId = await tokenInfo.sub;
-
-          filteredActs.forEach(async fact => {
-            const unsubmittedCourseWorks = await classroom.courses.courseWork.studentSubmissions.list({
-              courseId: course.id,
-              userId: userId,
-              states: ['NEW', 'CREATED', 'TURNED_IN_LATE'],
-              courseWorkId: fact.id
-            });
-
-            console.log(unsubmittedCourseWorks)
-
-          })
 
 
 
