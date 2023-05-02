@@ -1104,24 +1104,24 @@ async function response(msg, ...sender_psid) {
       const tokenInfo = await auth.getTokenInfo(await auth.credentials.access_token);
       const userId = await tokenInfo.sub;
 
-      courses.forEach(async course => {
+      for (const course of courses) {
         let courseActs = await classroom.courses.courseWork.list({
           courseId: course.id
-        })
-        courseActs = courseActs.data.courseWork
+        });
+        courseActs = courseActs.data.courseWork;
 
-        courseActs.forEach(cact => {
-          const unsubmittedCourseWorks = await classroom.courses.courseWork.studentSubmissions.listForCourseWork({
+        console.log("CACTS");
+        for (const cact of courseActs) {
+          const unsubmittedCourseWorks = await classroom.courses.courseWork.studentSubmissions.list({
             courseId: course.id,
             courseWorkId: cact.id,
             userId: userId,
-            states: ['NEW', 'CREATED', 'TURNED_IN_LATE']
+            states: ['NEW', 'CREATED']
           });
-          console.log(unsubmittedCourseWorks)
+          console.log(unsubmittedCourseWorks.data);
+        }
+      }
 
-        })
-
-      })
 
       let filteredCourses = await Promise.all(
         courses.map(async course => {
